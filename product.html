@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechEssentials Pro - Product Detail</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <nav>
+      <div class="logo">
+        <a href="index.html">TechEssentials Pro</a>
+      </div>
+
+      <div class="nav-content">
+        <ul class="nav-links">
+          <li><a href="index.html" id="nav-home" class="nav-link"></a></li>
+          <li><a href="products.html" id="nav-products" class="nav-link"></a></li>
+          <li><a href="reviews.html" id="nav-reviews" class="nav-link"></a></li>
+          <li><a href="deals.html" id="nav-deals" class="nav-link"></a></li>
+          <li><a href="contact.html" id="nav-contact" class="nav-link"></a></li>
+        </ul>
+
+        <div class="language-switcher">
+          <button class="lang-btn active" onclick="switchLanguage('en')">EN</button>
+          <button class="lang-btn" onclick="switchLanguage('fr')">FR</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero / Breadcrumbs -->
+  <section class="product-hero-banner">
+    <div class="container">
+      <nav class="breadcrumbs">
+        <a href="index.html">Home</a> › <a href="products.html">Products</a> › 
+        <span id="breadcrumb-product"></span>
+      </nav>
+      <h1 id="hero-product-name"></h1>
+    </div>
+  </section>
+
+  <!-- Product Detail -->
+  <main class="product-detail container">
+    <div class="product-hero">
+      <div class="product-left">
+        <img id="product-image" alt="">
+      </div>
+      <div class="product-right">
+        <h2 id="product-name"></h2>
+        <span class="product-badge" id="product-badge"></span>
+
+        <h3>Key Features</h3>
+        <ul id="product-features"></ul>
+
+        <a href="#" id="sticky-cta-link" class="primary-cta">🔥 Get Best Deal</a>
+      </div>
+    </div>
+
+    <div class="product-description">
+      <h3>Description</h3>
+      <p id="product-description"></p>
+    </div>
+
+    <div class="product-pricing">
+      <h3 id="price-comparison-title"></h3>
+      <table class="price-table" id="price-table"></table>
+    </div>
+  </main>
+
+  <!-- Sticky CTA (mobile) -->
+  <div class="sticky-cta">
+    <a href="#" id="sticky-cta-link-mobile">🔥 Get Best Deal Now</a>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 id="footer-about-title"></h3>
+          <p id="footer-about-text"></p>
+        </div>
+        <div class="footer-section">
+          <h3 id="footer-quicklinks"></h3>
+          <p><a href="#reviews" id="footer-link-reviews"></a></p>
+          <p><a href="#deals" id="footer-link-deals"></a></p>
+          <p><a href="#contact" id="footer-link-contact"></a></p>
+          <p><a href="#privacy" id="footer-link-privacy"></a></p>
+        </div>
+        <div class="footer-section">
+          <h3 id="footer-contact-title"></h3>
+          <p id="footer-contact-email"></p>
+          <p id="footer-contact-time"></p>
+          <p id="footer-contact-based"></p>
+        </div>
+      </div>
+      <div id="footer-legal"></div>
+    </div>
+  </footer>
+
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

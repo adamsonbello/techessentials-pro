@@ -1,0 +1,383 @@
+{
+  "anker-737": {
+    "name": {
+      "en": "Anker 737 GaN Prime Fast Charger 120W",
+      "fr": "Anker 737 Chargeur GaN Prime 120W"
+    },
+    "image": "anker-737.jpg",
+    "badge": "Fast Charging",
+    "features": {
+      "en": ["120W GaN fast charger", "3 USB ports", "Compact design"],
+      "fr": ["Charge rapide GaN 120W", "3 ports USB", "Design compact"]
+    },
+    "price": { "amazon": "89.99", "fnac": "92.00", "bestbuy": "90.50" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Anker 737 GaN Prime delivers 120W of fast charging power in a compact form. Ideal for remote workers and digital nomads who need to power laptops, tablets, and smartphones on the go.",
+      "fr": "L’Anker 737 GaN Prime fournit 120W de puissance de charge rapide dans un format compact. Parfait pour les télétravailleurs et les nomades digitaux qui doivent alimenter ordinateurs, tablettes et smartphones en déplacement."
+    }
+  },
+
+  "anker-dock": {
+    "name": {
+      "en": "Anker Docking Station USB-C Hub",
+      "fr": "Anker Station d’accueil Hub USB-C"
+    },
+    "image": "anker-dock.jpg",
+    "badge": "Productivity",
+    "features": {
+      "en": ["Multi-port docking station", "USB-C, HDMI, SD card", "Supports dual displays"],
+      "fr": ["Station multi-ports", "USB-C, HDMI, carte SD", "Support double écran"]
+    },
+    "price": { "amazon": "129.99", "fnac": "132.00", "bestbuy": "130.50" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Anker Docking Station is a versatile USB-C hub that expands connectivity for laptops. Perfect for home office setups and professionals working remotely.",
+      "fr": "La station d’accueil Anker est un hub USB-C polyvalent qui étend la connectivité des ordinateurs portables. Idéal pour les bureaux à domicile et les professionnels en télétravail."
+    }
+  },
+
+  "anker-nebula": {
+    "name": {
+      "en": "Anker Nebula Portable Mini Projector",
+      "fr": "Anker Nebula Mini Projecteur Portable"
+    },
+    "image": "anker-nebula.jpg",
+    "badge": "Entertainment",
+    "features": {
+      "en": ["Compact projector", "HD resolution", "Wireless streaming"],
+      "fr": ["Projecteur compact", "Résolution HD", "Diffusion sans fil"]
+    },
+    "price": { "amazon": "249.99", "fnac": "255.00", "bestbuy": "252.50" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Anker Nebula is a pocket-sized portable projector that transforms any space into a home cinema. Great for digital nomads and teams who want presentations anywhere.",
+      "fr": "L’Anker Nebula est un projecteur portable de poche qui transforme n’importe quel espace en cinéma maison. Parfait pour les nomades digitaux et les équipes souhaitant présenter partout."
+    }
+  },
+
+  "anker-powercore": {
+    "name": {
+      "en": "Anker PowerCore 10000 Portable Charger",
+      "fr": "Anker PowerCore 10000 Batterie Externe"
+    },
+    "image": "anker-powercore.jpg",
+    "badge": "Best Seller",
+    "features": {
+      "en": ["10000mAh capacity", "Lightweight design", "Fast charging"],
+      "fr": ["Capacité 10000mAh", "Design léger", "Charge rapide"]
+    },
+    "price": { "amazon": "29.99", "fnac": "32.00", "bestbuy": "30.50" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Anker PowerCore 10000 is a must-have portable power bank. Lightweight and compact, it keeps your devices charged while working remotely or traveling.",
+      "fr": "L’Anker PowerCore 10000 est une batterie externe incontournable. Légère et compacte, elle garde vos appareils chargés pendant le télétravail ou en déplacement."
+    }
+  },
+
+  "anker-soundcore-q30": {
+    "name": {
+      "en": "Anker Soundcore Q30 Hybrid Noise Cancelling Headphones",
+      "fr": "Anker Soundcore Q30 Casque Anti-Bruit Hybride"
+    },
+    "image": "anker-soundcore-q30.jpg",
+    "badge": "Noise Cancelling",
+    "features": {
+      "en": ["Hybrid ANC", "40h playtime", "Comfortable fit"],
+      "fr": ["ANC hybride", "40h d’autonomie", "Confort optimal"]
+    },
+    "price": { "amazon": "79.99", "fnac": "82.00", "bestbuy": "81.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Soundcore Q30 headphones block distractions with hybrid noise cancellation. Perfect for focused work sessions at home or while traveling.",
+      "fr": "Le casque Soundcore Q30 bloque les distractions grâce à l’ANC hybride. Idéal pour rester concentré au bureau à domicile ou en voyage."
+    }
+  },
+
+  "asus-proart-pa248QV": {
+    "name": {
+      "en": "ASUS ProArt PA248QV 24-inch Professional Monitor",
+      "fr": "ASUS ProArt PA248QV Écran Professionnel 24 pouces"
+    },
+    "image": "asus-proart-pa248QV.jpg",
+    "badge": "Professional",
+    "features": {
+      "en": ["24-inch display", "100% sRGB", "Factory calibrated"],
+      "fr": ["Écran 24 pouces", "100% sRGB", "Calibré en usine"]
+    },
+    "price": { "amazon": "249.99", "fnac": "255.00", "bestbuy": "252.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The ASUS ProArt PA248QV delivers professional-grade color accuracy, making it perfect for designers, content creators, and remote workers needing visual precision.",
+      "fr": "L’ASUS ProArt PA248QV offre une précision des couleurs de qualité professionnelle, idéal pour les designers, créateurs de contenu et télétravailleurs recherchant une image fidèle."
+    }
+  },
+
+  "aukey-hub": {
+    "name": {
+      "en": "Aukey Multiport USB-C Hub",
+      "fr": "Aukey Hub USB-C Multiport"
+    },
+    "image": "aukey-hub.jpg",
+    "badge": "Connectivity",
+    "features": {
+      "en": ["Multiple ports", "USB-C and HDMI", "Lightweight"],
+      "fr": ["Ports multiples", "USB-C et HDMI", "Léger"]
+    },
+    "price": { "amazon": "49.99", "fnac": "52.00", "bestbuy": "50.50" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Aukey USB-C Hub expands your laptop connectivity with HDMI, USB, and card slots. A must-have for productivity setups in remote work.",
+      "fr": "Le hub Aukey USB-C élargit la connectivité de votre ordinateur portable avec HDMI, USB et cartes. Un accessoire essentiel pour booster la productivité en télétravail."
+    }
+  },
+
+  "benq-screenbar": {
+    "name": {
+      "en": "BenQ ScreenBar Monitor Light",
+      "fr": "BenQ ScreenBar Lampe d’Écran"
+    },
+    "image": "benq-screenbar.jpg",
+    "badge": "Ergonomic",
+    "features": {
+      "en": ["Eye-care lighting", "USB powered", "Space-saving design"],
+      "fr": ["Éclairage confort visuel", "Alimentée en USB", "Design gain de place"]
+    },
+    "price": { "amazon": "99.99", "fnac": "105.00", "bestbuy": "102.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The BenQ ScreenBar reduces eye strain with customizable LED lighting. Ideal for long remote work sessions in low-light environments.",
+      "fr": "La BenQ ScreenBar réduit la fatigue oculaire grâce à un éclairage LED ajustable. Idéal pour les longues sessions de télétravail dans des environnements peu éclairés."
+    }
+  },
+
+  "blue-yeti-nano": {
+    "name": {
+      "en": "Blue Yeti Nano USB Microphone",
+      "fr": "Blue Yeti Nano Microphone USB"
+    },
+    "image": "blue-yeti-nano.png",
+    "badge": "Streaming",
+    "features": {
+      "en": ["Broadcast-quality sound", "Plug & play", "Dual pickup patterns"],
+      "fr": ["Son de qualité broadcast", "Plug & play", "Double directivité"]
+    },
+    "price": { "amazon": "89.99", "fnac": "92.00", "bestbuy": "91.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Blue Yeti Nano delivers crystal-clear audio for streaming, calls, and content creation. A professional USB microphone trusted by remote workers and creators worldwide.",
+      "fr": "Le Blue Yeti Nano offre un son cristallin pour le streaming, les appels et la création de contenu. Un microphone USB professionnel adopté par les télétravailleurs et créateurs du monde entier."
+    }
+  },
+
+  "bose-qc45": {
+    "name": {
+      "en": "Bose QuietComfort 45 Wireless Noise Cancelling Headphones",
+      "fr": "Bose QuietComfort 45 Casque Sans Fil à Réduction de Bruit"
+    },
+    "image": "bose-qc45.jpg",
+    "badge": "Premium",
+    "features": {
+      "en": ["World-class ANC", "Comfortable fit", "24h battery"],
+      "fr": ["ANC de classe mondiale", "Confort optimal", "24h d’autonomie"]
+    },
+    "price": { "amazon": "299.99", "fnac": "305.00", "bestbuy": "302.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Bose QC45 offers industry-leading noise cancellation and premium comfort. A must-have for remote workers and travelers seeking focus and silence.",
+      "fr": "Le Bose QC45 offre une réduction de bruit de pointe et un confort premium. Un incontournable pour les télétravailleurs et voyageurs recherchant calme et concentration."
+    }
+  },
+
+  "dell-ultrasharp-u2720q": {
+    "name": {
+      "en": "Dell UltraSharp U2720Q 27-inch 4K Monitor",
+      "fr": "Dell UltraSharp U2720Q Écran 4K 27 pouces"
+    },
+    "image": "dell-ultrasharp-u2720q.jpg",
+    "badge": "4K Display",
+    "features": {
+      "en": ["27-inch display", "4K UHD resolution", "Wide color gamut"],
+      "fr": ["Écran 27 pouces", "Résolution 4K UHD", "Large gamme de couleurs"]
+    },
+    "price": { "amazon": "499.99", "fnac": "510.00", "bestbuy": "505.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Dell U2720Q combines stunning 4K resolution with ultra-sharp detail, ideal for professionals working remotely on creative projects.",
+      "fr": "Le Dell U2720Q combine une résolution 4K impressionnante avec des détails ultra-précis, idéal pour les professionnels en télétravail sur des projets créatifs."
+    }
+  },
+
+  "herman-miller-sayl": {
+    "name": {
+      "en": "Herman Miller Sayl Ergonomic Office Chair",
+      "fr": "Herman Miller Sayl Chaise de Bureau Ergonomique"
+    },
+    "image": "herman-miller-sayl.jpg",
+    "badge": "Ergonomic",
+    "features": {
+      "en": ["Ergonomic design", "Breathable backrest", "Premium quality"],
+      "fr": ["Design ergonomique", "Dossier respirant", "Qualité premium"]
+    },
+    "price": { "amazon": "799.99", "fnac": "810.00", "bestbuy": "805.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Herman Miller Sayl is a premium ergonomic chair that supports healthy posture. Perfect for remote workers seeking comfort during long work sessions.",
+      "fr": "La Herman Miller Sayl est une chaise ergonomique premium qui favorise une posture saine. Parfaite pour les télétravailleurs recherchant confort et soutien pendant de longues heures de travail."
+    }
+  },
+
+  "logitech-brio": {
+    "name": {
+      "en": "Logitech Brio 4K Ultra HD Webcam",
+      "fr": "Logitech Brio Webcam Ultra HD 4K"
+    },
+    "image": "logitech-brio.jpg",
+    "badge": "4K Video",
+    "features": {
+      "en": ["4K Ultra HD", "HDR support", "Adjustable field of view"],
+      "fr": ["4K Ultra HD", "Support HDR", "Champ de vision réglable"]
+    },
+    "price": { "amazon": "199.99", "fnac": "205.00", "bestbuy": "202.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Logitech Brio delivers 4K Ultra HD video quality with HDR support. Trusted by professionals for video calls, streaming, and remote meetings.",
+      "fr": "La Logitech Brio offre une qualité vidéo 4K Ultra HD avec HDR. Adoptée par les professionnels pour les appels vidéo, le streaming et les réunions à distance."
+    }
+  },
+
+  "logitech-c920": {
+    "name": {
+      "en": "Logitech C920 HD Pro Webcam",
+      "fr": "Logitech C920 Webcam HD Pro"
+    },
+    "image": "logitech-c920.jpg",
+    "badge": "Best Seller",
+    "features": {
+      "en": ["1080p Full HD", "Stereo microphones", "Automatic light correction"],
+      "fr": ["1080p Full HD", "Microphones stéréo", "Correction auto de lumière"]
+    },
+    "price": { "amazon": "79.99", "fnac": "82.00", "bestbuy": "81.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Logitech C920 is the most popular webcam for remote workers and streamers. It delivers Full HD video with clear sound for professional calls.",
+      "fr": "La Logitech C920 est la webcam la plus populaire pour les télétravailleurs et les streamers. Elle offre une vidéo Full HD avec un son clair pour des appels professionnels."
+    }
+  },
+
+  "logitech-ergo-k860": {
+    "name": {
+      "en": "Logitech Ergo K860 Ergonomic Split Keyboard",
+      "fr": "Logitech Ergo K860 Clavier Ergonomique Divisé"
+    },
+    "image": "logitech-ergo-k860.jpg",
+    "badge": "Ergonomic",
+    "features": {
+      "en": ["Split curved design", "Wrist rest support", "Wireless connectivity"],
+      "fr": ["Design incurvé divisé", "Repos poignets intégré", "Connectivité sans fil"]
+    },
+    "price": { "amazon": "129.99", "fnac": "135.00", "bestbuy": "132.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Logitech Ergo K860 keyboard reduces strain with its split curved design. Ideal for long typing sessions in remote work setups.",
+      "fr": "Le Logitech Ergo K860 réduit la fatigue grâce à son design incurvé divisé. Idéal pour les longues sessions de frappe en télétravail."
+    }
+  },
+
+  "logitech-mx-keys": {
+    "name": {
+      "en": "Logitech MX Keys Advanced Wireless Keyboard",
+      "fr": "Logitech MX Keys Clavier Sans Fil Avancé"
+    },
+    "image": "logitech-mx-keys.jpg",
+    "badge": "Productivity",
+    "features": {
+      "en": ["Smart illumination", "USB-C rechargeable", "Multi-device pairing"],
+      "fr": ["Éclairage intelligent", "Recharge USB-C", "Appairage multi-appareils"]
+    },
+    "price": { "amazon": "109.99", "fnac": "112.00", "bestbuy": "111.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Logitech MX Keys is a premium wireless keyboard with smart illumination. A favorite for digital nomads and professionals who value productivity.",
+      "fr": "Le Logitech MX Keys est un clavier sans fil premium avec éclairage intelligent. Un favori des nomades digitaux et des professionnels qui privilégient la productivité."
+    }
+  },
+
+  "logitech-mx-master-3s": {
+    "name": {
+      "en": "Logitech MX Master 3S Wireless Ergonomic Mouse",
+      "fr": "Logitech MX Master 3S Souris Ergonomique Sans Fil"
+    },
+    "image": "logitech-mx-master-3s.jpg",
+    "badge": "Ergonomic",
+    "features": {
+      "en": ["Ergonomic design", "MagSpeed scroll", "Customizable buttons"],
+      "fr": ["Design ergonomique", "Défilement MagSpeed", "Boutons personnalisables"]
+    },
+    "price": { "amazon": "99.99", "fnac": "105.00", "bestbuy": "101.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Logitech MX Master 3S is the gold standard for productivity mice. With ergonomic shape, MagSpeed scroll, and customizable buttons, it’s built for professionals and remote workers.",
+      "fr": "La Logitech MX Master 3S est la référence des souris de productivité. Avec sa forme ergonomique, sa molette MagSpeed et ses boutons personnalisables, elle est conçue pour les professionnels et télétravailleurs."
+    }
+  },
+
+  "logitech-streamcam": {
+    "name": {
+      "en": "Logitech StreamCam Full HD Webcam",
+      "fr": "Logitech StreamCam Webcam Full HD"
+    },
+    "image": "logitech-streamcam.jpg",
+    "badge": "Streaming",
+    "features": {
+      "en": ["Full HD 1080p60", "Auto focus", "Portrait mode"],
+      "fr": ["Full HD 1080p60", "Mise au point auto", "Mode portrait"]
+    },
+    "price": { "amazon": "139.99", "fnac": "145.00", "bestbuy": "142.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Logitech StreamCam is designed for streamers and creators. It delivers smooth Full HD video with advanced autofocus and portrait mode.",
+      "fr": "La Logitech StreamCam est conçue pour les streamers et créateurs. Elle offre une vidéo Full HD fluide avec mise au point avancée et mode portrait."
+    }
+  },
+
+  "logitech-zone-wireless": {
+    "name": {
+      "en": "Logitech Zone Wireless Bluetooth Headset",
+      "fr": "Logitech Zone Wireless Casque Bluetooth"
+    },
+    "image": "logitech-zone-wireless.jpg",
+    "badge": "Business",
+    "features": {
+      "en": ["Noise-cancelling mic", "Wireless Bluetooth", "All-day comfort"],
+      "fr": ["Micro anti-bruit", "Bluetooth sans fil", "Confort toute la journée"]
+    },
+    "price": { "amazon": "149.99", "fnac": "155.00", "bestbuy": "152.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Logitech Zone Wireless headset provides crystal-clear calls with noise-cancelling mic. Perfect for remote meetings and hybrid work setups.",
+      "fr": "Le Logitech Zone Wireless offre des appels clairs grâce à son micro anti-bruit. Idéal pour les réunions à distance et le travail hybride."
+    }
+  },
+
+  "seagate-2tb": {
+    "name": {
+      "en": "Seagate Portable 2TB External Hard Drive",
+      "fr": "Seagate Disque Dur Externe Portable 2 To"
+    },
+    "image": "seagate-2tb.jpg",
+    "badge": "Storage",
+    "features": {
+      "en": ["2TB storage", "USB 3.0", "Plug and play"],
+      "fr": ["2 To de stockage", "USB 3.0", "Plug and play"]
+    },
+    "price": { "amazon": "69.99", "fnac": "72.00", "bestbuy": "71.00" },
+    "links": { "amazon": "#", "fnac": "#", "bestbuy": "#" },
+    "description": {
+      "en": "The Seagate 2TB external hard drive offers reliable portable storage. A must-have for professionals and remote workers backing up their files.",
+      "fr": "Le disque dur externe Seagate 2 To offre un stockage portable fiable. Indispensable pour les professionnels et télétravailleurs qui sauvegardent leurs fichiers."
+    }
+  }
+}
+
+

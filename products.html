@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Products - TechEssentials Pro</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <nav>
+      <div class="logo">
+        <a href="index.html">TechEssentials Pro</a>
+      </div>
+
+      <div class="nav-content">
+        <ul class="nav-links">
+          <li><a href="index.html" id="nav-home" class="nav-link"></a></li>
+          <li><a href="products.html" id="nav-products" class="nav-link"></a></li>
+          <li><a href="reviews.html" id="nav-reviews" class="nav-link"></a></li>
+          <li><a href="deals.html" id="nav-deals" class="nav-link"></a></li>
+          <li><a href="contact.html" id="nav-contact" class="nav-link"></a></li>
+        </ul>
+
+        <div class="language-switcher">
+          <button class="lang-btn active" onclick="switchLanguage('en')">EN</button>
+          <button class="lang-btn" onclick="switchLanguage('fr')">FR</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Product Listing -->
+  <main class="featured-products">
+    <div class="container">
+      <h1 id="products-title" class="section-title"></h1>
+      <p id="products-subtitle" class="section-subtitle"></p>
+      <div class="products-grid" id="products-list"></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 id="footer-about-title"></h3>
+          <p id="footer-about-text"></p>
+        </div>
+        <div class="footer-section">
+          <h3 id="footer-quicklinks"></h3>
+          <p><a href="#reviews" id="footer-link-reviews"></a></p>
+          <p><a href="#deals" id="footer-link-deals"></a></p>
+          <p><a href="#contact" id="footer-link-contact"></a></p>
+          <p><a href="#privacy" id="footer-link-privacy"></a></p>
+        </div>
+        <div class="footer-section">
+          <h3 id="footer-contact-title"></h3>
+          <p id="footer-contact-email"></p>
+          <p id="footer-contact-time"></p>
+          <p id="footer-contact-based"></p>
+        </div>
+      </div>
+      <div id="footer-legal"></div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+ <script src="assets/js/main.js" defer></script>
+<script src="assets/js/products.js" defer></script>
+</body>
+</html>
+
