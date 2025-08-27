@@ -27,6 +27,34 @@ async function loadTranslations(lang) {
         document.getElementById("nav-contact").textContent = siteTranslations.nav.contact[lang];
     }
 
+    // ---- Footer ----
+    if (siteTranslations.footer) {
+      if (document.getElementById("footer-about-title"))
+        document.getElementById("footer-about-title").textContent = siteTranslations.footer.aboutTitle[lang];
+      if (document.getElementById("footer-about-text"))
+        document.getElementById("footer-about-text").textContent = siteTranslations.footer.aboutText[lang];
+      if (document.getElementById("footer-quicklinks"))
+        document.getElementById("footer-quicklinks").textContent = siteTranslations.footer.quickLinks[lang];
+      if (document.getElementById("footer-link-reviews"))
+        document.getElementById("footer-link-reviews").textContent = siteTranslations.footer.linkReviews[lang];
+      if (document.getElementById("footer-link-deals"))
+        document.getElementById("footer-link-deals").textContent = siteTranslations.footer.linkDeals[lang];
+      if (document.getElementById("footer-link-contact"))
+        document.getElementById("footer-link-contact").textContent = siteTranslations.footer.linkContact[lang];
+      if (document.getElementById("footer-link-privacy"))
+        document.getElementById("footer-link-privacy").textContent = siteTranslations.footer.linkPrivacy[lang];
+      if (document.getElementById("footer-contact-title"))
+        document.getElementById("footer-contact-title").textContent = siteTranslations.footer.contactTitle[lang];
+      if (document.getElementById("footer-contact-email"))
+        document.getElementById("footer-contact-email").textContent = siteTranslations.footer.contactEmail[lang];
+      if (document.getElementById("footer-contact-time"))
+        document.getElementById("footer-contact-time").textContent = siteTranslations.footer.contactTime[lang];
+      if (document.getElementById("footer-contact-based"))
+        document.getElementById("footer-contact-based").textContent = siteTranslations.footer.contactBased[lang];
+      if (document.getElementById("footer-legal"))
+        document.getElementById("footer-legal").textContent = siteTranslations.footer.legal[lang];
+    }
+
     // ---- Hero ----
     if (siteTranslations.hero) {
       if (document.getElementById("hero-title"))
@@ -37,7 +65,7 @@ async function loadTranslations(lang) {
         document.getElementById("hero-cta").textContent = siteTranslations.hero.cta[lang];
     }
 
-    // ---- Sections ----
+    // ---- Sections (Home page) ----
     if (siteTranslations.sections) {
       if (document.getElementById("products-title"))
         document.getElementById("products-title").textContent = siteTranslations.sections.productsTitle[lang];
@@ -57,20 +85,12 @@ async function loadTranslations(lang) {
         document.getElementById("btn-best-deal").textContent = siteTranslations.buttons.bestDeal[lang];
     }
 
-    // ---- Footer ----
-    if (siteTranslations.footer) {
-      document.getElementById("footer-about-title").textContent = siteTranslations.footer.aboutTitle[lang];
-      document.getElementById("footer-about-text").textContent = siteTranslations.footer.aboutText[lang];
-      document.getElementById("footer-quicklinks").textContent = siteTranslations.footer.quickLinks[lang];
-      document.getElementById("footer-link-reviews").textContent = siteTranslations.footer.linkReviews[lang];
-      document.getElementById("footer-link-deals").textContent = siteTranslations.footer.linkDeals[lang];
-      document.getElementById("footer-link-contact").textContent = siteTranslations.footer.linkContact[lang];
-      document.getElementById("footer-link-privacy").textContent = siteTranslations.footer.linkPrivacy[lang];
-      document.getElementById("footer-contact-title").textContent = siteTranslations.footer.contactTitle[lang];
-      document.getElementById("footer-contact-email").textContent = siteTranslations.footer.contactEmail[lang];
-      document.getElementById("footer-contact-time").textContent = siteTranslations.footer.contactTime[lang];
-      document.getElementById("footer-contact-based").textContent = siteTranslations.footer.contactBased[lang];
-      document.getElementById("footer-legal").textContent = siteTranslations.footer.legal[lang];
+    // ---- Deals Page ----
+    if (siteTranslations.dealsPage) {
+      if (document.getElementById("deals-title"))
+        document.getElementById("deals-title").textContent = siteTranslations.dealsPage.title[lang];
+      if (document.getElementById("deals-subtitle"))
+        document.getElementById("deals-subtitle").textContent = siteTranslations.dealsPage.subtitle[lang];
     }
 
     console.log("✅ Translations applied for:", lang);
@@ -86,29 +106,22 @@ function switchLanguage(lang) {
   currentLanguage = lang;
   localStorage.setItem("lang", lang);
 
-  // Recharge produits si dispo
   if (typeof loadProducts === "function") {
     loadProducts();
   }
 
-  // Recharge textes fixes
   loadTranslations(lang);
 
-  // Update boutons
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
+  document.querySelectorAll(".lang-btn").forEach(btn => btn.classList.remove("active"));
   const activeBtn = document.querySelector(`.lang-btn[onclick="switchLanguage('${lang}')"]`);
-  if (activeBtn) activeBtn.classList.add('active');
+  if (activeBtn) activeBtn.classList.add("active");
 
-  // Update page title
-  if (lang === 'fr') {
-    document.title = 'TechEssentials Pro - Meilleur Tech pour Télétravail | Best Tech for Remote Workers';
+  if (lang === "fr") {
+    document.title = "TechEssentials Pro - Meilleur Tech pour Télétravail | Best Tech for Remote Workers";
   } else {
-    document.title = 'TechEssentials Pro - Best Tech for Remote Workers | Meilleur Tech pour Télétravail';
+    document.title = "TechEssentials Pro - Best Tech for Remote Workers | Meilleur Tech pour Télétravail";
   }
 
-  console.log(`🌍 Language switched to: ${lang}`);
   initScrollAnimations();
 }
 
@@ -116,29 +129,25 @@ function switchLanguage(lang) {
 // Scroll animations
 // ===============================
 function initScrollAnimations() {
-  const observer = new IntersectionObserver((entries) => {
+  const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('revealed');
-      }
+      if (entry.isIntersecting) entry.target.classList.add("revealed");
     });
   }, { threshold: 0.1 });
 
-  document.querySelectorAll('.scroll-reveal').forEach(element => {
-    observer.observe(element);
-  });
+  document.querySelectorAll(".scroll-reveal").forEach(element => observer.observe(element));
 }
 
 // ===============================
 // Smooth scrolling
 // ===============================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
+  anchor.addEventListener("click", function (e) {
     e.preventDefault();
-    const targetId = this.getAttribute('href');
+    const targetId = this.getAttribute("href");
     const targetElement = document.querySelector(targetId);
     if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth' });
+      targetElement.scrollIntoView({ behavior: "smooth" });
     }
   });
 });
@@ -146,75 +155,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // ===============================
 // Initialize on page load
 // ===============================
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('🌟 TechEssentials Pro - Bilingual Affiliate Site Loaded');
-  console.log('🎯 Revenue Projection: €1500-3200/month (bilingual expansion)');
-
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("🌟 TechEssentials Pro - Loaded");
+  loadTranslations(currentLanguage);
   initScrollAnimations();
-
-  // Charge les traductions pour la langue sauvegardée
-  loadTranslations(currentLanguage);
 });
 
-// ===============================
-// Produits vedettes - Page d'accueil
-// ===============================
-async function loadFeaturedProducts() {
-  try {
-    const res = await fetch("data/products.json");
-    if (!res.ok) throw new Error("❌ Cannot load products.json");
-    const products = await res.json();
-
-    // Sélection fixe de 6 produits vedettes (slugs dans products.json)
-    const featuredSlugs = [
-      "anker-powercore",
-      "sony-headphones",
-      "logitech-mouse",
-      "asus-monitor",
-      "anker-powerstrip",
-      "benq-screenbar"
-    ];
-
-    const grid = document.getElementById("featured-products-grid");
-    if (!grid) return;
-
-    grid.innerHTML = featuredSlugs.map(slug => {
-      const p = products[slug];
-      if (!p) return "";
-      return `
-        <div class="product-card">
-          <div class="product-image">
-            <img src="assets/images/products/${p.image}" alt="${p.name[currentLanguage]}">
-            <span class="product-badge">${p.badge}</span>
-          </div>
-          <h3 class="product-title">${p.name[currentLanguage]}</h3>
-          <ul class="product-features">
-            ${p.features[currentLanguage].slice(0,3).map(f => `<li>${f}</li>`).join("")}
-          </ul>
-          <p class="product-description">
-            ${p.description[currentLanguage].substring(0, 100)}...
-          </p>
-          <div class="product-price">€${p.price.amazon}</div>
-          <a href="product.html?id=${slug}" class="affiliate-button">
-            ${siteTranslations.buttons.viewDetails[currentLanguage]}
-          </a>
-        </div>
-      `;
-    }).join("");
-
-    console.log("✨ Featured products loaded:", featuredSlugs);
-  } catch (err) {
-    console.error("⚠️ Error loading featured products:", err);
-  }
-}
-
-// ===============================
-// Initialisation - page d'accueil
-// ===============================
-document.addEventListener("DOMContentLoaded", function() {
-  console.log("🌟 TechEssentials Pro - Home Page Loaded");
-
-  // Charger les traductions et les produits vedettes
-  loadTranslations(currentLanguage);
-  loadFeaturedProducts();
-});

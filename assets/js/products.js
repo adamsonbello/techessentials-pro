@@ -143,6 +143,34 @@ async function loadProducts() {
       }).join("");
     }
 
+    // ----- Deals (deals.html) -----
+const listDeals = document.getElementById("deals-list");
+if (listDeals) {
+  listDeals.innerHTML = Object.keys(products)
+    .filter(slug => products[slug].deal) // seulement ceux qui ont "deal": true
+    .map(slug => {
+      const p = products[slug];
+      return `
+        <div class="product-card">
+          <div class="product-image">
+            <img src="assets/images/products/${p.image}" alt="${p.name[currentLang]}">
+            <span class="product-badge">${p.badge}</span>
+          </div>
+          <h3 class="product-title">${p.name[currentLang]}</h3>
+          <p class="product-description">${p.description[currentLang].substring(0, 80)}...</p>
+          <div class="product-price">
+            ${p.oldPrice ? `<span class="price-old">€${p.oldPrice}</span>` : ""}
+            €${p.price.amazon}
+          </div>
+          <a href="product.html?id=${slug}" class="affiliate-button">
+            ${currentLang === "fr" ? "Voir le détail →" : "View Details →"}
+          </a>
+        </div>
+      `;
+    }).join("");
+}
+
+
     // ----- Home Page (6 vedettes) -----
     const homeFeaturedList = document.getElementById("home-featured-list");
     if (homeFeaturedList) {

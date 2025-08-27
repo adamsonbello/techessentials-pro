@@ -78,8 +78,19 @@
       "en": "© 2025 TechEssentials Pro. Affiliate disclosure: We earn commission from qualifying purchases at no extra cost to you.",
       "fr": "© 2025 TechEssentials Pro. Divulgation d'affiliation: Nous gagnons une commission sur les achats qualifiés sans coût supplémentaire pour vous."
     }
+  },
+  "dealsPage": {
+    "title": {
+      "en": "Best Tech Deals",
+      "fr": "Meilleures Offres Tech"
+    },
+    "subtitle": {
+      "en": "Exclusive discounts and smart bundles for remote workers.",
+      "fr": "Réductions exclusives et bundles intelligents pour les télétravailleurs."
+    }
   }
 }
+
 
 
 

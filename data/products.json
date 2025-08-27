@@ -72,7 +72,9 @@
     "description": {
       "en": "The Anker PowerCore 10000 is a must-have portable power bank. Lightweight and compact, it keeps your devices charged while working remotely or traveling.",
       "fr": "L’Anker PowerCore 10000 est une batterie externe incontournable. Légère et compacte, elle garde vos appareils chargés pendant le télétravail ou en déplacement."
-    }
+    },
+     "featured": true,
+    "deal": true
   },
 
   "anker-soundcore-q30": {
@@ -91,7 +93,9 @@
     "description": {
       "en": "The Soundcore Q30 headphones block distractions with hybrid noise cancellation. Perfect for focused work sessions at home or while traveling.",
       "fr": "Le casque Soundcore Q30 bloque les distractions grâce à l’ANC hybride. Idéal pour rester concentré au bureau à domicile ou en voyage."
-    }
+    },
+     "featured": false,
+    "deal": true
   },
 
   "asus-proart-pa248QV": {
@@ -167,7 +171,9 @@
     "description": {
       "en": "The Blue Yeti Nano delivers crystal-clear audio for streaming, calls, and content creation. A professional USB microphone trusted by remote workers and creators worldwide.",
       "fr": "Le Blue Yeti Nano offre un son cristallin pour le streaming, les appels et la création de contenu. Un microphone USB professionnel adopté par les télétravailleurs et créateurs du monde entier."
-    }
+    },
+    "featured": false,
+    "deal": true
   },
 
   "bose-qc45": {
@@ -319,7 +325,9 @@
     "description": {
       "en": "The Logitech MX Master 3S is the gold standard for productivity mice. With ergonomic shape, MagSpeed scroll, and customizable buttons, it’s built for professionals and remote workers.",
       "fr": "La Logitech MX Master 3S est la référence des souris de productivité. Avec sa forme ergonomique, sa molette MagSpeed et ses boutons personnalisables, elle est conçue pour les professionnels et télétravailleurs."
-    }
+    },
+    "featured": false,
+    "deal": false
   },
 
   "logitech-streamcam": {
