@@ -144,37 +144,36 @@ async function loadProducts() {
     }
 
     // ----- Deals (deals.html) -----
-const listDeals = document.getElementById("deals-list");
-if (listDeals) {
-  listDeals.innerHTML = Object.keys(products)
-    .filter(slug => products[slug].deal) // seulement ceux qui ont "deal": true
-    .map(slug => {
-      const p = products[slug];
-      return `
-        <div class="product-card">
-          <div class="product-image">
-            <img src="assets/images/products/${p.image}" alt="${p.name[currentLang]}">
-            <span class="product-badge">${p.badge}</span>
-          </div>
-          <h3 class="product-title">${p.name[currentLang]}</h3>
-          <p class="product-description">${p.description[currentLang].substring(0, 80)}...</p>
-          <div class="product-price">
-            ${p.oldPrice ? `<span class="price-old">€${p.oldPrice}</span>` : ""}
-            €${p.price.amazon}
-          </div>
-          <a href="product.html?id=${slug}" class="affiliate-button">
-            ${currentLang === "fr" ? "Voir le détail →" : "View Details →"}
-          </a>
-        </div>
-      `;
-    }).join("");
-}
-
+    const listDeals = document.getElementById("deals-list");
+    if (listDeals) {
+      listDeals.innerHTML = Object.keys(products)
+        .filter(slug => products[slug].deal)
+        .map(slug => {
+          const p = products[slug];
+          return `
+            <div class="product-card">
+              <div class="product-image">
+                <img src="assets/images/products/${p.image}" alt="${p.name[currentLang]}">
+                <span class="product-badge">${p.badge}</span>
+              </div>
+              <h3 class="product-title">${p.name[currentLang]}</h3>
+              <p class="product-description">${p.description[currentLang].substring(0, 80)}...</p>
+              <div class="product-price">
+                ${p.oldPrice ? `<span class="price-old">€${p.oldPrice}</span>` : ""}
+                €${p.price.amazon}
+              </div>
+              <a href="product.html?id=${slug}" class="affiliate-button">
+                ${currentLang === "fr" ? "Voir le détail →" : "View Details →"}
+              </a>
+            </div>
+          `;
+        }).join("");
+    }
 
     // ----- Home Page (6 vedettes) -----
     const homeFeaturedList = document.getElementById("home-featured-list");
     if (homeFeaturedList) {
-      const featured = Object.keys(products).slice(0, 6); // prend 6 premiers produits
+      const featured = Object.keys(products).slice(0, 6);
       homeFeaturedList.innerHTML = featured.map(slug => {
         const p = products[slug];
         return `
@@ -260,9 +259,53 @@ if (listDeals) {
         currentLang === "fr" ? "🔥 Obtenir l’offre maintenant" : "🔥 Get Deal Now";
     }
 
+    // ✅ Initialiser QuickView après le rendu des produits
+    initQuickView();
+
   } catch (err) {
     console.error("⚠️ Error loading products:", err);
   }
 }
 
 document.addEventListener("DOMContentLoaded", loadProducts);
+
+// ===============================
+// Quick View Popup (image only)
+// ===============================
+// Popup QuickView
+function initQuickView() {
+  const overlay = document.getElementById("quickview-overlay");
+  const closeBtn = document.getElementById("quickview-close");
+  const quickImg = document.getElementById("quickview-img");
+
+  document.querySelectorAll(".product-card img").forEach(img => {
+    img.addEventListener("click", () => {
+      quickImg.src = img.src;
+      quickImg.alt = img.alt;
+      overlay.style.display = "flex"; // ✅ IMPORTANT
+    });
+  });
+
+  closeBtn.addEventListener("click", () => overlay.style.display = "none");
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) overlay.style.display = "none";
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initQuickView);
+
+function switchLanguage(lang) {
+  // Sauvegarde et mise à jour
+  localStorage.setItem("lang", lang);
+  currentLang = lang;
+
+  // Mise à jour visuelle des boutons
+  document.querySelectorAll(".lang-btn").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  const activeBtn = document.querySelector(`.lang-btn[onclick="switchLanguage('${lang}')"]`);
+  if (activeBtn) activeBtn.classList.add("active");
+
+  // Recharge le contenu
+  loadReview(currentLang);
+}

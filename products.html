@@ -5,31 +5,169 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title id="page-title">Products - TechEssentials Pro</title>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+/* =======================
+   ✅ QuickView Popup
+   ======================= */
+#quickview-overlay {
+  display: none; /* caché par défaut */
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+#quickview-content {
+  position: relative;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  max-width: 60%;
+  max-height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+#quickview-content img {
+  max-width: 100%;
+  max-height: 75vh;
+  border-radius: 8px;
+  object-fit: contain;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Petit effet zoom quand la popup s'ouvre */
+#quickview-overlay.show #quickview-content img {
+  transform: scale(1.05);
+}
+
+#quickview-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+#quickview-close:hover {
+  color: #e60000;
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px) {
+  #quickview-content {
+    max-width: 90%;
+    max-height: 70%;
+  }
+}
+
+/* =======================
+   ✅ QuickView Popup FIX
+   ======================= */
+#quickview-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+#quickview-content {
+  position: relative;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  width: 50%;   /* ✅ Forcer taille du popup */
+  max-width: 800px;
+  max-height: 85%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+#quickview-content img {
+  width: 100%;        /* ✅ L’image prend toute la largeur */
+  height: auto;
+  max-height: 70vh;   /* ✅ Adapté à l’écran */
+  object-fit: contain;
+  border-radius: 8px;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Animation à l’ouverture */
+#quickview-overlay.show #quickview-content img {
+  transform: scale(1.05);
+}
+
+#quickview-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+#quickview-close:hover {
+  color: #e60000;
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px) {
+  #quickview-content {
+    width: 90%;
+    max-width: 95%;
+  }
+}
+
+
+</style>
 </head>
 <body>
   <!-- Header -->
   <header>
-    <nav>
-      <div class="logo">
-        <a href="index.html">TechEssentials Pro</a>
-      </div>
-
-      <div class="nav-content">
-        <ul class="nav-links">
-          <li><a href="index.html" id="nav-home" class="nav-link"></a></li>
-          <li><a href="products.html" id="nav-products" class="nav-link"></a></li>
-          <li><a href="reviews.html" id="nav-reviews" class="nav-link"></a></li>
-          <li><a href="deals.html" id="nav-deals" class="nav-link"></a></li>
-          <li><a href="contact.html" id="nav-contact" class="nav-link"></a></li>
-        </ul>
-
-        <div class="language-switcher">
-          <button class="lang-btn active" onclick="switchLanguage('en')">EN</button>
-          <button class="lang-btn" onclick="switchLanguage('fr')">FR</button>
+    <div class="container">
+      <nav>
+        <div class="logo">TechEssentials Pro</div>
+        <div class="nav-content">
+          <ul class="nav-links">
+            <li><a href="index.html" id="nav-home"></a></li>
+            <li><a href="products.html" id="nav-products"></a></li>
+            <li><a href="reviews.html" id="nav-reviews"></a></li>
+            <li><a href="deals.html" id="nav-deals"></a></li>
+            <li><a href="contact.html" id="nav-contact"></a></li>
+          </ul>
+          <div class="language-switcher">
+            <button class="lang-btn active" onclick="switchLanguage('en')">EN</button>
+            <button class="lang-btn" onclick="switchLanguage('fr')">FR</button>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   </header>
+    <section class="hero" id="products">
+    <div class="container">
+      <h1 id="hero-title">Our Products</h1>
+      <p id="hero-subtitle">Carefully selected tools and devices for digital nomads and remote workers.</p>
+      <a id="hero-cta" class="cta-button">Browse Products</a>
+    </div>
+  </section>
 
   <!-- Product Listing -->
   <main class="featured-products">
@@ -69,6 +207,15 @@
   <!-- Scripts -->
  <script src="assets/js/main.js" defer></script>
 <script src="assets/js/products.js" defer></script>
+
+<!-- ✅ QuickView Popup -->
+<div id="quickview-overlay">
+  <div id="quickview-content">
+    <span id="quickview-close">&times;</span>
+    <img id="quickview-img" src="" alt="Product Preview">
+  </div>
+</div>
+
 </body>
 </html>
 

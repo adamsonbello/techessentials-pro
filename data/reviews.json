@@ -1,0 +1,605 @@
+{
+  "anker-737-review": {
+    "title": {
+      "en": "Anker 737 GaN Prime Fast Charger 120W Review",
+      "fr": "Test du chargeur rapide Anker 737 GaN Prime 120W"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "anker-737.jpg",
+    "excerpt": {
+      "en": "We tested the Anker 737 GaN Prime Fast Charger 120W to see if it truly helps digital nomads and remote workers.",
+      "fr": "Nous avons testé le chargeur rapide Anker 737 GaN Prime 120W pour voir s'il aide vraiment les nomades digitaux et les télétravailleurs."
+    },
+    "content": {
+      "en": "<p>The Anker 737 GaN Prime Fast Charger 120W is part of our in-depth review series. We tested its performance, build quality, and value for money.</p>",
+      "fr": "<p>L’Anker 737 GaN Prime Fast Charger 120W fait partie de notre série de tests approfondis. Nous avons évalué ses performances, sa qualité de fabrication et son rapport qualité-prix.</p>"
+    },
+    "pros": {
+      "en": ["Great for productivity", "Solid design"],
+      "fr": ["Excellent pour la productivité", "Conception solide"]
+    },
+    "cons": {
+      "en": ["Could be improved in some areas"],
+      "fr": ["Certains aspects pourraient être améliorés"]
+    },
+    "verdict": {
+      "en": "The Anker 737 GaN Prime Fast Charger 120W is a solid choice for remote workers.",
+      "fr": "L’Anker 737 GaN Prime Fast Charger 120W est un excellent choix pour les télétravailleurs."
+    }
+  },
+
+  "anker-dock-review": {
+    "title": {
+      "en": "Anker Docking Station USB-C Hub Review",
+      "fr": "Test du hub USB-C Anker Docking Station"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "anker-dock.jpg",
+    "excerpt": {
+      "en": "We tested the Anker Docking Station USB-C Hub to see if it truly helps digital nomads and remote workers.",
+      "fr": "Nous avons testé le hub USB-C Anker Docking Station pour vérifier son utilité pour les nomades digitaux et télétravailleurs."
+    },
+    "content": {
+      "en": "<p>The Anker Docking Station USB-C Hub is part of our in-depth review series. We tested its performance, build quality, and value for money.</p>",
+      "fr": "<p>L’Anker Docking Station USB-C Hub fait partie de nos tests approfondis. Nous avons évalué ses performances, sa qualité et son rapport qualité-prix.</p>"
+    },
+    "pros": {
+      "en": ["Great for productivity", "Solid design"],
+      "fr": ["Excellent pour la productivité", "Conception solide"]
+    },
+    "cons": {
+      "en": ["Could be improved in some areas"],
+      "fr": ["Certains aspects pourraient être améliorés"]
+    },
+    "verdict": {
+      "en": "The Anker Docking Station USB-C Hub is a solid choice for remote workers.",
+      "fr": "L’Anker Docking Station USB-C Hub est un choix solide pour les télétravailleurs."
+    }
+  },
+
+  "anker-nebula-review": {
+    "title": {
+      "en": "Anker Nebula Portable Mini Projector Review",
+      "fr": "Test du projecteur portable Anker Nebula"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "anker-nebula.jpg",
+    "excerpt": {
+      "en": "We tested the Anker Nebula Portable Mini Projector to see if it truly helps digital nomads and remote workers.",
+      "fr": "Nous avons testé le projecteur portable Anker Nebula pour voir s’il est utile aux nomades digitaux et télétravailleurs."
+    },
+    "content": {
+      "en": "<p>The Anker Nebula Portable Mini Projector is part of our in-depth review series. We tested its performance, build quality, and value for money.</p>",
+      "fr": "<p>Le projecteur portable Anker Nebula fait partie de notre série de tests approfondis. Nous avons évalué ses performances, sa qualité de fabrication et son rapport qualité-prix.</p>"
+    },
+    "pros": {
+      "en": ["Portable and lightweight", "Good image quality"],
+      "fr": ["Portable et léger", "Bonne qualité d’image"]
+    },
+    "cons": {
+      "en": ["Battery life could be better"],
+      "fr": ["Autonomie perfectible"]
+    },
+    "verdict": {
+      "en": "The Anker Nebula is a handy tool for presentations and entertainment on the go.",
+      "fr": "L’Anker Nebula est un outil pratique pour les présentations et le divertissement en déplacement."
+    }
+  },
+
+  "anker-powercore-review": {
+    "title": {
+      "en": "Anker PowerCore 10000 Portable Charger Review",
+      "fr": "Test du chargeur portable Anker PowerCore 10000"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "anker-powercore.jpg",
+    "excerpt": {
+      "en": "We tested the Anker PowerCore 10000 Portable Charger to see if it truly helps digital nomads and remote workers.",
+      "fr": "Nous avons testé le chargeur portable Anker PowerCore 10000 pour voir s’il aide vraiment les nomades digitaux et télétravailleurs."
+    },
+    "content": {
+      "en": "<p>The Anker PowerCore 10000 is a compact portable charger. We tested its charging speed, capacity, and reliability.</p>",
+      "fr": "<p>L’Anker PowerCore 10000 est un chargeur portable compact. Nous avons évalué sa vitesse de charge, sa capacité et sa fiabilité.</p>"
+    },
+    "pros": {
+      "en": ["Compact size", "Fast charging"],
+      "fr": ["Format compact", "Charge rapide"]
+    },
+    "cons": {
+      "en": ["Only one port"],
+      "fr": ["Un seul port disponible"]
+    },
+    "verdict": {
+      "en": "The PowerCore 10000 is a must-have for travel.",
+      "fr": "Le PowerCore 10000 est un indispensable pour voyager."
+    }
+  },
+
+  
+  "anker-soundcore-q30-review": {
+    "title": {
+      "en": "Anker Soundcore Q30 Hybrid Noise Cancelling Headphones Review",
+      "fr": "Test du casque Anker Soundcore Q30 à réduction de bruit hybride"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "anker-soundcore-q30.jpg",
+    "excerpt": {
+      "en": "We tested the Anker Soundcore Q30 Hybrid Noise Cancelling Headphones to see if they truly help remote workers.",
+      "fr": "Nous avons testé le casque Anker Soundcore Q30 à réduction de bruit pour voir son utilité pour les télétravailleurs."
+    },
+    "content": {
+      "en": "<p>The Anker Soundcore Q30 offers effective noise cancellation and comfort for long sessions.</p>",
+      "fr": "<p>L’Anker Soundcore Q30 offre une réduction de bruit efficace et un confort adapté aux longues sessions.</p>"
+    },
+    "pros": {
+      "en": ["Excellent noise cancellation", "Comfortable fit"],
+      "fr": ["Excellente réduction de bruit", "Confort optimal"]
+    },
+    "cons": {
+      "en": ["Plastic build feels average"],
+      "fr": ["Conception plastique moyenne"]
+    },
+    "verdict": {
+      "en": "A solid budget option for noise-cancelling headphones.",
+      "fr": "Un bon choix abordable pour un casque à réduction de bruit."
+    }
+  },
+
+  "asus-proart-pa248QV-review": {
+    "title": {
+      "en": "ASUS ProArt PA248QV 24-inch Professional Monitor Review",
+      "fr": "Test du moniteur professionnel ASUS ProArt PA248QV 24 pouces"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "asus-proart-pa248QV.jpg",
+    "excerpt": {
+      "en": "We tested the ASUS ProArt PA248QV Monitor for design professionals and remote workers.",
+      "fr": "Nous avons testé le moniteur ASUS ProArt PA248QV pour les professionnels et les télétravailleurs."
+    },
+    "content": {
+      "en": "<p>The ASUS ProArt delivers accurate colors and ergonomic design, ideal for creative professionals.</p>",
+      "fr": "<p>L’ASUS ProArt offre une excellente fidélité des couleurs et un design ergonomique, idéal pour les créatifs.</p>"
+    },
+    "pros": {
+      "en": ["Color accuracy", "Ergonomic stand"],
+      "fr": ["Précision des couleurs", "Pied ergonomique"]
+    },
+    "cons": {
+      "en": ["Limited HDR support"],
+      "fr": ["HDR limité"]
+    },
+    "verdict": {
+      "en": "A strong choice for designers and photographers.",
+      "fr": "Un excellent choix pour les designers et photographes."
+    }
+  },
+
+  "benq-screenbar-review": {
+    "title": {
+      "en": "BenQ ScreenBar Monitor Light Review",
+      "fr": "Test de la lampe d’écran BenQ ScreenBar"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "benq-screenbar.jpg",
+    "excerpt": {
+      "en": "We tested the BenQ ScreenBar to see how it improves productivity and workspace lighting.",
+      "fr": "Nous avons testé la BenQ ScreenBar pour voir comment elle améliore la productivité et l’éclairage du bureau."
+    },
+    "content": {
+      "en": "<p>The BenQ ScreenBar provides focused light without glare, freeing desk space.</p>",
+      "fr": "<p>La BenQ ScreenBar offre un éclairage ciblé sans reflets tout en libérant de l’espace sur le bureau.</p>"
+    },
+    "pros": {
+      "en": ["No glare on screen", "Space-saving design"],
+      "fr": ["Pas de reflets", "Design peu encombrant"]
+    },
+    "cons": {
+      "en": ["Expensive for a light"],
+      "fr": ["Prix élevé pour une lampe"]
+    },
+    "verdict": {
+      "en": "A great tool for reducing eye strain.",
+      "fr": "Un excellent outil pour réduire la fatigue visuelle."
+    }
+  },
+
+  "blue-yeti-nano-review": {
+    "title": {
+      "en": "Blue Yeti Nano USB Microphone Review",
+      "fr": "Test du microphone USB Blue Yeti Nano"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "blue-yeti-nano.png",
+    "excerpt": {
+      "en": "We tested the Blue Yeti Nano for sound clarity during remote work and streaming.",
+      "fr": "Nous avons testé le Blue Yeti Nano pour sa clarté sonore en télétravail et streaming."
+    },
+    "content": {
+      "en": "<p>The Blue Yeti Nano offers broadcast-quality sound in a compact form.</p>",
+      "fr": "<p>Le Blue Yeti Nano offre un son de qualité professionnelle dans un format compact.</p>"
+    },
+    "pros": {
+      "en": ["Clear sound", "Plug & play"],
+      "fr": ["Son clair", "Installation facile"]
+    },
+    "cons": {
+      "en": ["No XLR support"],
+      "fr": ["Pas de prise XLR"]
+    },
+    "verdict": {
+      "en": "An affordable mic for professionals and creators.",
+      "fr": "Un micro abordable pour pros et créateurs."
+    }
+  },
+
+  "bose-qc45-review": {
+    "title": {
+      "en": "Bose QuietComfort 45 Wireless Headphones Review",
+      "fr": "Test du casque sans fil Bose QuietComfort 45"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "bose-qc45.jpg",
+    "excerpt": {
+      "en": "We tested the Bose QC45 for its noise cancellation and comfort.",
+      "fr": "Nous avons testé le Bose QC45 pour sa réduction de bruit et son confort."
+    },
+    "content": {
+      "en": "<p>The Bose QC45 continues the legacy of premium comfort and sound.</p>",
+      "fr": "<p>Le Bose QC45 perpétue l’héritage du confort et du son haut de gamme.</p>"
+    },
+    "pros": {
+      "en": ["World-class ANC", "Comfortable fit"],
+      "fr": ["ANC exceptionnel", "Confort longue durée"]
+    },
+    "cons": {
+      "en": ["Design hasn’t changed much"],
+      "fr": ["Design peu innovant"]
+    },
+    "verdict": {
+      "en": "Still one of the best travel headphones.",
+      "fr": "Toujours l’un des meilleurs casques pour voyager."
+    }
+  },
+
+  "dell-ultrasharp-u2720q-review": {
+    "title": {
+      "en": "Dell UltraSharp U2720Q 27-inch 4K Monitor Review",
+      "fr": "Test du moniteur Dell UltraSharp U2720Q 27 pouces 4K"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "dell-ultrasharp-u2720q.jpg",
+    "excerpt": {
+      "en": "We tested the Dell UltraSharp U2720Q to check its performance for remote workers.",
+      "fr": "Nous avons testé le Dell UltraSharp U2720Q pour évaluer ses performances pour les télétravailleurs."
+    },
+    "content": {
+      "en": "<p>The Dell UltraSharp U2720Q provides sharp visuals and great ergonomics.</p>",
+      "fr": "<p>Le Dell UltraSharp U2720Q offre des images nettes et une bonne ergonomie.</p>"
+    },
+    "pros": {
+      "en": ["Excellent 4K display", "Ergonomic stand"],
+      "fr": ["Excellente dalle 4K", "Support ergonomique"]
+    },
+    "cons": {
+      "en": ["Price is high"],
+      "fr": ["Prix élevé"]
+    },
+    "verdict": {
+      "en": "Perfect for productivity and creative work.",
+      "fr": "Parfait pour la productivité et les travaux créatifs."
+    }
+  },
+
+  "herman-miller-sayl-review": {
+    "title": {
+      "en": "Herman Miller Sayl Ergonomic Office Chair Review",
+      "fr": "Test de la chaise ergonomique Herman Miller Sayl"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "herman-miller-sayl.jpg",
+    "excerpt": {
+      "en": "We tested the Herman Miller Sayl to evaluate comfort for long work hours.",
+      "fr": "Nous avons testé la Herman Miller Sayl pour évaluer son confort lors de longues journées de travail."
+    },
+    "content": {
+      "en": "<p>The Herman Miller Sayl combines unique design with ergonomic support.</p>",
+      "fr": "<p>La Herman Miller Sayl combine un design unique avec un excellent soutien ergonomique.</p>"
+    },
+    "pros": {
+      "en": ["Stylish design", "Ergonomic support"],
+      "fr": ["Design élégant", "Support ergonomique"]
+    },
+    "cons": {
+      "en": ["Very expensive"],
+      "fr": ["Très coûteuse"]
+    },
+    "verdict": {
+      "en": "A premium chair for serious professionals.",
+      "fr": "Une chaise haut de gamme pour les professionnels exigeants."
+    }
+  },
+
+  "logitech-brio-review": {
+    "title": {
+      "en": "Logitech Brio 4K Ultra HD Webcam Review",
+      "fr": "Test de la webcam Logitech Brio 4K Ultra HD"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "logitech-brio.jpg",
+    "excerpt": {
+      "en": "We tested the Logitech Brio 4K webcam for clarity in video calls.",
+      "fr": "Nous avons testé la webcam Logitech Brio 4K pour sa clarté lors des appels vidéo."
+    },
+    "content": {
+      "en": "<p>The Logitech Brio offers sharp 4K image quality and reliable autofocus.</p>",
+      "fr": "<p>La Logitech Brio offre une qualité d’image 4K nette et un autofocus fiable.</p>"
+    },
+    "pros": {
+      "en": ["Sharp 4K image", "Reliable autofocus"],
+      "fr": ["Image 4K nette", "Autofocus fiable"]
+    },
+    "cons": {
+      "en": ["Expensive"],
+      "fr": ["Prix élevé"]
+    },
+    "verdict": {
+      "en": "One of the best webcams for professionals.",
+      "fr": "L’une des meilleures webcams pour les pros."
+    }
+  },
+
+  "logitech-c920-review": {
+    "title": {
+      "en": "Logitech C920 HD Pro Webcam Review",
+      "fr": "Test de la webcam Logitech C920 HD Pro"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "logitech-c920.jpg",
+    "excerpt": {
+      "en": "We tested the Logitech C920, a classic webcam for remote workers.",
+      "fr": "Nous avons testé la Logitech C920, une webcam classique pour télétravailleurs."
+    },
+    "content": {
+      "en": "<p>The Logitech C920 remains reliable for video calls with good 1080p quality.</p>",
+      "fr": "<p>La Logitech C920 reste fiable pour les visioconférences avec une bonne qualité 1080p.</p>"
+    },
+    "pros": {
+      "en": ["Affordable", "Good 1080p quality"],
+      "fr": ["Abordable", "Bonne qualité 1080p"]
+    },
+    "cons": {
+      "en": ["Old design"],
+      "fr": ["Design ancien"]
+    },
+    "verdict": {
+      "en": "A reliable budget webcam.",
+      "fr": "Une webcam fiable et abordable."
+    }
+  },
+
+  "logitech-ergo-k860-review": {
+    "title": {
+      "en": "Logitech Ergo K860 Ergonomic Split Keyboard Review",
+      "fr": "Test du clavier ergonomique Logitech Ergo K860"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "logitech-ergo-k860.jpg",
+    "excerpt": {
+      "en": "We tested the Logitech Ergo K860 to see its impact on typing comfort.",
+      "fr": "Nous avons testé le Logitech Ergo K860 pour évaluer son confort de frappe."
+    },
+    "content": {
+      "en": "<p>The Ergo K860 reduces strain thanks to its split ergonomic design.</p>",
+      "fr": "<p>Le Ergo K860 réduit les tensions grâce à son design ergonomique séparé.</p>"
+    },
+    "pros": {
+      "en": ["Ergonomic design", "Wrist support"],
+      "fr": ["Design ergonomique", "Support poignet intégré"]
+    },
+    "cons": {
+      "en": ["Takes time to adapt"],
+      "fr": ["Temps d’adaptation nécessaire"]
+    },
+    "verdict": {
+      "en": "A great choice for healthier typing.",
+      "fr": "Un excellent choix pour une frappe plus saine."
+    }
+  },
+
+  "logitech-mx-keys-review": {
+    "title": {
+      "en": "Logitech MX Keys Wireless Keyboard Review",
+      "fr": "Test du clavier sans fil Logitech MX Keys"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "logitech-mx-keys.jpg",
+    "excerpt": {
+      "en": "We tested the Logitech MX Keys for productivity and typing comfort.",
+      "fr": "Nous avons testé le Logitech MX Keys pour sa productivité et son confort de frappe."
+    },
+    "content": {
+      "en": "<p>The MX Keys is premium with backlit keys and excellent typing feel.</p>",
+      "fr": "<p>Le MX Keys est haut de gamme avec des touches rétroéclairées et une frappe agréable.</p>"
+    },
+    "pros": {
+      "en": ["Backlit keys", "Excellent typing feel"],
+      "fr": ["Touches rétroéclairées", "Confort de frappe"]
+    },
+    "cons": {
+      "en": ["Expensive for a keyboard"],
+      "fr": ["Cher pour un clavier"]
+    },
+    "verdict": {
+      "en": "Ideal for professionals typing daily.",
+      "fr": "Idéal pour les professionnels qui tapent au quotidien."
+    }
+  },
+
+  "logitech-mx-master-3s-review": {
+    "title": {
+      "en": "Logitech MX Master 3S Mouse Review",
+      "fr": "Test de la souris Logitech MX Master 3S"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "logitech-mx-master-3s.jpg",
+    "excerpt": {
+      "en": "We tested the Logitech MX Master 3S for productivity and comfort.",
+      "fr": "Nous avons testé la Logitech MX Master 3S pour sa productivité et son confort."
+    },
+    "content": {
+      "en": "<p>The MX Master 3S is ergonomic with customizable buttons for productivity.</p>",
+      "fr": "<p>La MX Master 3S est ergonomique avec des boutons personnalisables pour la productivité.</p>"
+    },
+    "pros": {
+      "en": ["Ergonomic design", "Customizable buttons"],
+      "fr": ["Design ergonomique", "Boutons personnalisables"]
+    },
+    "cons": {
+      "en": ["Slightly bulky"],
+      "fr": ["Un peu volumineuse"]
+    },
+    "verdict": {
+      "en": "One of the best mice for professionals.",
+      "fr": "L’une des meilleures souris pour les pros."
+    }
+  },
+
+  "logitech-streamcam-review": {
+    "title": {
+      "en": "Logitech StreamCam Webcam Review",
+      "fr": "Test de la webcam Logitech StreamCam"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "logitech-streamcam.jpg",
+    "excerpt": {
+      "en": "We tested the Logitech StreamCam for streaming and remote work.",
+      "fr": "Nous avons testé la Logitech StreamCam pour le streaming et le télétravail."
+    },
+    "content": {
+      "en": "<p>The StreamCam delivers smooth 1080p60 video with good autofocus.</p>",
+      "fr": "<p>La StreamCam fournit une vidéo fluide en 1080p60 avec un bon autofocus.</p>"
+    },
+    "pros": {
+      "en": ["Smooth 1080p60", "USB-C connection"],
+      "fr": ["1080p60 fluide", "Connexion USB-C"]
+    },
+    "cons": {
+      "en": ["Limited software"],
+      "fr": ["Logiciel limité"]
+    },
+    "verdict": {
+      "en": "A good option for content creators.",
+      "fr": "Une bonne option pour les créateurs de contenu."
+    }
+  },
+
+  "logitech-zone-wireless-review": {
+    "title": {
+      "en": "Logitech Zone Wireless Headset Review",
+      "fr": "Test du casque Logitech Zone Wireless"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "logitech-zone-wireless.jpg",
+    "excerpt": {
+      "en": "We tested the Logitech Zone Wireless for calls and productivity.",
+      "fr": "Nous avons testé le Logitech Zone Wireless pour les appels et la productivité."
+    },
+    "content": {
+      "en": "<p>The Logitech Zone Wireless combines ANC with clear microphone quality.</p>",
+      "fr": "<p>Le Logitech Zone Wireless combine ANC et un micro de qualité.</p>"
+    },
+    "pros": {
+      "en": ["Clear mic", "Active noise cancellation"],
+      "fr": ["Micro clair", "Réduction de bruit active"]
+    },
+    "cons": {
+      "en": ["Battery life could be better"],
+      "fr": ["Autonomie perfectible"]
+    },
+    "verdict": {
+      "en": "Solid headset for remote work.",
+      "fr": "Un casque solide pour le télétravail."
+    }
+  },
+
+  "seagate-2tb-review": {
+    "title": {
+      "en": "Seagate Portable 2TB Hard Drive Review",
+      "fr": "Test du disque dur portable Seagate 2 To"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "seagate-2tb.jpg",
+    "excerpt": {
+      "en": "We tested the Seagate Portable 2TB Hard Drive for backups and portability.",
+      "fr": "Nous avons testé le disque dur portable Seagate 2 To pour les sauvegardes et la portabilité."
+    },
+    "content": {
+      "en": "<p>The Seagate 2TB is compact, reliable, and affordable for backups.</p>",
+      "fr": "<p>Le Seagate 2 To est compact, fiable et abordable pour les sauvegardes.</p>"
+    },
+    "pros": {
+      "en": ["Portable design", "Affordable"],
+      "fr": ["Design portable", "Prix abordable"]
+    },
+    "cons": {
+      "en": ["No hardware encryption"],
+      "fr": ["Pas de chiffrement matériel"]
+    },
+    "verdict": {
+      "en": "A great value external drive for backups.",
+      "fr": "Un disque externe d’un excellent rapport qualité-prix."
+    }
+  },
+
+    "aukey-hub-review": {
+    "title": {
+      "en": "Aukey Multiport USB-C Hub Review",
+      "fr": "Test du hub USB-C multiport Aukey"
+    },
+    "author": "TechEssentialsPro Team",
+    "date": "2025-08-28",
+    "image": "aukey-hub.jpg",
+    "excerpt": {
+      "en": "We tested the Aukey Multiport USB-C Hub to see if it really helps remote workers and digital nomads.",
+      "fr": "Nous avons testé le hub USB-C multiport Aukey pour voir s’il aide vraiment les télétravailleurs et les nomades digitaux."
+    },
+    "content": {
+      "en": "<p>The Aukey Multiport USB-C Hub expands your laptop’s connectivity with HDMI, USB, and card reader support.</p>",
+      "fr": "<p>Le hub USB-C multiport Aukey étend la connectivité de votre ordinateur portable avec HDMI, USB et lecteur de carte.</p>"
+    },
+    "pros": {
+      "en": ["Lightweight", "Affordable", "Good port variety"],
+      "fr": ["Léger", "Abordable", "Bonne variété de ports"]
+    },
+    "cons": {
+      "en": ["Gets warm under heavy use"],
+      "fr": ["Chauffe en usage intensif"]
+    },
+    "verdict": {
+      "en": "A good budget hub for expanding your laptop connectivity.",
+      "fr": "Un bon hub abordable pour étendre la connectivité de votre PC portable."
+    }
+  }
+
+}
+
+

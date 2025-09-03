@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Detail | TechEssentials Pro</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    /*   HERO - REVIEW PAGE
+   ========================= */
+#hero-review {
+  position: relative;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+}
+
+#hero-review .hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+#hero-review .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+#hero-review .hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+    /* =======================
+   REVIEW DETAIL PAGE
+   ======================= */
+
+.review-detail {
+  margin-top: 40px;
+  margin-bottom: 60px;
+  max-width: 850px;
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.review-main-img {
+  width: 70%;
+  max-width: 600px;
+  max-height: 300px;
+  object-fit: contain;
+  margin: 0 auto 25px auto;
+  display: block;
+}
+
+
+.review-detail article {
+  margin-bottom: 30px;
+}
+
+.review-detail h2, 
+.review-detail h3 {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: #003366;
+}
+
+.review-detail p {
+  margin-bottom: 18px;
+  color: #444;
+}
+
+/* Pros & Cons */
+.review-pros-cons {
+  display: flex;
+  gap: 30px;
+  margin: 40px 0;
+}
+
+.review-pros-cons .pros, 
+.review-pros-cons .cons {
+  flex: 1;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.review-pros-cons .pros {
+  background: #e6f9f0;
+  border: 1px solid #a3e2c4;
+}
+
+.review-pros-cons .cons {
+  background: #fdeaea;
+  border: 1px solid #f5a6a6;
+}
+
+.review-pros-cons h3 {
+  margin-bottom: 12px;
+}
+
+.review-pros-cons ul {
+  padding-left: 20px;
+  list-style: disc;
+}
+
+/* Rating */
+.review-rating {
+  background: #f9f9f9;
+  padding: 25px;
+  border-radius: 12px;
+  margin: 40px 0;
+  text-align: center;
+  font-size: 1.1rem;
+  box-shadow: 0px 3px 12px rgba(0,0,0,0.08);
+}
+
+/* CTA */
+.review-cta {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.review-cta .cta-button {
+  background: #007bff;
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  transition: background 0.3s ease;
+}
+
+.review-cta .cta-button:hover {
+  background: #0056b3;
+}
+
+/* Newsletter (hérité de home) */
+.newsletter {
+  margin-top: 60px;
+  padding: 50px 20px;
+  background: linear-gradient(135deg, #003366, #0055aa);
+  color: #fff;
+  text-align: center;
+  border-radius: 12px;
+}
+
+.newsletter h2 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.newsletter p {
+  margin-bottom: 20px;
+}
+
+.newsletter-form {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.newsletter-input {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: none;
+  width: 280px;
+}
+
+.newsletter-button {
+  background: #ff9800;
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.newsletter-button:hover {
+  background: #e68900;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .review-pros-cons {
+    flex-direction: column;
+  }
+  .newsletter-form {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .newsletter-input {
+    width: 100%;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Navbar -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">TechEssentials Pro</div>
+        <div class="nav-content">
+          <ul class="nav-links">
+            <li><a href="index.html" id="nav-home"></a></li>
+            <li><a href="products.html" id="nav-products"></a></li>
+            <li><a href="reviews.html" id="nav-reviews"></a></li>
+            <li><a href="deals.html" id="nav-deals"></a></li>
+            <li><a href="contact.html" id="nav-contact"></a></li>
+          </ul>
+          <div class="language-switcher">
+            <button class="lang-btn active" onclick="switchLanguage('en')">EN</button>
+            <button class="lang-btn" onclick="switchLanguage('fr')">FR</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ✅ Hero Section (standardized) -->
+<!-- ✅ Hero Section -->
+<section id="hero-review">
+  <!-- Background video -->
+  <video autoplay muted loop playsinline poster="./assets/videos/hero-review.png" class="hero-video">
+    <source src="./assets/videos/hero-review.mp4" type="video/mp4">
+    <!-- Fallback -->
+    <img src="./assets/images/products/reviews-hero-fallback.png" alt="Tech workspace setup">
+  </video>
+
+  <!-- Overlay sombre -->
+  <div class="overlay"></div>
+
+  <div class="container hero-content">
+    <h1 id="hero-title">Product Tests & Reviews</h1>
+    <p id="hero-subtitle">In-depth analysis and hands-on tests of the best tools for digital nomads and remote workers.</p>
+    <a href="#review-content" id="hero-cta" class="cta-button">Explore Reviews</a>
+  </div>
+</section>
+
+
+  <!-- ✅ Review Content -->
+  <main class="container review-detail">
+    <img id="review-image" src="" alt="" class="review-main-img">
+    
+    <article id="review-content">
+      <!-- texte complet injecté via JS -->
+    </article>
+
+    <!-- Pros / Cons -->
+    <div class="review-pros-cons">
+      <div class="pros">
+        <h3>✅ Pros</h3>
+        <ul id="review-pros"></ul>
+      </div>
+      <div class="cons">
+        <h3>❌ Cons</h3>
+        <ul id="review-cons"></ul>
+      </div>
+    </div>
+
+    <!-- Rating -->
+    <div class="review-rating">
+      <h3>User Rating</h3>
+      <p id="review-rating"></p>
+    </div>
+
+    <!-- CTA vers produit -->
+    <div class="review-cta">
+      <a id="review-product-link" href="#" class="cta-button">See Product →</a>
+    </div>
+  </main>
+
+   <!-- NEWSLETTER -->
+  <section class="newsletter scroll-reveal">
+    <div class="container">
+      <h2>Get Exclusive Tech Deals & Reviews</h2>
+      <p>Join 15,000+ remote workers getting weekly recommendations and early access to deals</p>
+      <form class="newsletter-form" onsubmit="subscribeNewsletter(event, currentLanguage)">
+        <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+        <button type="submit" class="newsletter-button">Subscribe Free</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ✅ Footer -->
+  <footer>
+  <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 id="footer-about-title"></h3>
+          <p id="footer-about-text"></p>
+        </div>
+        <div class="footer-section">
+          <h3 id="footer-quicklinks"></h3>
+          <p><a href="#reviews" id="footer-link-reviews"></a></p>
+          <p><a href="#deals" id="footer-link-deals"></a></p>
+          <p><a href="#contact" id="footer-link-contact"></a></p>
+          <p><a href="#privacy" id="footer-link-privacy"></a></p>
+        </div>
+        <div class="footer-section">
+          <h3 id="footer-contact-title"></h3>
+          <p id="footer-contact-email"></p>
+          <p id="footer-contact-time"></p>
+          <p id="footer-contact-based"></p>
+        </div>
+      </div>
+      <div id="footer-legal"></div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/review-detail.js"></script>
+</body>
+</html> 

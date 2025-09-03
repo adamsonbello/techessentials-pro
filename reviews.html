@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reviews | TechEssentials Pro</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    /* =========================
+   HERO - REVIEWS PAGE
+   ========================= */
+#reviews-hero {
+  position: relative;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+}
+
+#reviews-hero .hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+#reviews-hero .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+#reviews-hero .hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* =======================
+   REVIEWS GRID & BLUE CARDS
+   ======================= */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 25px;
+  margin-top: 40px;
+}
+
+.review-card {
+  background: #007bff; /* ✅ bleu plein */
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 6px 14px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 8px 18px rgba(0,0,0,0.2);
+  background: #0056b3; /* ✅ bleu plus foncé au survol */
+}
+
+.review-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background: #fff;
+  padding: 10px;
+}
+
+.review-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.review-card p {
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  color: #eaeaea;
+}
+
+.review-card a {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.review-card a:hover {
+  color: #ffdd57; /* ✅ lien jaune au survol */
+}
+
+
+</style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">TechEssentials Pro</div>
+        <div class="nav-content">
+          <ul class="nav-links">
+            <li><a href="index.html" id="nav-home"></a></li>
+            <li><a href="products.html" id="nav-products"></a></li>
+            <li><a href="reviews.html" id="nav-reviews"></a></li>
+            <li><a href="deals.html" id="nav-deals"></a></li>
+            <li><a href="contact.html" id="nav-contact"></a></li>
+          </ul>
+          <div class="language-switcher">
+            <button class="lang-btn active" onclick="switchLanguage('en')">EN</button>
+            <button class="lang-btn" onclick="switchLanguage('fr')">FR</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+<!-- ✅ Hero Section with Video Background + Fallback -->
+<section class="hero" id="reviews-hero">
+  <!-- Background video -->
+  <video autoplay muted loop playsinline poster="./assets/videos/hero-reviews.png" class="hero-video">
+    <source src="./assets/videos/hero-reviews.mp4" type="video/mp4">
+    <!-- Fallback si la vidéo ne charge pas -->
+    <img src="./assets/images/products/reviews-hero-fallback.png" alt="Tech workspace setup">
+  </video>
+
+  <!-- Overlay sombre -->
+  <div class="overlay"></div>
+
+  <!-- Contenu -->
+  <div class="container hero-content">
+    <h1 id="hero-title">Product Tests & Reviews</h1>
+    <p id="hero-subtitle">In-depth analysis and hands-on tests of the best tools for digital nomads and remote workers.</p>
+    <a href="#reviews-grid" id="hero-cta" class="cta-button">Explore Reviews</a>
+  </div>
+</section>
+
+
+  <!-- Reviews Grid -->
+  <main class="container">
+    <div id="reviews-grid" class="reviews-grid">
+      <!-- Cartes injectées par JS -->
+    </div>
+  </main>
+
+  <!-- Newsletter -->
+  <section class="newsletter scroll-reveal">
+    <div class="container">
+      <h2>Get Exclusive Tech Deals & Reviews</h2>
+      <p>Join 15,000+ remote workers getting weekly recommendations and early access to deals</p>
+      <form class="newsletter-form" onsubmit="subscribeNewsletter(event, currentLang)">
+        <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+        <button type="submit" class="newsletter-button">Subscribe Free</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 id="footer-about-title"></h3>
+          <p id="footer-about-text"></p>
+        </div>
+        <div class="footer-section">
+          <h3 id="footer-quicklinks"></h3>
+          <p><a href="reviews.html" id="footer-link-reviews"></a></p>
+          <p><a href="deals.html" id="footer-link-deals"></a></p>
+          <p><a href="contact.html" id="footer-link-contact"></a></p>
+          <p><a href="privacy.html" id="footer-link-privacy"></a></p>
+        </div>
+        <div class="footer-section">
+          <h3 id="footer-contact-title"></h3>
+          <p id="footer-contact-email"></p>
+          <p id="footer-contact-time"></p>
+          <p id="footer-contact-based"></p>
+        </div>
+      </div>
+      <div id="footer-legal"></div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/reviews.js"></script>
+</body>
+</html>

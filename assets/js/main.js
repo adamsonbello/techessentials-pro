@@ -161,3 +161,40 @@ document.addEventListener("DOMContentLoaded", function () {
   initScrollAnimations();
 });
 
+function switchLanguage(lang) {
+  // Sauvegarde et mise à jour
+  localStorage.setItem("lang", lang);
+  currentLang = lang;
+
+  // Mise à jour visuelle des boutons
+  document.querySelectorAll(".lang-btn").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  const activeBtn = document.querySelector(`.lang-btn[onclick="switchLanguage('${lang}')"]`);
+  if (activeBtn) activeBtn.classList.add("active");
+
+  // Recharge le contenu
+  loadReview(currentLang);
+}
+
+// ✅ Mise à jour de l'état visuel des boutons EN/FR
+function updateLanguageButtons(lang) {
+  document.querySelectorAll(".lang-btn").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  const activeBtn = document.querySelector(`.lang-btn[onclick="switchLanguage('${lang}')"]`);
+  if (activeBtn) activeBtn.classList.add("active");
+}
+
+// Surcharge switchLanguage uniquement pour cette page
+function switchLanguage(lang) {
+  localStorage.setItem("lang", lang);
+  currentLang = lang;
+  updateLanguageButtons(lang);
+  loadReview(currentLang);
+}
+
+// Initialiser les boutons au bon état
+document.addEventListener("DOMContentLoaded", () => {
+  updateLanguageButtons(currentLang);
+});
