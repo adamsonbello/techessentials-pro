@@ -1,192 +1,358 @@
-// assets/js/review-detail.js
-let currentLang = localStorage.getItem("lang") || "en";
-const params = new URLSearchParams(window.location.search);
-const reviewId = params.get("id"); // ex: ?id=anker-737-review
+// assets/js/review-detail.js - SOLUTION FINALE
 
-// ---------------------------
-// Charger la review + ratings
-// ---------------------------
-async function loadReview(lang) {
-  if (!reviewId) {
-    document.querySelector("main").innerHTML = `<p>❌ No review ID provided.</p>`;
+// Variables globales
+let currentReviewId = null;
+let currentLang = localStorage.getItem("lang") || "fr";
+let allUserRatings = [];
+let reviewsPerPage = 3;
+let currentPage = 1;
+
+// Charger la review et ses avis
+async function loadReview(lang = currentLang) {
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get("id");
+
+  if (!slug) {
+    document.querySelector("main").innerHTML = `<p>❌ No review ID provided</p>`;
     return;
   }
 
   try {
-    const res = await fetch(`api.php?action=getReview&id=${reviewId}`);
+    console.log(`🔍 Loading review: ${slug}`);
+    const res = await fetch(`${API_URL}?action=getReview&id=${slug}`);
     const data = await res.json();
 
     if (data.error) {
-      document.querySelector("main").innerHTML = `<p>❌ ${data.error}</p>`;
+      document.querySelector("main").innerHTML = `<p>${data.error}</p>`;
       return;
     }
 
     const r = data.review;
+    currentReviewId = r.id;
+    allUserRatings = data.ratings || [];
 
-    // 🎯 Hero + contenu
+    console.log("✅ Review loaded:", r);
+
+    // Titre de la page
     document.title = `${r[`title_${lang}`]} | TechEssentials Pro`;
-    document.getElementById("review-image").src = `assets/images/products/${r.image}`;
-    document.getElementById("review-image").alt = r[`title_${lang}`];
-    document.getElementById("review-content").innerHTML = r[`content_${lang}`];
+
+    // Image principale
+    const imgEl = document.getElementById("review-image");
+    if (imgEl && r.image) {
+      imgEl.src = `assets/images/products/${r.image}`;
+      imgEl.alt = r[`title_${lang}`];
+      imgEl.style.display = "block";
+    }
+
+    // Contenu principal
+    const contentEl = document.getElementById("review-content");
+    if (contentEl && r[`content_${lang}`]) {
+      contentEl.innerHTML = r[`content_${lang}`];
+    }
 
     // Pros & Cons
-    document.getElementById("review-pros").innerHTML =
-      (r[`pros_${lang}`] || "").split("||").map(p => `<li>${p}</li>`).join("");
-    document.getElementById("review-cons").innerHTML =
-      (r[`cons_${lang}`] || "").split("||").map(c => `<li>${c}</li>`).join("");
+    renderProsAndCons(r, lang);
 
     // Verdict
-    let verdictDiv = document.querySelector(".review-verdict");
-    if (!verdictDiv) {
-      verdictDiv = document.createElement("div");
-      verdictDiv.classList.add("review-verdict");
-      document.querySelector("main").appendChild(verdictDiv);
-    }
-    verdictDiv.innerHTML = `
-      <h3>${lang === "fr" ? "Verdict" : "Verdict"}</h3>
-      <p>${r[`verdict_${lang}`]}</p>
-    `;
+    renderVerdict(r, lang);
 
-    // Lien produit
+    // Affichage du rating moyen
+    renderAverageRating(data.average, data.count, lang);
+
+    // CTA produit
     const cta = document.getElementById("review-product-link");
     if (cta) {
       cta.href = `product.html?id=${r.slug}`;
       cta.textContent = lang === "fr" ? "Voir le produit →" : "See Product →";
     }
 
-    // Notes utilisateurs
-    renderRatings(data.ratings, data.average, lang);
+    // Avis utilisateurs
+    renderUserReviews(lang);
 
   } catch (err) {
     console.error("⚠️ Error loading review:", err);
+    document.querySelector("main").innerHTML = `<p>❌ Error loading review</p>`;
   }
 }
 
-// ---------------------------
-// Affichage des avis utilisateurs
-// ---------------------------
-let reviewsPerPage = 3;
-let currentPage = 1;
+// Afficher les pros et cons
+function renderProsAndCons(review, lang) {
+  try {
+    const prosEl = document.getElementById("review-pros");
+    const consEl = document.getElementById("review-cons");
+    
+    if (prosEl) {
+      const pros = JSON.parse(review[`pros_${lang}`] || "[]");
+      prosEl.innerHTML = pros.map(p => `<li>${p}</li>`).join("");
+    }
 
-function renderRatings(ratings, average, lang) {
+    if (consEl) {
+      const cons = JSON.parse(review[`cons_${lang}`] || "[]");
+      consEl.innerHTML = cons.map(c => `<li>${c}</li>`).join("");
+    }
+  } catch (err) {
+    console.error("Error parsing pros/cons:", err);
+  }
+}
+
+// Afficher le verdict
+function renderVerdict(review, lang) {
+  let verdictDiv = document.querySelector(".review-verdict");
+  if (verdictDiv && review[`verdict_${lang}`]) {
+    verdictDiv.innerHTML = `
+      <h3>${lang === "fr" ? "Verdict" : "Verdict"}</h3>
+      <p>${review[`verdict_${lang}`]}</p>
+    `;
+  }
+}
+
+// Afficher le rating moyen
+function renderAverageRating(average, count, lang) {
+  const ratingEl = document.getElementById("review-rating");
+  if (ratingEl) {
+    if (average && count > 0) {
+      const stars = "⭐".repeat(Math.round(average));
+      ratingEl.innerHTML = `
+        <strong>${average}/5 ${stars}</strong><br>
+        <small>${count} ${lang === "fr" ? "avis" : "reviews"}</small>
+      `;
+    } else {
+      ratingEl.innerHTML = `<p>${lang === "fr" ? "Aucun avis pour le moment" : "No reviews yet"}</p>`;
+    }
+  }
+}
+
+// Afficher les avis utilisateurs avec pagination
+function renderUserReviews(lang) {
   const container = document.getElementById("user-reviews");
   const title = document.getElementById("user-reviews-title");
+  
+  if (title) {
+    title.textContent = lang === "fr" ? "Avis des utilisateurs" : "User Reviews";
+  }
 
-  title.textContent = lang === "fr" ? "Avis des utilisateurs" : "User Reviews";
+  if (!container) return;
 
-  if (!ratings || ratings.length === 0) {
+  if (!allUserRatings || allUserRatings.length === 0) {
     container.innerHTML = `<p>${lang === "fr" ? "Aucun avis pour le moment." : "No reviews yet."}</p>`;
+    hideButton("load-more-reviews");
+    hideButton("load-less-reviews");
     return;
   }
 
-  // Pagination
+  // Afficher les avis selon la pagination
   const start = 0;
   const end = currentPage * reviewsPerPage;
-  const visible = ratings.slice(start, end);
+  const visibleReviews = allUserRatings.slice(start, end);
 
-  container.innerHTML = `
-    <p><strong>${lang === "fr" ? "Note moyenne" : "Average rating"}:</strong> 
-       ${average ?? "N/A"} ⭐ (${ratings.length} ${lang === "fr" ? "avis" : "reviews"})</p>
-    <ul class="reviews-list">
-      ${visible.map(r => `
-        <li class="review-item">
-          <p><strong>${r.name}</strong> - ${r.rating}⭐</p>
-          <p>${r.comment}</p>
-          <small>${new Date(r.created_at).toLocaleDateString()}</small>
-        </li>
-      `).join("")}
-    </ul>
-  `;
+  container.innerHTML = visibleReviews.map(r => `
+    <div class="user-review">
+      <strong>${r.name}</strong>
+      <div class="stars">${"⭐".repeat(r.rating)}</div>
+      <p>${r.comment}</p>
+      <small>${new Date(r.created_at).toLocaleDateString()}</small>
+    </div>
+  `).join("");
 
-  // Bouton "Voir plus / moins"
+  // Gestion des boutons pagination
+  managePaginationButtons(lang);
+}
+
+function hideButton(buttonId) {
+  const btn = document.getElementById(buttonId);
+  if (btn) btn.style.display = "none";
+}
+
+function managePaginationButtons(lang) {
   const loadMoreBtn = document.getElementById("load-more-reviews");
-  if (ratings.length > end) {
-    loadMoreBtn.style.display = "inline-block";
-    loadMoreBtn.textContent = lang === "fr" ? "Voir plus d’avis" : "Load more reviews";
-    loadMoreBtn.onclick = () => {
-      currentPage++;
-      renderRatings(ratings, average, lang);
-    };
-  } else if (ratings.length > reviewsPerPage) {
-    loadMoreBtn.style.display = "inline-block";
-    loadMoreBtn.textContent = lang === "fr" ? "Voir moins" : "See less";
-    loadMoreBtn.onclick = () => {
-      currentPage = 1;
-      renderRatings(ratings, average, lang);
-    };
-  } else {
-    loadMoreBtn.style.display = "none";
+  const loadLessBtn = document.getElementById("load-less-reviews");
+  
+  const totalReviews = allUserRatings.length;
+  const visibleCount = currentPage * reviewsPerPage;
+
+  if (loadMoreBtn) {
+    if (totalReviews > visibleCount) {
+      loadMoreBtn.style.display = "block";
+      loadMoreBtn.textContent = lang === "fr" ? "Voir plus d'avis" : "Load more reviews";
+      loadMoreBtn.onclick = () => {
+        currentPage++;
+        renderUserReviews(lang);
+      };
+    } else {
+      loadMoreBtn.style.display = "none";
+    }
+  }
+
+  if (loadLessBtn) {
+    if (currentPage > 1) {
+      loadLessBtn.style.display = "block";
+      loadLessBtn.textContent = lang === "fr" ? "Voir moins" : "Show less";
+      loadLessBtn.onclick = () => {
+        currentPage = 1;
+        renderUserReviews(lang);
+      };
+    } else {
+      loadLessBtn.style.display = "none";
+    }
   }
 }
 
-// ---------------------------
-// Ajouter un avis utilisateur
-// ---------------------------
-async function submitReview(e) {
+// Soumission d'un avis utilisateur - VERSION CORRIGÉE
+async function submitUserReview(e) {
   e.preventDefault();
+  
+  console.log("🚀 Form submission started");
 
-  const name = document.getElementById("reviewer-name").value.trim();
-  const rating = document.getElementById("reviewer-rating").value;
-  const comment = document.getElementById("reviewer-comment").value.trim();
+  // SOLUTION: Utiliser les noms des champs au lieu des IDs pour éviter les conflits
+  const form = e.target;
+  const formData = new FormData(form);
+  
+  // Récupération via FormData (plus robuste)
+  const name = formData.get("review-name") ? formData.get("review-name").trim() : "";
+  const rating = formData.get("user-rating") || "";
+  const comment = formData.get("review-comment") ? formData.get("review-comment").trim() : "";
 
+  console.log("📝 Form data extracted:", { name, rating, comment });
+
+  // Fallback: essayer aussi par les IDs
   if (!name || !rating || !comment) {
-    alert(currentLang === "fr" ? "Veuillez remplir tous les champs." : "Please fill in all fields.");
+    console.log("🔄 Trying fallback method with IDs...");
+    const nameEl = document.querySelector('input[name="review-name"]') || document.getElementById("review-name");
+    const ratingEl = document.querySelector('select[name="user-rating"]') || document.getElementById("user-rating");
+    const commentEl = document.querySelector('textarea[name="review-comment"]') || document.getElementById("review-comment");
+
+    const fallbackName = nameEl ? nameEl.value.trim() : "";
+    const fallbackRating = ratingEl ? ratingEl.value : "";
+    const fallbackComment = commentEl ? commentEl.value.trim() : "";
+
+    console.log("📝 Fallback values:", { 
+      name: fallbackName, 
+      rating: fallbackRating, 
+      comment: fallbackComment 
+    });
+
+    // Utiliser les valeurs de fallback si nécessaire
+    const finalName = name || fallbackName;
+    const finalRating = rating || fallbackRating;
+    const finalComment = comment || fallbackComment;
+
+    console.log("📝 Final values:", { 
+      name: finalName, 
+      rating: finalRating, 
+      comment: finalComment 
+    });
+
+    // Validation finale
+    if (!finalName) {
+      alert(currentLang === "fr" ? "Veuillez saisir votre nom." : "Please enter your name.");
+      return;
+    }
+
+    if (!finalRating || finalRating === "" || finalRating === "Select Rating") {
+      alert(currentLang === "fr" ? "Veuillez sélectionner une note." : "Please select a rating.");
+      return;
+    }
+
+    if (!finalComment) {
+      alert(currentLang === "fr" ? "Veuillez saisir un commentaire." : "Please enter a comment.");
+      return;
+    }
+
+    // Validation du rating numérique
+    const ratingNum = parseInt(finalRating);
+    if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+      alert(currentLang === "fr" ? "Veuillez sélectionner une note valide (1-5)." : "Please select a valid rating (1-5).");
+      return;
+    }
+
+    // Envoyer avec les valeurs finales
+    await sendReviewToAPI(finalName, ratingNum, finalComment);
+    
+  } else {
+    // Validation normale
+    const ratingNum = parseInt(rating);
+    if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+      alert(currentLang === "fr" ? "Veuillez sélectionner une note valide (1-5)." : "Please select a valid rating (1-5).");
+      return;
+    }
+
+    await sendReviewToAPI(name, ratingNum, comment);
+  }
+}
+
+// Fonction séparée pour envoyer à l'API
+async function sendReviewToAPI(name, rating, comment) {
+  const params = new URLSearchParams(window.location.search);
+  const reviewSlug = params.get("id");
+
+  if (!reviewSlug) {
+    alert("❌ Erreur: ID de review manquant");
     return;
   }
 
   try {
-    const res = await fetch("api.php?action=addRating", {
+    console.log("📤 Sending review to API...");
+    
+    const payload = { 
+      review_slug: reviewSlug, 
+      name: name, 
+      rating: rating, 
+      comment: comment 
+    };
+    
+    console.log("Payload:", payload);
+
+    const response = await fetch(`${API_URL}?action=addRating`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ review_id: reviewId, name, rating, comment })
+      headers: { 
+        "Content-Type": "application/json" 
+      },
+      body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
-    if (data.success) {
-      alert(currentLang === "fr" ? "Avis ajouté avec succès !" : "Review added successfully!");
-      document.getElementById("user-review-form").reset();
-      loadReview(currentLang); // recharge les avis
+    const result = await response.json();
+    console.log("📥 API Response:", result);
+
+    if (result.success) {
+      alert(currentLang === "fr" ? "✅ Avis ajouté avec succès !" : "✅ Review added successfully!");
+      
+      // Réinitialiser le formulaire
+      document.getElementById("review-form").reset();
+      
+      // Recharger les données
+      await loadReview(currentLang);
     } else {
-      alert("⚠️ " + (data.error || "Unknown error"));
+      alert("❌ Erreur: " + (result.error || "Erreur inconnue"));
     }
+    
   } catch (err) {
-    console.error("Error submitting review:", err);
+    console.error("❌ Network error:", err);
+    alert(currentLang === "fr" ? 
+      "❌ Erreur de connexion. Veuillez réessayer." : 
+      "❌ Connection error. Please try again.");
   }
 }
 
-// ---------------------------
-// Gestion du multilingue
-// ---------------------------
-function updateReviewFormLanguage() {
-  if (currentLang === "fr") {
-    document.getElementById("user-reviews-title").textContent = "Avis Utilisateurs";
-    document.getElementById("review-form-title").textContent = "Laisser un avis";
-    document.getElementById("reviewer-name").placeholder = "Votre nom";
-    document.getElementById("reviewer-rating").options[0].textContent = "Sélectionnez une note";
-    document.getElementById("reviewer-comment").placeholder = "Votre commentaire";
-    document.getElementById("review-submit").textContent = "Envoyer";
+// Initialisation
+document.addEventListener("DOMContentLoaded", function() {
+  console.log("🚀 Review detail page initialized");
+  console.log("🔗 API_URL:", typeof API_URL !== 'undefined' ? API_URL : "❌ Not defined");
+  console.log("🌍 Language:", currentLang);
+  
+  // Charger la review
+  loadReview(currentLang);
+  
+  // Attacher l'événement au formulaire
+  const reviewForm = document.getElementById("review-form");
+  if (reviewForm) {
+    reviewForm.addEventListener("submit", submitUserReview);
+    console.log("✅ Form event listener attached");
   } else {
-    document.getElementById("user-reviews-title").textContent = "User Reviews";
-    document.getElementById("review-form-title").textContent = "Leave a Review";
-    document.getElementById("reviewer-name").placeholder = "Your Name";
-    document.getElementById("reviewer-rating").options[0].textContent = "Select Rating";
-    document.getElementById("reviewer-comment").placeholder = "Your Comment";
-    document.getElementById("review-submit").textContent = "Submit";
+    console.warn("⚠️ Review form not found");
   }
-}
-
-// ---------------------------
-// Init
-// ---------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  if (reviewId) {
-    loadReview(currentLang);
-  }
-
-  const form = document.getElementById("user-review-form");
-  if (form) form.addEventListener("submit", submitReview);
-
-  updateReviewFormLanguage();
 });
+
+// Export pour utilisation globale
+window.loadReview = loadReview;
 
 

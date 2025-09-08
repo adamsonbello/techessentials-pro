@@ -610,17 +610,24 @@
     </div>
   </section>
 
-  <!-- NEWSLETTER -->
-  <section class="newsletter scroll-reveal">
-    <div class="container">
-      <h2>Get Exclusive Tech Deals & Reviews</h2>
-      <p>Join 15,000+ remote workers getting weekly recommendations and early access to deals</p>
-      <form class="newsletter-form" onsubmit="subscribeNewsletter(event, currentLanguage)">
-        <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
-        <button type="submit" class="newsletter-button">Subscribe Free</button>
-      </form>
-    </div>
-  </section>
+  <!-- NEWSLETTER SECTION BILINGUE -->
+<section class="newsletter scroll-reveal">
+  <div class="container">
+    <h2>Get Exclusive Tech Deals & Reviews</h2>
+    <p>Join 15,000+ remote workers getting weekly recommendations and early access to deals</p>
+    <form class="newsletter-form" onsubmit="subscribeNewsletter(event, currentLanguage)">
+      <input 
+        type="email" 
+        class="newsletter-input" 
+        placeholder="Enter your email address" 
+        required
+        autocomplete="email"
+        name="email"
+      >
+      <button type="submit" class="newsletter-button">Subscribe Free</button>
+    </form>
+  </div>
+</section>
 
   <!-- FOOTER -->
   <footer>
@@ -651,5 +658,16 @@
   <!-- SCRIPTS -->
   <script src="assets/js/products.js"></script>
   <script src="assets/js/main.js" defer></script>
+  <script>
+// Si vous n'avez pas encore de fichier config.js inclus, assurez-vous que API_URL est défini
+if (typeof API_URL === 'undefined') {
+  const API_URL = "http://localhost/TechEssentialsPro/api.php";
+}
+
+// Si vous n'avez pas encore de variable currentLanguage globale
+if (typeof currentLanguage === 'undefined') {
+  let currentLanguage = localStorage.getItem("lang") || "en";
+}
+</script>
 </body>
 </html>

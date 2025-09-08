@@ -1,58 +1,90 @@
+// assets/js/reviews.js
+
+// Variable globale pour la langue
 let currentLang = localStorage.getItem("lang") || "en";
 
-function loadReviews(lang) {
-  const reviewsGrid = document.getElementById("reviews-grid");
+// Charger toutes les reviews pour la page reviews.html
+async function loadReviews() {
+  try {
+    console.log("🔍 Loading reviews from API...");
+    const res = await fetch(`${API_URL}?action=getAllReviews`);
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
+    const data = await res.json();
+    console.log("✅ Reviews loaded:", data);
 
-  fetch("data/reviews.json")
-    .then(res => res.json())
-    .then(data => {
-      reviewsGrid.innerHTML = Object.keys(data).map(key => {
-        const review = data[key];
-        return `
-          <div class="review-card">
-            <img src="assets/images/products/${review.image}" 
-                 alt="${review.title[lang]}" 
-                 style="width:100%; height:120px; object-fit:contain; background:#fff; border-radius:6px; margin-bottom:10px;">
-            
-            <h3>${review.title[lang]}</h3>
-            <p>${review.excerpt[lang]}</p>
-            
-            <a href="review-detail.html?id=${key}" class="cta-button">
-              ${lang === "fr" ? "Lire la suite →" : "Read More →"}
-            </a>
-          </div>
-        `;
-      }).join("");
-    })
-    .catch(err => {
-      console.error("⚠️ Error loading reviews:", err);
-      reviewsGrid.innerHTML = `<p>⚠️ Unable to load reviews at the moment.</p>`;
-    });
+    const reviewsGrid = document.getElementById("reviews-grid");
+    if (!reviewsGrid) {
+      console.warn("⚠️ reviews-grid element not found");
+      return;
+    }
+
+    if (data.error) {
+      reviewsGrid.innerHTML = `<p>❌ ${data.error}</p>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      reviewsGrid.innerHTML = `
+        <p>${currentLang === "fr" ? "Aucune review disponible." : "No reviews available."}</p>
+      `;
+      return;
+    }
+
+    // Générer les cartes de reviews
+    reviewsGrid.innerHTML = data.map(r => `
+      <div class="review-card">
+        <img src="assets/images/products/${r.image}" 
+             alt="${r[`title_${currentLang}`]}" 
+             onerror="this.src='assets/images/products/placeholder.jpg'">
+        
+        <h3>${r[`title_${currentLang}`]}</h3>
+        <p>${r[`excerpt_${currentLang}`]}</p>
+        
+        <div style="margin-top: 15px;">
+          <small style="color: #eaeaea;">
+            ${currentLang === "fr" ? "Par" : "By"} ${r.author} - ${new Date(r.date).toLocaleDateString()}
+          </small>
+        </div>
+        
+        <a href="review-detail.html?id=${r.slug}" class="cta-button" style="margin-top: 10px; display: inline-block;">
+          ${currentLang === "fr" ? "Lire la suite →" : "Read More →"}
+        </a>
+      </div>
+    `).join("");
+
+    console.log(`✅ ${data.length} reviews rendered`);
+
+  } catch (err) {
+    console.error("❌ Error loading reviews:", err);
+    const reviewsGrid = document.getElementById("reviews-grid");
+    if (reviewsGrid) {
+      reviewsGrid.innerHTML = `
+        <p>❌ ${currentLang === "fr" ? "Erreur de chargement des reviews." : "Error loading reviews."}</p>
+      `;
+    }
+  }
 }
 
+// Fonction pour mettre à jour la langue
+function updateLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem("lang", lang);
+  loadReviews(); // Recharger avec la nouvelle langue
+}
+
+// Initialisation
 document.addEventListener("DOMContentLoaded", () => {
-  loadReviews(currentLang);
+  console.log("🚀 Reviews page initialized");
+  console.log("🔗 API_URL:", API_URL);
+  console.log("🌍 Current language:", currentLang);
+  
+  loadReviews();
 });
 
-// 🔄 Mise à jour quand la langue change
-function switchLanguage(lang) {
-  localStorage.setItem("lang", lang);
-  currentLang = lang;
-  loadReviews(currentLang);
-}
-
-function switchLanguage(lang) {
-  // Sauvegarde et mise à jour
-  localStorage.setItem("lang", lang);
-  currentLang = lang;
-
-  // Mise à jour visuelle des boutons
-  document.querySelectorAll(".lang-btn").forEach(btn => {
-    btn.classList.remove("active");
-  });
-  const activeBtn = document.querySelector(`.lang-btn[onclick="switchLanguage('${lang}')"]`);
-  if (activeBtn) activeBtn.classList.add("active");
-
-  // Recharge le contenu
-  loadReview(currentLang);
-}
+// Export pour utilisation globale
+window.loadReviews = loadReviews;
+window.updateReviewsLanguage = updateLanguage;

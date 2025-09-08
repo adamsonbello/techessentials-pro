@@ -377,52 +377,6 @@
 /* fin nouveau css */
 
 
-/* Newsletter (hérité de home) */
-.newsletter {
-  margin-top: 60px;
-  padding: 50px 20px;
-  background: linear-gradient(135deg, #003366, #0055aa);
-  color: #fff;
-  text-align: center;
-  border-radius: 12px;
-}
-
-.newsletter h2 {
-  font-size: 2rem;
-  margin-bottom: 12px;
-}
-
-.newsletter p {
-  margin-bottom: 20px;
-}
-
-.newsletter-form {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.newsletter-input {
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: none;
-  width: 280px;
-}
-
-.newsletter-button {
-  background: #ff9800;
-  border: none;
-  color: white;
-  font-weight: bold;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.newsletter-button:hover {
-  background: #e68900;
-}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -522,7 +476,6 @@
       <a id="review-product-link" href="#" class="cta-button">See Product →</a>
     </div>
  
-<!-- Avis utilisateurs -->
 <section class="user-reviews-section container">
   <h3 id="user-reviews-title">User Reviews</h3>
   <div id="user-reviews"></div>
@@ -535,31 +488,46 @@
     See less reviews
   </button>
 
-  <!-- Formulaire d’avis -->
+  <!-- Formulaire d'avis - CORRIGÉ -->
   <form id="review-form" class="user-review-form">
     <h4 id="review-form-title">Leave a Review</h4>
-    <input type="text" id="review-name" placeholder="Your Name" required>
     
-    <select id="review-rating" required>
-      <option value="">Select Rating</option>
-      <option value="5">⭐⭐⭐⭐⭐</option>
-      <option value="4">⭐⭐⭐⭐</option>
-      <option value="3">⭐⭐⭐</option>
-      <option value="2">⭐⭐</option>
-      <option value="1">⭐</option>
+    <!-- Nom -->
+    <input type="text" 
+           id="review-name"
+           name="review-name"
+           placeholder="Your Name" 
+           required>
+    
+    <!-- Note - ATTENTION: utiliser name="user-rating" pour éviter les conflits -->
+    <select id="user-rating" 
+            name="user-rating" 
+            required>
+      <option value="">-- Select Rating --</option>
+      <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
+      <option value="4">⭐⭐⭐⭐ (Very Good)</option>
+      <option value="3">⭐⭐⭐ (Good)</option>
+      <option value="2">⭐⭐ (Fair)</option>
+      <option value="1">⭐ (Poor)</option>
     </select>
 
-    <textarea id="review-comment" placeholder="Your Comment" required></textarea>
+    <!-- Commentaire -->
+    <textarea id="review-comment" 
+              name="review-comment"
+              placeholder="Your Comment" 
+              rows="4"
+              required></textarea>
     
-    <button type="submit" id="review-submit">Submit</button>
+    <!-- Bouton -->
+    <button type="submit" id="review-submit">Submit Review</button>
   </form>
 </section>
-
 
  </main>
 
 
    <!-- NEWSLETTER -->
+  <!-- NEWSLETTER -->
   <section class="newsletter scroll-reveal">
     <div class="container">
       <h2>Get Exclusive Tech Deals & Reviews</h2>
@@ -600,5 +568,11 @@
   <!-- Scripts -->
   <script src="assets/js/main.js"></script>
   <script src="assets/js/review-detail.js"></script>
+  <!-- ✅ Config API -->
+<script src="assets/js/config.js"></script>
+
+<!-- ✅ JS Review Detail -->
+<script src="assets/js/review-detail.js"></script>
+
 </body>
 </html> 

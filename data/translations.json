@@ -88,8 +88,48 @@
       "en": "Exclusive discounts and smart bundles for remote workers.",
       "fr": "Réductions exclusives et bundles intelligents pour les télétravailleurs."
     }
+  },
+  
+  "newsletter": {
+    "title": {
+      "en": "Get Exclusive Tech Deals & Reviews",
+      "fr": "Obtenez des Offres Tech Exclusives & Avis"
+    },
+    "subtitle": {
+      "en": "Join 15,000+ remote workers getting weekly recommendations and early access to deals",
+      "fr": "Rejoignez plus de 15 000 télétravailleurs qui reçoivent des recommandations hebdomadaires et un accès anticipé aux offres"
+    },
+    "placeholder": {
+      "en": "Enter your email address",
+      "fr": "Entrez votre adresse email"
+    },
+    "button": {
+      "en": "Subscribe Free",
+      "fr": "S'abonner Gratuitement"
+    },
+    "submitting": {
+      "en": "Subscribing...",
+      "fr": "Inscription..."
+    },
+    "successMessage": {
+      "en": "Thank you! You're now subscribed to our newsletter.",
+      "fr": "Merci ! Vous êtes maintenant inscrit à notre newsletter."
+    },
+    "errorGeneric": {
+      "en": "An error occurred. Please try again.",
+      "fr": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "errorInvalidEmail": {
+      "en": "Please enter a valid email address.",
+      "fr": "Veuillez entrer une adresse email valide."
+    },
+    "errorAlreadySubscribed": {
+      "en": "This email is already subscribed to our newsletter.",
+      "fr": "Cet email est déjà inscrit à notre newsletter."
+    }
   }
 }
+
 
 
 
