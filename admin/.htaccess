@@ -1,0 +1,26 @@
+# Protection basique du dossier admin
+# Version compatible XAMPP/Windows
+
+# Activer le module de réécriture si disponible
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>
+
+# Bloquer l'accès aux fichiers de log et de configuration
+<Files "*.log">
+    Require all denied
+</Files>
+
+<Files "*.conf">
+    Require all denied
+</Files>
+
+# Headers de sécurité basiques (si mod_headers est disponible)
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options SAMEORIGIN
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Désactiver l'affichage des index de répertoire
+Options -Indexes
