@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteRule ^index\.html$ index.php [R=301,L]
+
+# Faire de index.php la page par défaut
+DirectoryIndex index.php index.html

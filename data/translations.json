@@ -3,13 +3,14 @@
     "home": { "en": "Home", "fr": "Accueil" },
     "products": { "en": "Products", "fr": "Produits" },
     "reviews": { "en": "Reviews", "fr": "Tests" },
+    "blog": { "en": "Blog", "fr": "Blog" },
     "deals": { "en": "Deals", "fr": "Offres" },
     "contact": { "en": "Contact", "fr": "Contact" }
   },
   "hero": {
     "title": {
       "en": "The Ultimate Tech Setup for Remote Success",
-      "fr": "L’équipement ultime pour réussir en télétravail"
+      "fr": "L'équipement ultime pour réussir en télétravail"
     },
     "subtitle": {
       "en": "Discover hand-picked tech accessories that boost productivity and enhance your work-from-home experience.",
@@ -49,7 +50,7 @@
     },
     "bestDealNow": {
       "en": "🔥 Get Best Deal Now",
-      "fr": "🔥 Obtenir l’offre maintenant"
+      "fr": "🔥 Obtenir l'offre maintenant"
     }
   },
   "productPage": {
@@ -129,7 +130,6 @@
     }
   }
 }
-
 
 
 

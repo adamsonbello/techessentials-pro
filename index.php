@@ -8,6 +8,9 @@
   <meta name="keywords" content="remote work, tech accessories, home office, télétravail, tech reviews, productivity tools">
   <meta name="author" content="TechEssentials Pro">
 
+  <link rel="stylesheet" href="assets/css/styles.css">
+  ="author" content="TechEssentials Pro">
+
   <style>
     /* 👉 On garde exactement ton CSS original */
     /* === ton CSS original copié intégralement ici === */
@@ -540,13 +543,14 @@
       <nav>
         <div class="logo">TechEssentials Pro</div>
         <div class="nav-content">
-            <ul class="nav-links">
-          <li><a href="index.html" id="nav-home">Home</a></li>
-          <li><a href="products.html" id="nav-products">Products</a></li>
-          <li><a href="reviews.html" id="nav-reviews">Reviews</a></li>
-          <li><a href="deals.html" id="nav-deals">Deals</a></li>
-          <li><a href="contact.html" id="nav-contact">Contact</a></li>
-        </ul>
+         <ul class="nav-links">
+             <li><a href="index.php" id="nav-home"></a></li>
+             <li><a href="products.html" id="nav-products"></a></li>
+             <li><a href="reviews.html" id="nav-reviews"></a></li>
+             <li><a href="blog/" id="nav-blog">📝 Blog</a></li>
+             <li><a href="deals.html" id="nav-deals"></a></li>
+             <li><a href="contact.html" id="nav-contact"></a></li>
+         </ul>
           <div class="language-switcher">
             <button class="lang-btn active" onclick="switchLanguage('en')">EN</button>
             <button class="lang-btn" onclick="switchLanguage('fr')">FR</button>
@@ -561,7 +565,7 @@
     <div class="container">
       <h1 id="hero-title"></h1>
       <p id="hero-subtitle"></p>
-      <a href="#products" id="hero-cta" class="cta-button"></a>
+      <a href="#home-featured" id="hero-cta" class="cta-button"></a>
 
       <div class="trust-badges">
         <div class="trust-badge" id="trust-1">✓ Expert Tested</div>
@@ -597,28 +601,36 @@
       </div>
     </div>
   </section>
-    <!-- FEATURED PRODUCTS -->
+
+  <!-- FEATURED PRODUCTS -->
   <section class="featured-products scroll-reveal" id="home-featured">
+    <div class="container">
+      <h2 id="products-title" class="section-title"></h2>
+      <p id="products-subtitle" class="section-subtitle"></p>
+      <div class="products-grid" id="home-featured-list"></div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER SECTION BILINGUE -->
+<section class="newsletter scroll-reveal">
   <div class="container">
-    <h2 id="products-title" class="section-title"></h2>
-    <p id="products-subtitle" class="section-subtitle"></p>
-    <div class="products-grid" id="home-featured-list"></div>
+    <h2>Get Exclusive Tech Deals & Reviews</h2>
+    <p>Join 15,000+ remote workers getting weekly recommendations and early access to deals</p>
+    <form class="newsletter-form" onsubmit="subscribeNewsletter(event, currentLanguage)">
+      <input 
+        type="email" 
+        class="newsletter-input" 
+        placeholder="Enter your email address" 
+        required
+        autocomplete="email"
+        name="email"
+      >
+      <button type="submit" class="newsletter-button">Subscribe Free</button>
+    </form>
   </div>
 </section>
 
-  
-
-  <!-- NEWSLETTER -->
-  <section class="newsletter scroll-reveal">
-    <div class="container">
-      <h2>Get Exclusive Tech Deals & Reviews</h2>
-      <p>Join 15,000+ remote workers getting weekly recommendations and early access to deals</p>
-      <form class="newsletter-form" onsubmit="subscribeNewsletter(event, currentLanguage)">
-        <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
-        <button type="submit" class="newsletter-button">Subscribe Free</button>
-      </form>
-    </div>
-  </section>
+<?php include 'blog_widget.php'; ?>
 
   <!-- FOOTER -->
   <footer>
@@ -646,6 +658,19 @@
     </div>
   </footer>
 
+  <!-- SCRIPTS -->
+  <script src="assets/js/products.js"></script>
   <script src="assets/js/main.js" defer></script>
+  <script>
+// Si vous n'avez pas encore de fichier config.js inclus, assurez-vous que API_URL est défini
+if (typeof API_URL === 'undefined') {
+  const API_URL = "http://localhost/TechEssentialsPro/api.php";
+}
+
+// Si vous n'avez pas encore de variable currentLanguage globale
+if (typeof currentLanguage === 'undefined') {
+  let currentLanguage = localStorage.getItem("lang") || "en";
+}
+</script>
 </body>
 </html>
