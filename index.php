@@ -632,31 +632,43 @@
 
 <?php include 'blog_widget.php'; ?>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3 id="footer-about-title"></h3>
-          <p id="footer-about-text"></p>
-        </div>
-        <div class="footer-section">
-          <h3 id="footer-quicklinks"></h3>
-          <p><a href="#reviews" id="footer-link-reviews"></a></p>
-          <p><a href="#deals" id="footer-link-deals"></a></p>
-          <p><a href="#contact" id="footer-link-contact"></a></p>
-          <p><a href="#privacy" id="footer-link-privacy"></a></p>
-        </div>
-        <div class="footer-section">
-          <h3 id="footer-contact-title"></h3>
-          <p id="footer-contact-email"></p>
-          <p id="footer-contact-time"></p>
-          <p id="footer-contact-based"></p>
-        </div>
+ <!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3 id="footer-about-title"></h3>
+        <p id="footer-about-text"></p>
       </div>
-      <div id="footer-legal"></div>
+      <div class="footer-section">
+        <h3 id="footer-quicklinks"></h3>
+        <p><a href="#reviews" id="footer-link-reviews"></a></p>
+        <p><a href="#deals" id="footer-link-deals"></a></p>
+        <p><a href="#contact" id="footer-link-contact"></a></p>
+        <p><a href="#privacy" id="footer-link-privacy"></a></p>
+      </div>
+      <div class="footer-section">
+        <h3 id="footer-contact-title"></h3>
+        <p id="footer-contact-email"></p>
+        <p id="footer-contact-time"></p>
+        <p id="footer-contact-based"></p>
+      </div>
     </div>
-  </footer>
+    
+    <!-- Liens d'administration -->
+    <div class="admin-access" style="text-align: center; padding: 15px 0; border-top: 1px solid #eee; margin-top: 20px;">
+      <a href="/techessentialspro/admin/" style="color: #667eea; text-decoration: none; margin: 0 15px; font-size: 0.9rem;">
+        Panel Principal
+      </a>
+      <span style="color: #ccc;">|</span>
+      <a href="/techessentialspro/admin-blog/login.php" style="color: #8e44ad; text-decoration: none; margin: 0 15px; font-size: 0.9rem;">
+        Panel Blog
+      </a>
+    </div>
+    
+    <div id="footer-legal"></div>
+  </div>
+</footer>
 
   <!-- SCRIPTS -->
   <script src="assets/js/products.js"></script>

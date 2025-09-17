@@ -1,5 +1,5 @@
 <?php
-// admin-blog/newsletter/index.php - Système de newsletter pour le blog
+// admin-blog/newsletter/index.php - Système de newsletter unifié avec templates
 session_start();
 
 // Vérification auth
@@ -83,8 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
                 $campaign_id = $pdo->lastInsertId();
                 
-                // Génération du contenu HTML
-                $newsletter_content = generateNewsletterContent($articles, $subject);
+                // Génération du contenu HTML avec le template sélectionné
+                $newsletter_content = generateNewsletterContent($articles, $subject, $template, $pdo);
                 
                 // Mise à jour du contenu de la campagne
                 $stmt = $pdo->prepare("UPDATE newsletter_campaigns SET content = ? WHERE id = ?");
@@ -94,9 +94,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Envoi de test
                     $success = sendTestEmail($test_email, $subject, $newsletter_content, $EMAIL_CONFIG);
                     if ($success) {
-                        $message = "✅ Email de test envoyé avec succès à $test_email";
+                        $message = "Email de test envoyé avec succès à $test_email";
                     } else {
-                        $error = "❌ Erreur lors de l'envoi du test";
+                        $error = "Erreur lors de l'envoi du test";
                     }
                 } else {
                     // Envoi à tous les abonnés actifs et confirmés
@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ");
                     $stmt->execute([count($subscribers), $sent_count, $campaign_id]);
                     
-                    $message = "✅ Newsletter envoyée à $sent_count abonnés";
+                    $message = "Newsletter envoyée à $sent_count abonnés";
                 }
                 break;
                 
@@ -157,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $confirmation_token, $_SERVER['REMOTE_ADDR']
                 ]);
                 
-                $message = "✅ Abonné ajouté avec succès";
+                $message = "Abonné ajouté avec succès";
                 break;
                 
             case 'toggle_subscriber':
@@ -168,34 +168,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     WHERE id = ?
                 ");
                 $stmt->execute([$id]);
-                $message = "✅ Statut mis à jour";
+                $message = "Statut mis à jour";
                 break;
                 
             case 'delete_subscriber':
                 $id = (int)$_POST['id'];
                 $stmt = $pdo->prepare("DELETE FROM newsletter_subscribers WHERE id = ?");
                 $stmt->execute([$id]);
-                $message = "✅ Abonné supprimé";
+                $message = "Abonné supprimé";
                 break;
         }
     } catch (Exception $e) {
-        $error = "❌ " . $e->getMessage();
+        $error = $e->getMessage();
     }
 }
 
 // Statistiques
-$stats = [];
-$stmt = $pdo->query("SELECT COUNT(*) as total FROM newsletter_subscribers");
-$stats['total_subscribers'] = $stmt->fetchColumn();
-
-$stmt = $pdo->query("SELECT COUNT(*) as active FROM newsletter_subscribers WHERE is_active = 1 AND is_confirmed = 1");
-$stats['active_subscribers'] = $stmt->fetchColumn();
-
-$stmt = $pdo->query("SELECT COUNT(*) as campaigns FROM newsletter_campaigns");
-$stats['total_campaigns'] = $stmt->fetchColumn();
-
-$stmt = $pdo->query("SELECT COUNT(*) as sent FROM newsletter_campaigns WHERE status = 'sent'");
-$stats['sent_campaigns'] = $stmt->fetchColumn();
+$stats = getNewsletterStats($pdo);
 
 // Récupération des données selon l'onglet
 $tab = $_GET['tab'] ?? 'compose';
@@ -203,6 +192,7 @@ $tab = $_GET['tab'] ?? 'compose';
 $articles = [];
 $subscribers = [];
 $campaigns = [];
+$custom_templates = [];
 
 if ($tab === 'compose') {
     // Articles récents pour la newsletter
@@ -215,10 +205,47 @@ if ($tab === 'compose') {
         LIMIT 20
     ");
     $articles = $stmt->fetchAll();
+    
+    // Templates personnalisés disponibles
+    $stmt = $pdo->query("SELECT id, name FROM newsletter_templates WHERE is_active = 1 ORDER BY name");
+    $custom_templates = $stmt->fetchAll();
 }
 
 if ($tab === 'subscribers') {
-    // Liste des abonnés
+    $subscribers = getSubscribers($pdo);
+}
+
+if ($tab === 'history') {
+    $campaigns = getCampaigns($pdo);
+}
+
+// ==================== FONCTIONS UTILITAIRES ====================
+
+/**
+ * Récupère les statistiques de la newsletter
+ */
+function getNewsletterStats($pdo) {
+    $stats = [];
+    
+    $stmt = $pdo->query("SELECT COUNT(*) as total FROM newsletter_subscribers");
+    $stats['total_subscribers'] = $stmt->fetchColumn();
+
+    $stmt = $pdo->query("SELECT COUNT(*) as active FROM newsletter_subscribers WHERE is_active = 1 AND is_confirmed = 1");
+    $stats['active_subscribers'] = $stmt->fetchColumn();
+
+    $stmt = $pdo->query("SELECT COUNT(*) as campaigns FROM newsletter_campaigns");
+    $stats['total_campaigns'] = $stmt->fetchColumn();
+
+    $stmt = $pdo->query("SELECT COUNT(*) as sent FROM newsletter_campaigns WHERE status = 'sent'");
+    $stats['sent_campaigns'] = $stmt->fetchColumn();
+    
+    return $stats;
+}
+
+/**
+ * Récupère la liste des abonnés
+ */
+function getSubscribers($pdo) {
     $stmt = $pdo->query("
         SELECT *, 
                CASE WHEN is_active = 1 AND is_confirmed = 1 THEN 'Actif'
@@ -227,11 +254,13 @@ if ($tab === 'subscribers') {
         FROM newsletter_subscribers 
         ORDER BY subscribed_at DESC
     ");
-    $subscribers = $stmt->fetchAll();
+    return $stmt->fetchAll();
 }
 
-if ($tab === 'history') {
-    // Historique des campagnes
+/**
+ * Récupère l'historique des campagnes
+ */
+function getCampaigns($pdo) {
     $stmt = $pdo->query("
         SELECT *, 
                CASE status 
@@ -244,86 +273,185 @@ if ($tab === 'history') {
         FROM newsletter_campaigns 
         ORDER BY created_at DESC
     ");
-    $campaigns = $stmt->fetchAll();
+    return $stmt->fetchAll();
 }
 
-// Fonctions utilitaires
-function generateNewsletterContent($articles, $subject) {
-    $content = '
+/**
+ * Fonction principale de génération de newsletter
+ */
+function generateNewsletterContent($articles, $subject, $template, $pdo) {
+    if (strpos($template, 'custom_') === 0) {
+        // Template personnalisé de la BDD
+        $template_id = (int)str_replace('custom_', '', $template);
+        return generateCustomTemplate($articles, $subject, $template_id, $pdo);
+    } else {
+        // Templates intégrés (default, modern, minimal)
+        return generateBuiltinTemplate($articles, $subject, $template);
+    }
+}
+
+/**
+ * Génère une newsletter avec un template intégré
+ */
+function generateBuiltinTemplate($articles, $subject, $template) {
+    $styles = getTemplateStyles($template);
+    $content = getTemplateStructure($template);
+    
+    $newsletter_html = '
     <!DOCTYPE html>
     <html lang="fr">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>' . htmlspecialchars($subject) . '</title>
-        <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: #f8f9fa; }
-            .container { max-width: 600px; margin: 0 auto; background: white; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; text-align: center; }
-            .header h1 { color: white; margin: 0; font-size: 24px; }
-            .content { padding: 30px 20px; }
-            .article { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-            .article:last-child { border-bottom: none; }
-            .article h2 { color: #333; font-size: 20px; margin: 0 0 10px 0; }
-            .article .meta { color: #666; font-size: 14px; margin-bottom: 15px; }
-            .article .excerpt { color: #555; line-height: 1.6; margin-bottom: 15px; }
-            .btn { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: 500; }
-            .footer { background: #2c3e50; color: white; padding: 20px; text-align: center; font-size: 14px; }
-            .footer a { color: #3498db; text-decoration: none; }
-        </style>
+        <style>' . $styles . '</style>
     </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1>🚀 TechEssentials Pro</h1>
-                <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Votre dose de tech et d\'innovation</p>
-            </div>
-            <div class="content">
-                <h2 style="color: #333; margin-bottom: 20px;">📰 Nouveaux articles</h2>';
+    <body>' . $content . '</body>
+    </html>';
+    
+    // Remplacer les variables
+    $newsletter_html = str_replace('{{SUBJECT}}', htmlspecialchars($subject), $newsletter_html);
+    $newsletter_html = str_replace('{{ARTICLES}}', generateArticlesHtml($articles, $template), $newsletter_html);
+    
+    return $newsletter_html;
+}
+
+/**
+ * Génère une newsletter avec un template personnalisé
+ */
+function generateCustomTemplate($articles, $subject, $template_id, $pdo) {
+    $stmt = $pdo->prepare("SELECT html_content FROM newsletter_templates WHERE id = ? AND is_active = 1");
+    $stmt->execute([$template_id]);
+    $template_data = $stmt->fetch();
+    
+    if (!$template_data) {
+        return generateBuiltinTemplate($articles, $subject, 'default');
+    }
+    
+    $html = $template_data['html_content'];
+    
+    // Remplacer les variables du système
+    $replacements = [
+        '{{SITE_NAME}}' => 'TechEssentials Pro',
+        '{{NEWSLETTER_TITLE}}' => htmlspecialchars($subject),
+        '{{WEBSITE_URL}}' => 'https://techessentialspro.com',
+        '{{CURRENT_YEAR}}' => date('Y'),
+        '{{ARTICLES}}' => generateArticlesHtml($articles, 'custom')
+    ];
+    
+    foreach ($replacements as $placeholder => $value) {
+        $html = str_replace($placeholder, $value, $html);
+    }
+    
+    return $html;
+}
+
+/**
+ * Retourne les styles CSS selon le template
+ */
+function getTemplateStyles($template) {
+    $common = 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
+               .container { max-width: 600px; margin: 0 auto; }
+               .article { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+               .article:last-child { border-bottom: none; }
+               .btn { display: inline-block; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: 500; }';
+    
+    switch ($template) {
+        case 'modern':
+            return $common . '
+                body { background: #f8f9fa; }
+                .container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center; color: white; }
+                .content { padding: 40px 30px; }
+                .btn { background: #667eea; color: white; }
+                .footer { background: #2c3e50; color: white; padding: 30px; text-align: center; }';
+                
+        case 'minimal':
+            return $common . '
+                body { background: white; color: #333; }
+                .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 30px; margin-bottom: 30px; }
+                .header h1 { font-family: Georgia, serif; font-weight: normal; }
+                .content { padding: 0 20px; }
+                .btn { background: #000; color: white; }
+                .footer { border-top: 2px solid #000; padding-top: 20px; margin-top: 40px; text-align: center; }';
+                
+        default: // 'default'
+            return $common . '
+                body { background: #f8f9fa; }
+                .container { background: white; }
+                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; text-align: center; color: white; }
+                .content { padding: 30px 20px; }
+                .btn { background: #667eea; color: white; }
+                .footer { background: #2c3e50; color: white; padding: 20px; text-align: center; }';
+    }
+}
+
+/**
+ * Retourne la structure HTML selon le template
+ */
+function getTemplateStructure($template) {
+    return '
+    <div class="container">
+        <div class="header">
+            <h1>TechEssentials Pro</h1>
+            <p>{{SUBJECT}}</p>
+        </div>
+        <div class="content">
+            <h2>Nouveaux articles</h2>
+            {{ARTICLES}}
+        </div>
+        <div class="footer">
+            <p>Merci de votre abonnement !</p>
+            <p><a href="https://techessentialspro.com">Visiter le site</a> • <a href="{{UNSUBSCRIBE_URL}}">Se désabonner</a></p>
+        </div>
+    </div>';
+}
+
+/**
+ * Génère le HTML des articles selon le template
+ */
+function generateArticlesHtml($articles, $template) {
+    $articles_html = '';
     
     foreach ($articles as $article) {
         $article_url = "https://techessentialspro.com/blog/article.php?id=" . $article['id'];
         $excerpt = substr(strip_tags($article['content']), 0, 200) . '...';
         
-        $content .= '
-                <div class="article">
-                    <h2>' . htmlspecialchars($article['title']) . '</h2>
-                    <div class="meta">
-                        <span style="background: ' . htmlspecialchars($article['category_color'] ?? '#667eea') . '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
-                            ' . htmlspecialchars($article['category_name'] ?? 'Tech') . '
-                        </span>
-                        • ' . date('d/m/Y', strtotime($article['created_at'])) . '
-                    </div>
-                    <div class="excerpt">' . htmlspecialchars($excerpt) . '</div>
-                    <a href="' . $article_url . '" class="btn">Lire l\'article →</a>
-                </div>';
+        $articles_html .= '
+        <div class="article">
+            <h2>' . htmlspecialchars($article['title']) . '</h2>
+            <div style="color: #666; font-size: 14px; margin-bottom: 15px;">
+                <span style="background: ' . htmlspecialchars($article['category_color'] ?? '#667eea') . '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                    ' . htmlspecialchars($article['category_name'] ?? 'Tech') . '
+                </span>
+                • ' . date('d/m/Y', strtotime($article['created_at'])) . '
+            </div>
+            <div style="color: #555; line-height: 1.6; margin-bottom: 15px;">' . htmlspecialchars($excerpt) . '</div>
+            <a href="' . $article_url . '" class="btn">Lire l\'article →</a>
+        </div>';
     }
     
-    $content .= '
-            </div>
-            <div class="footer">
-                <p>Merci de votre abonnement à TechEssentials Pro !</p>
-                <p>
-                    <a href="https://techessentialspro.com">Visiter le site</a> • 
-                    <a href="{{UNSUBSCRIBE_URL}}">Se désabonner</a>
-                </p>
-            </div>
-        </div>
-    </body>
-    </html>';
-    
-    return $content;
+    return $articles_html;
 }
 
+/**
+ * Personnalise le contenu pour un abonné
+ */
 function personalizeContent($content, $subscriber) {
     $unsubscribe_url = "https://techessentialspro.com/newsletter/unsubscribe.php?token=" . $subscriber['unsubscribe_token'];
     return str_replace('{{UNSUBSCRIBE_URL}}', $unsubscribe_url, $content);
 }
 
+/**
+ * Envoi d'email de test
+ */
 function sendTestEmail($to, $subject, $content, $config) {
     return sendEmail($to, "[TEST] " . $subject, $content, $config);
 }
 
+/**
+ * Envoi d'email
+ */
 function sendEmail($to, $subject, $content, $config) {
     $headers = [
         'From: ' . $config['from_name'] . ' <' . $config['from_email'] . '>',
@@ -601,6 +729,15 @@ function sendEmail($to, $subject, $content, $config) {
             gap: 2rem;
         }
         
+        .template-info {
+            background: #e8f4f8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+        
         @media (max-width: 768px) {
             .two-columns {
                 grid-template-columns: 1fr;
@@ -624,13 +761,13 @@ function sendEmail($to, $subject, $content, $config) {
                 ← Retour au Dashboard
             </a>
             <a href="../" class="btn" style="background: #17a2b8;">
-                📝 Articles
+                Articles
             </a>
         </div>
         
         <!-- Header -->
         <div class="header">
-            <h1>📧 Newsletter</h1>
+            <h1>Newsletter</h1>
             <p>Gérez vos campagnes et abonnés</p>
         </div>
         
@@ -666,13 +803,20 @@ function sendEmail($to, $subject, $content, $config) {
         <!-- Onglets -->
         <div class="tabs">
             <a href="?tab=compose" class="tab <?= $tab === 'compose' ? 'active' : '' ?>">
-                ✏️ Composer
+                Composer
             </a>
             <a href="?tab=subscribers" class="tab <?= $tab === 'subscribers' ? 'active' : '' ?>">
-                👥 Abonnés (<?= $stats['total_subscribers'] ?>)
+                Abonnés (<?= $stats['total_subscribers'] ?>)
             </a>
             <a href="?tab=history" class="tab <?= $tab === 'history' ? 'active' : '' ?>">
-                📋 Historique
+                Historique
+            </a>
+        </div>
+        
+        <!-- Lien vers gestionnaire de templates -->
+        <div style="margin-bottom: 1rem; text-align: right;">
+            <a href="templates.php" class="btn" style="background: #8e44ad;">
+                Gérer Templates
             </a>
         </div>
         
@@ -680,7 +824,7 @@ function sendEmail($to, $subject, $content, $config) {
         <div class="content">
             <?php if ($tab === 'compose'): ?>
                 <!-- Composer une newsletter -->
-                <h2>✏️ Nouvelle Newsletter</h2>
+                <h2>Nouvelle Newsletter</h2>
                 <p style="color: #666; margin-bottom: 2rem;">Sélectionnez les articles à inclure dans votre newsletter</p>
                 
                 <form method="POST">
@@ -695,7 +839,7 @@ function sendEmail($to, $subject, $content, $config) {
                             
                             <div class="form-group">
                                 <label for="subject">Sujet de l'email <span class="required">*</span></label>
-                                <input type="text" id="subject" name="subject" placeholder="🚀 Nouveautés tech de la semaine" required>
+                                <input type="text" id="subject" name="subject" placeholder="Nouveautés tech de la semaine" required>
                             </div>
                             
                             <div class="form-group">
@@ -704,7 +848,21 @@ function sendEmail($to, $subject, $content, $config) {
                                     <option value="default">Template par défaut</option>
                                     <option value="modern">Template moderne</option>
                                     <option value="minimal">Template minimal</option>
+                                    <?php if (!empty($custom_templates)): ?>
+                                        <optgroup label="Templates personnalisés">
+                                            <?php foreach ($custom_templates as $tmpl): ?>
+                                                <option value="custom_<?= $tmpl['id'] ?>">
+                                                    <?= htmlspecialchars($tmpl['name']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endif; ?>
                                 </select>
+                                <?php if (!empty($custom_templates)): ?>
+                                    <div class="template-info">
+                                        Templates personnalisés disponibles: <?= count($custom_templates) ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                         
@@ -744,14 +902,14 @@ function sendEmail($to, $subject, $content, $config) {
                     </div>
                     
                     <button type="submit" class="btn btn-success">
-                        📤 Envoyer la Newsletter
+                        Envoyer la Newsletter
                     </button>
                 </form>
                 
             <?php elseif ($tab === 'subscribers'): ?>
                 <!-- Gestion des abonnés -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h2>👥 Abonnés</h2>
+                    <h2>Abonnés</h2>
                     <button onclick="showAddSubscriber()" class="btn">+ Ajouter un abonné</button>
                 </div>
                 
@@ -851,7 +1009,7 @@ function sendEmail($to, $subject, $content, $config) {
                 
             <?php elseif ($tab === 'history'): ?>
                 <!-- Historique des campagnes -->
-                <h2>📋 Historique des Campagnes</h2>
+                <h2>Historique des Campagnes</h2>
                 <p style="color: #666; margin-bottom: 2rem;">Toutes vos newsletters envoyées</p>
                 
                 <div style="overflow-x: auto;">
@@ -1015,4 +1173,4 @@ function sendEmail($to, $subject, $content, $config) {
         });
     </script>
 </body>
-</html>
+</html>                                                                                                                                                   

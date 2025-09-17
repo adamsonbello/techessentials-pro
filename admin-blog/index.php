@@ -2,11 +2,8 @@
 // admin-blog/index.php - Système de connexion blog sécurisé
 session_start();
 
-// Ligne 6-7, changez :
 $BLOG_ADMIN_USERNAME = 'adams_blog_admin';
 $BLOG_ADMIN_PASSWORD_HASH = '$2y$10$aQhs.woYrqCI5J6g88E4DuBRhfX4/mBVNeDaFmTckufsJsBhq417m';
-
-
 // Configuration de la base de données blog
 $DB_CONFIG = [
     'host' => 'localhost',
@@ -469,6 +466,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$blocked) {
             countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }, 1000);
     </script>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['logout_message'])): ?>
+    <div class="alert alert-success">
+        <?= $_SESSION['logout_message'] ?>
+    </div>
+    <?php unset($_SESSION['logout_message']); ?>
     <?php endif; ?>
 </body>
 </html>

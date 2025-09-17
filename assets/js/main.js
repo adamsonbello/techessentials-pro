@@ -1,385 +1,834 @@
-// ===============================
-// main.js - Gestion globale avec Newsletter
-// ===============================
-let currentLanguage = localStorage.getItem("lang") || "en";
-let siteTranslations = {}; // on charge depuis JSON
+/**
+ * TechEssentials Pro - JavaScript Principal
+ * @author Adams (Fred) - CTO
+ * @version 2.0
+ * @date 2025-09-16
+ */
 
-// ===============================
-// Fonction pour charger toutes les traductions
-// ===============================
-async function loadTranslations(lang) {
-  try {
-    const res = await fetch("data/translations.json");
-    siteTranslations = await res.json();
+// Configuration globale (définie dans le template)
+const config = window.TechEssentials || {};
 
-    // ---- Navigation ----
-    if (siteTranslations.nav) {
-      if (document.getElementById("nav-home"))
-        document.getElementById("nav-home").textContent = siteTranslations.nav.home[lang];
-      if (document.getElementById("nav-products"))
-        document.getElementById("nav-products").textContent = siteTranslations.nav.products[lang];
-      if (document.getElementById("nav-reviews"))
-        document.getElementById("nav-reviews").textContent = siteTranslations.nav.reviews[lang];
-      if (document.getElementById("nav-deals"))
-        document.getElementById("nav-deals").textContent = siteTranslations.nav.deals[lang];
-      if (document.getElementById("nav-contact"))
-        document.getElementById("nav-contact").textContent = siteTranslations.nav.contact[lang];
-    }
+// ==========================================
+// UTILITAIRES
+// ==========================================
 
-    // ---- Footer ----
-    if (siteTranslations.footer) {
-      if (document.getElementById("footer-about-title"))
-        document.getElementById("footer-about-title").textContent = siteTranslations.footer.aboutTitle[lang];
-      if (document.getElementById("footer-about-text"))
-        document.getElementById("footer-about-text").textContent = siteTranslations.footer.aboutText[lang];
-      if (document.getElementById("footer-quicklinks"))
-        document.getElementById("footer-quicklinks").textContent = siteTranslations.footer.quickLinks[lang];
-      if (document.getElementById("footer-link-reviews"))
-        document.getElementById("footer-link-reviews").textContent = siteTranslations.footer.linkReviews[lang];
-      if (document.getElementById("footer-link-deals"))
-        document.getElementById("footer-link-deals").textContent = siteTranslations.footer.linkDeals[lang];
-      if (document.getElementById("footer-link-contact"))
-        document.getElementById("footer-link-contact").textContent = siteTranslations.footer.linkContact[lang];
-      if (document.getElementById("footer-link-privacy"))
-        document.getElementById("footer-link-privacy").textContent = siteTranslations.footer.linkPrivacy[lang];
-      if (document.getElementById("footer-contact-title"))
-        document.getElementById("footer-contact-title").textContent = siteTranslations.footer.contactTitle[lang];
-      if (document.getElementById("footer-contact-email"))
-        document.getElementById("footer-contact-email").textContent = siteTranslations.footer.contactEmail[lang];
-      if (document.getElementById("footer-contact-time"))
-        document.getElementById("footer-contact-time").textContent = siteTranslations.footer.contactTime[lang];
-      if (document.getElementById("footer-contact-based"))
-        document.getElementById("footer-contact-based").textContent = siteTranslations.footer.contactBased[lang];
-      if (document.getElementById("footer-legal"))
-        document.getElementById("footer-legal").textContent = siteTranslations.footer.legal[lang];
-    }
+const utils = {
+    /**
+     * Sélecteur DOM moderne
+     */
+    $: (selector, context = document) => context.querySelector(selector),
+    $$: (selector, context = document) => Array.from(context.querySelectorAll(selector)),
 
-    // ---- Hero ----
-    if (siteTranslations.hero) {
-      if (document.getElementById("hero-title"))
-        document.getElementById("hero-title").textContent = siteTranslations.hero.title[lang];
-      if (document.getElementById("hero-subtitle"))
-        document.getElementById("hero-subtitle").textContent = siteTranslations.hero.subtitle[lang];
-      if (document.getElementById("hero-cta"))
-        document.getElementById("hero-cta").textContent = siteTranslations.hero.cta[lang];
-    }
+    /**
+     * Débounce fonction
+     */
+    debounce: (func, wait, immediate) => {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                timeout = null;
+                if (!immediate) func(...args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func(...args);
+        };
+    },
 
-    // ---- Sections (Home page) ----
-    if (siteTranslations.sections) {
-      if (document.getElementById("products-title"))
-        document.getElementById("products-title").textContent = siteTranslations.sections.productsTitle[lang];
-      if (document.getElementById("products-subtitle"))
-        document.getElementById("products-subtitle").textContent = siteTranslations.sections.productsSubtitle[lang];
-      if (document.getElementById("trusted-title"))
-        document.getElementById("trusted-title").textContent = siteTranslations.sections.trustedTitle[lang];
-      if (document.getElementById("trusted-subtitle"))
-        document.getElementById("trusted-subtitle").textContent = siteTranslations.sections.trustedSubtitle[lang];
-    }
+    /**
+     * Throttle fonction
+     */
+    throttle: (func, limit) => {
+        let inThrottle;
+        return function(...args) {
+            if (!inThrottle) {
+                func.apply(this, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
 
-    // ---- Buttons ----
-    if (siteTranslations.buttons) {
-      if (document.getElementById("btn-view-details"))
-        document.getElementById("btn-view-details").textContent = siteTranslations.buttons.viewDetails[lang];
-      if (document.getElementById("btn-best-deal"))
-        document.getElementById("btn-best-deal").textContent = siteTranslations.buttons.bestDeal[lang];
-    }
+    /**
+     * Requête AJAX moderne
+     */
+    async fetch(url, options = {}) {
+        const defaults = {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        };
 
-    // ---- Deals Page ----
-    if (siteTranslations.dealsPage) {
-      if (document.getElementById("deals-title"))
-        document.getElementById("deals-title").textContent = siteTranslations.dealsPage.title[lang];
-      if (document.getElementById("deals-subtitle"))
-        document.getElementById("deals-subtitle").textContent = siteTranslations.dealsPage.subtitle[lang];
-    }
+        if (config.csrfToken && (options.method === 'POST' || options.method === 'PUT' || options.method === 'DELETE')) {
+            defaults.headers['X-CSRF-Token'] = config.csrfToken;
+        }
 
-    // ---- Newsletter ----
-    loadNewsletterTranslations(lang);
+        const mergedOptions = {
+            ...defaults,
+            ...options,
+            headers: { ...defaults.headers, ...options.headers }
+        };
 
-    console.log("✅ Translations applied for:", lang);
-  } catch (error) {
-    console.error("Error loading translations:", error);
-  }
-}
+        try {
+            const response = await fetch(url, mergedOptions);
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || `HTTP ${response.status}`);
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Fetch error:', error);
+            throw error;
+        }
+    },
 
-// ===============================
-// Fonction pour charger les traductions newsletter
-// ===============================
-async function loadNewsletterTranslations(lang) {
-  try {
-    // Mise à jour des éléments newsletter
-    const newsletterTitle = document.querySelector(".newsletter h2");
-    const newsletterSubtitle = document.querySelector(".newsletter p");
-    const newsletterInput = document.querySelector(".newsletter-input");
-    const newsletterButton = document.querySelector(".newsletter-button");
+    /**
+     * Afficher une notification
+     */
+    notify(message, type = 'info', duration = 5000) {
+        const notification = document.createElement('div');
+        notification.className = `notification notification--${type}`;
+        notification.innerHTML = `
+            <div class="notification__content">
+                <span class="notification__message">${message}</span>
+                <button class="notification__close">&times;</button>
+            </div>
+        `;
 
-    if (newsletterTitle && siteTranslations.newsletter?.title) {
-      newsletterTitle.textContent = siteTranslations.newsletter.title[lang];
-    }
-    
-    if (newsletterSubtitle && siteTranslations.newsletter?.subtitle) {
-      newsletterSubtitle.textContent = siteTranslations.newsletter.subtitle[lang];
-    }
-    
-    if (newsletterInput && siteTranslations.newsletter?.placeholder) {
-      newsletterInput.placeholder = siteTranslations.newsletter.placeholder[lang];
-    }
-    
-    if (newsletterButton && siteTranslations.newsletter?.button) {
-      newsletterButton.textContent = siteTranslations.newsletter.button[lang];
-    }
-
-  } catch (error) {
-    console.error("❌ Error loading newsletter translations:", error);
-  }
-}
-
-// ===============================
-// Fonction principale d'inscription newsletter
-// ===============================
-async function subscribeNewsletter(event, language = 'en') {
-  event.preventDefault();
-  
-  const form = event.target;
-  const emailInput = form.querySelector('.newsletter-input');
-  const submitButton = form.querySelector('.newsletter-button');
-  const email = emailInput.value.trim();
-
-  // Validation email côté client
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    showNewsletterMessage('error', getNewsletterMessage('errorInvalidEmail', language));
-    return;
-  }
-
-  // État de chargement
-  const originalButtonText = submitButton.textContent;
-  submitButton.textContent = getNewsletterMessage('submitting', language);
-  submitButton.disabled = true;
-  emailInput.disabled = true;
-
-  try {
-    const response = await fetch(`${API_URL}?action=subscribeNewsletter`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email,
-        language: language
-      })
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      showNewsletterMessage('success', data.message);
-      emailInput.value = ''; // Clear le champ email
-      
-      // Optionnel: tracking analytics
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'newsletter_subscribe', {
-          'event_category': 'engagement',
-          'event_label': language
+        // Styles inline pour éviter les dépendances CSS
+        Object.assign(notification.style, {
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            background: type === 'error' ? '#f56565' : type === 'success' ? '#48bb78' : '#4299e1',
+            color: 'white',
+            padding: '16px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            zIndex: '1000',
+            maxWidth: '400px',
+            transform: 'translateX(100%)',
+            transition: 'transform 0.3s ease'
         });
-      }
-    } else {
-      showNewsletterMessage('error', data.message || getNewsletterMessage('errorGeneric', language));
+
+        document.body.appendChild(notification);
+
+        // Animation d'entrée
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 10);
+
+        // Fermeture automatique
+        const removeNotification = () => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        };
+
+        // Fermeture manuelle
+        const closeBtn = notification.querySelector('.notification__close');
+        closeBtn.addEventListener('click', removeNotification);
+
+        // Fermeture automatique
+        if (duration > 0) {
+            setTimeout(removeNotification, duration);
+        }
+
+        return notification;
+    },
+
+    /**
+     * Validation d'email
+     */
+    validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    },
+
+    /**
+     * Formater la date
+     */
+    formatDate(date, locale = config.currentLang || 'en') {
+        return new Intl.DateTimeFormat(locale, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }).format(new Date(date));
+    }
+};
+
+// ==========================================
+// NAVIGATION & HEADER
+// ==========================================
+
+class Navigation {
+    constructor() {
+        this.header = utils.$('.site-header');
+        this.searchBar = utils.$('.search-bar');
+        this.searchToggle = utils.$('[data-toggle="search"]');
+        this.mobileToggle = utils.$('.mobile-menu-toggle');
+        this.langSwitcher = utils.$('.language-switcher');
+        
+        this.init();
     }
 
-  } catch (error) {
-    console.error('❌ Newsletter subscription error:', error);
-    showNewsletterMessage('error', getNewsletterMessage('errorGeneric', language));
-  } finally {
-    // Restaurer l'état du formulaire
-    submitButton.textContent = originalButtonText;
-    submitButton.disabled = false;
-    emailInput.disabled = false;
-  }
+    init() {
+        this.bindEvents();
+        this.handleScroll();
+    }
+
+    bindEvents() {
+        // Toggle de recherche
+        if (this.searchToggle) {
+            this.searchToggle.addEventListener('click', () => this.toggleSearch());
+        }
+
+        // Toggle mobile
+        if (this.mobileToggle) {
+            this.mobileToggle.addEventListener('click', () => this.toggleMobileMenu());
+        }
+
+        // Scroll header
+        window.addEventListener('scroll', utils.throttle(() => this.handleScroll(), 100));
+
+        // Fermer la recherche avec Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeSearch();
+            }
+        });
+
+        // Language switcher
+        if (this.langSwitcher) {
+            this.langSwitcher.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.langSwitcher.classList.toggle('active');
+            });
+        }
+    }
+
+    toggleSearch() {
+        if (this.searchBar) {
+            const isActive = this.searchBar.classList.toggle('active');
+            if (isActive) {
+                const searchInput = this.searchBar.querySelector('.search-input');
+                if (searchInput) {
+                    setTimeout(() => searchInput.focus(), 100);
+                }
+            }
+        }
+    }
+
+    closeSearch() {
+        if (this.searchBar) {
+            this.searchBar.classList.remove('active');
+        }
+    }
+
+    toggleMobileMenu() {
+        document.body.classList.toggle('mobile-menu-open');
+        this.mobileToggle.classList.toggle('active');
+    }
+
+    handleScroll() {
+        if (this.header) {
+            const scrolled = window.scrollY > 10;
+            this.header.classList.toggle('scrolled', scrolled);
+        }
+    }
 }
 
-// ===============================
-// Fonction pour afficher les messages (succès/erreur)
-// ===============================
-function showNewsletterMessage(type, message) {
-  // Supprimer les anciens messages
-  const existingMessage = document.querySelector('.newsletter-message');
-  if (existingMessage) {
-    existingMessage.remove();
-  }
+// ==========================================
+// FORMULAIRES
+// ==========================================
 
-  // Créer le nouveau message
-  const messageDiv = document.createElement('div');
-  messageDiv.className = `newsletter-message newsletter-message--${type}`;
-  messageDiv.textContent = message;
-
-  // Styles inline pour le message
-  messageDiv.style.cssText = `
-    margin-top: 10px;
-    padding: 12px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    text-align: center;
-    animation: slideInUp 0.3s ease-out;
-    ${type === 'success' 
-      ? 'background: #d4edda; color: #155724; border: 1px solid #c3e6cb;' 
-      : 'background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;'
+class FormHandler {
+    constructor() {
+        this.forms = utils.$$('form[data-action]');
+        this.init();
     }
-  `;
 
-  // Ajouter le message après le formulaire
-  const form = document.querySelector('.newsletter-form');
-  if (form) {
-    form.insertAdjacentElement('afterend', messageDiv);
+    init() {
+        this.forms.forEach(form => this.bindForm(form));
+    }
 
-    // Auto-suppression après 5 secondes
-    setTimeout(() => {
-      if (messageDiv.parentNode) {
-        messageDiv.style.animation = 'slideOutDown 0.3s ease-in forwards';
-        setTimeout(() => messageDiv.remove(), 300);
-      }
-    }, 5000);
-  }
+    bindForm(form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.handleSubmit(form);
+        });
+    }
+
+    async handleSubmit(form) {
+        const action = form.dataset.action;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        // État de chargement
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = config.translations.loading || 'Loading...';
+        }
+
+        // Validation côté client
+        const validationErrors = this.validateForm(form, data);
+        if (validationErrors.length > 0) {
+            this.showValidationErrors(form, validationErrors);
+            this.resetSubmitButton(submitBtn);
+            return;
+        }
+
+        try {
+            const response = await utils.fetch(`${config.apiUrl}${action}`, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+
+            this.handleSuccess(form, response);
+            
+        } catch (error) {
+            this.handleError(form, error);
+        } finally {
+            this.resetSubmitButton(submitBtn);
+        }
+    }
+
+    validateForm(form, data) {
+        const errors = [];
+        
+        // Validation email
+        const emailField = form.querySelector('input[type="email"]');
+        if (emailField && emailField.value && !utils.validateEmail(emailField.value)) {
+            errors.push({
+                field: emailField.name,
+                message: 'Please enter a valid email address'
+            });
+        }
+
+        // Validation champs requis
+        const requiredFields = form.querySelectorAll('input[required], textarea[required]');
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                errors.push({
+                    field: field.name,
+                    message: `${field.name} is required`
+                });
+            }
+        });
+
+        return errors;
+    }
+
+    showValidationErrors(form, errors) {
+        // Supprimer les erreurs existantes
+        form.querySelectorAll('.error-message').forEach(el => el.remove());
+        form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+
+        // Afficher les nouvelles erreurs
+        errors.forEach(error => {
+            const field = form.querySelector(`[name="${error.field}"]`);
+            if (field) {
+                field.classList.add('error');
+                const errorEl = document.createElement('div');
+                errorEl.className = 'error-message';
+                errorEl.textContent = error.message;
+                field.parentNode.appendChild(errorEl);
+            }
+        });
+    }
+
+    handleSuccess(form, response) {
+        const message = response.message || config.translations.success;
+        utils.notify(message, 'success');
+
+        // Réinitialiser le formulaire pour la newsletter
+        if (form.dataset.action.includes('newsletter')) {
+            form.reset();
+        }
+
+        // Supprimer les erreurs
+        form.querySelectorAll('.error-message').forEach(el => el.remove());
+        form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+    }
+
+    handleError(form, error) {
+        const message = error.message || config.translations.error;
+        utils.notify(message, 'error');
+    }
+
+    resetSubmitButton(button) {
+        if (button) {
+            button.disabled = false;
+            // Restaurer le texte original (stocké dans data-attribute)
+            const originalText = button.dataset.originalText || button.textContent;
+            button.textContent = originalText;
+        }
+    }
 }
 
-// ===============================
-// Fonction helper pour récupérer les messages traduits
-// ===============================
-function getNewsletterMessage(key, language) {
-  if (siteTranslations.newsletter && siteTranslations.newsletter[key]) {
-    return siteTranslations.newsletter[key][language] || siteTranslations.newsletter[key]['en'];
-  }
-  
-  // Messages de fallback
-  const fallbackMessages = {
-    'submitting': { 'en': 'Subscribing...', 'fr': 'Inscription...' },
-    'errorInvalidEmail': { 'en': 'Please enter a valid email address.', 'fr': 'Veuillez entrer une adresse email valide.' },
-    'errorGeneric': { 'en': 'An error occurred. Please try again.', 'fr': 'Une erreur s\'est produite. Veuillez réessayer.' }
-  };
-  
-  return fallbackMessages[key] ? fallbackMessages[key][language] || fallbackMessages[key]['en'] : 'Error';
+// ==========================================
+// LAZY LOADING IMAGES
+// ==========================================
+
+class LazyLoader {
+    constructor() {
+        this.images = utils.$$('img[loading="lazy"]');
+        this.init();
+    }
+
+    init() {
+        if ('IntersectionObserver' in window) {
+            this.observer = new IntersectionObserver(
+                (entries) => this.handleIntersect(entries),
+                { threshold: 0.1 }
+            );
+            this.images.forEach(img => this.observer.observe(img));
+        } else {
+            // Fallback pour les navigateurs non supportés
+            this.images.forEach(img => this.loadImage(img));
+        }
+    }
+
+    handleIntersect(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                this.loadImage(entry.target);
+                this.observer.unobserve(entry.target);
+            }
+        });
+    }
+
+    loadImage(img) {
+        if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.classList.add('loaded');
+        }
+    }
 }
 
-// ===============================
-// Changement de langue
-// ===============================
-function switchLanguage(lang) {
-  currentLanguage = lang;
-  localStorage.setItem("lang", lang);
+// ==========================================
+// ANALYTICS & TRACKING
+// ==========================================
 
-  if (typeof loadProducts === "function") {
-    loadProducts();
-  }
+class Analytics {
+    constructor() {
+        this.gtag = window.gtag;
+        this.init();
+    }
 
-  loadTranslations(lang);
+    init() {
+        if (!this.gtag) return;
 
-  document.querySelectorAll(".lang-btn").forEach(btn => btn.classList.remove("active"));
-  const activeBtn = document.querySelector(`.lang-btn[onclick="switchLanguage('${lang}')"]`);
-  if (activeBtn) activeBtn.classList.add("active");
+        // Tracking des clics sur liens externes
+        utils.$$('a[href^="http"]').forEach(link => {
+            if (!link.href.includes(window.location.hostname)) {
+                link.addEventListener('click', () => {
+                    this.trackEvent('click', 'external_link', link.href);
+                });
+            }
+        });
 
-  if (lang === "fr") {
-    document.title = "TechEssentials Pro - Meilleur Tech pour Télétravail | Best Tech for Remote Workers";
-  } else {
-    document.title = "TechEssentials Pro - Best Tech for Remote Workers | Meilleur Tech pour Télétravail";
-  }
+        // Tracking des clics sur liens d'affiliation
+        utils.$$('a[rel*="nofollow"]').forEach(link => {
+            link.addEventListener('click', () => {
+                this.trackEvent('click', 'affiliate_link', link.href);
+            });
+        });
 
-  initScrollAnimations();
+        // Tracking de la newsletter
+        document.addEventListener('newsletter_subscribe', (e) => {
+            this.trackEvent('engagement', 'newsletter_subscribe', e.detail.email);
+        });
+    }
+
+    trackEvent(action, category, label, value) {
+        if (this.gtag) {
+            this.gtag('event', action, {
+                event_category: category,
+                event_label: label,
+                value: value
+            });
+        }
+    }
+
+    trackPageView(path) {
+        if (this.gtag) {
+            this.gtag('config', config.ga_tracking_id, {
+                page_path: path
+            });
+        }
+    }
 }
 
-// ===============================
-// Scroll animations
-// ===============================
-function initScrollAnimations() {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add("revealed");
-    });
-  }, { threshold: 0.1 });
+// ==========================================
+// PERFORMANCE MONITORING
+// ==========================================
 
-  document.querySelectorAll(".scroll-reveal").forEach(element => observer.observe(element));
+class PerformanceMonitor {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        // Mesurer le temps de chargement
+        window.addEventListener('load', () => {
+            if ('performance' in window) {
+                const navTiming = performance.getEntriesByType('navigation')[0];
+                const loadTime = navTiming.loadEventEnd - navTiming.fetchStart;
+                
+                console.log(`Page loaded in ${loadTime}ms`);
+                
+                // Envoyer aux analytics si configuré
+                if (window.gtag) {
+                    window.gtag('event', 'timing_complete', {
+                        name: 'load',
+                        value: Math.round(loadTime)
+                    });
+                }
+            }
+        });
+
+        // Détecter les erreurs JavaScript
+        window.addEventListener('error', (e) => {
+            console.error('JavaScript Error:', e.error);
+            
+            if (window.gtag) {
+                window.gtag('event', 'exception', {
+                    description: e.error?.message || 'Unknown error',
+                    fatal: false
+                });
+            }
+        });
+    }
 }
 
-// ===============================
-// Smooth scrolling
-// ===============================
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener("click", function (e) {
-    e.preventDefault();
-    const targetId = this.getAttribute("href");
-    const targetElement = document.querySelector(targetId);
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth" });
-    }
-  });
-});
+// ==========================================
+// SERVICE WORKER
+// ==========================================
 
-// ===============================
-// Initialize on page load
-// ===============================
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("🌟 TechEssentials Pro - Loaded");
-  loadTranslations(currentLanguage);
-  initScrollAnimations();
-  
-  // Injecter les styles CSS pour la newsletter
-  injectNewsletterStyles();
-});
-
-// ===============================
-// Injecter les styles CSS pour la newsletter
-// ===============================
-function injectNewsletterStyles() {
-  if (!document.getElementById('newsletter-styles')) {
-    const newsletterStyles = `
-    @keyframes slideInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+class ServiceWorkerManager {
+    constructor() {
+        this.init();
     }
 
-    @keyframes slideOutDown {
-      from {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      to {
-        opacity: 0;
-        transform: translateY(20px);
-      }
+    async init() {
+        if ('serviceWorker' in navigator && config.environment === 'production') {
+            try {
+                const registration = await navigator.serviceWorker.register('/sw.js');
+                console.log('SW registered:', registration);
+                
+                // Écouter les mises à jour
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            this.showUpdateNotification();
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.error('SW registration failed:', error);
+            }
+        }
     }
 
-    .newsletter-form {
-      position: relative;
+    showUpdateNotification() {
+        utils.notify(
+            'A new version is available. Refresh to update.',
+            'info',
+            10000
+        );
     }
-
-    .newsletter-button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    .newsletter-input:disabled {
-      opacity: 0.7;
-      background-color: #f5f5f5;
-    }
-    `;
-
-    const styleSheet = document.createElement('style');
-    styleSheet.id = 'newsletter-styles';
-    styleSheet.textContent = newsletterStyles;
-    document.head.appendChild(styleSheet);
-  }
 }
 
-// ✅ Mise à jour de l'état visuel des boutons EN/FR
-function updateLanguageButtons(lang) {
-  document.querySelectorAll(".lang-btn").forEach(btn => {
-    btn.classList.remove("active");
-  });
-  const activeBtn = document.querySelector(`.lang-btn[onclick="switchLanguage('${lang}')"]`);
-  if (activeBtn) activeBtn.classList.add("active");
+// ==========================================
+// THEME MANAGER
+// ==========================================
+
+class ThemeManager {
+    constructor() {
+        this.currentTheme = localStorage.getItem('theme') || 'auto';
+        this.init();
+    }
+
+    init() {
+        this.applyTheme();
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        // Écouter les changements de préférence système
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)')
+                .addEventListener('change', () => this.applyTheme());
+        }
+    }
+
+    applyTheme() {
+        let theme = this.currentTheme;
+        
+        if (theme === 'auto') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        document.documentElement.setAttribute('data-theme', theme);
+    }
+
+    toggleTheme() {
+        const themes = ['light', 'dark', 'auto'];
+        const currentIndex = themes.indexOf(this.currentTheme);
+        const nextIndex = (currentIndex + 1) % themes.length;
+        
+        this.currentTheme = themes[nextIndex];
+        localStorage.setItem('theme', this.currentTheme);
+        this.applyTheme();
+        
+        return this.currentTheme;
+    }
+}
+
+// ==========================================
+// INITIALISATION PRINCIPALE
+// ==========================================
+
+class TechEssentialsApp {
+    constructor() {
+        this.modules = {};
+        this.init();
+    }
+
+    async init() {
+        // Attendre que le DOM soit prêt
+        if (document.readyState === 'loading') {
+            await new Promise(resolve => {
+                document.addEventListener('DOMContentLoaded', resolve);
+            });
+        }
+
+        try {
+            // Initialiser les modules
+            this.modules.navigation = new Navigation();
+            this.modules.formHandler = new FormHandler();
+            this.modules.lazyLoader = new LazyLoader();
+            this.modules.analytics = new Analytics();
+            this.modules.performanceMonitor = new PerformanceMonitor();
+            this.modules.serviceWorker = new ServiceWorkerManager();
+            this.modules.themeManager = new ThemeManager();
+
+            // Initialiser les composants spécifiques à la page
+            this.initPageSpecific();
+
+            // Marquer l'app comme initialisée
+            document.body.classList.add('app-initialized');
+            
+            console.log('TechEssentials App initialized successfully');
+            
+        } catch (error) {
+            console.error('Failed to initialize TechEssentials App:', error);
+        }
+    }
+
+    initPageSpecific() {
+        const pageType = document.body.dataset.route;
+        
+        switch (pageType) {
+            case 'home':
+                this.initHomePage();
+                break;
+            case 'reviews':
+                this.initReviewsPage();
+                break;
+            case 'blog':
+                this.initBlogPage();
+                break;
+            default:
+                break;
+        }
+    }
+
+    initHomePage() {
+        // Animations d'entrée pour les éléments
+        this.animateOnScroll();
+        
+        // Statistiques animées
+        this.animateCounters();
+    }
+
+    initReviewsPage() {
+        // Filtres et tri
+        this.initFilters();
+        
+        // Comparaison de produits
+        this.initProductComparison();
+    }
+
+    initBlogPage() {
+        // Partage social
+        this.initSocialSharing();
+        
+        // Table des matières
+        this.initTableOfContents();
+    }
+
+    animateOnScroll() {
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            utils.$$('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        }
+    }
+
+    animateCounters() {
+        const counters = utils.$$('.stat-number');
+        
+        counters.forEach(counter => {
+            const target = parseInt(counter.textContent.replace(/[^\d]/g, ''));
+            const duration = 2000;
+            const step = target / (duration / 16);
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    counter.textContent = target.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    counter.textContent = Math.floor(current).toLocaleString();
+                }
+            }, 16);
+        });
+    }
+
+    initFilters() {
+        // Implémentation des filtres pour les pages de liste
+        const filterButtons = utils.$$('[data-filter]');
+        const items = utils.$$('.filterable-item');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const filter = button.dataset.filter;
+                
+                // Mise à jour des boutons actifs
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Filtrage des éléments
+                items.forEach(item => {
+                    if (filter === 'all' || item.dataset.category === filter) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    }
+
+    initProductComparison() {
+        // Fonctionnalité de comparaison de produits
+        const compareCheckboxes = utils.$$('input[data-compare]');
+        const compareButton = utils.$('#compare-button');
+        
+        if (compareCheckboxes.length > 0 && compareButton) {
+            compareCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', this.updateCompareButton.bind(this));
+            });
+        }
+    }
+
+    updateCompareButton() {
+        const selected = utils.$$('input[data-compare]:checked');
+        const button = utils.$('#compare-button');
+        
+        if (button) {
+            button.textContent = `Compare (${selected.length})`;
+            button.disabled = selected.length < 2;
+        }
+    }
+
+    initSocialSharing() {
+        const shareButtons = utils.$$('[data-share]');
+        
+        shareButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const platform = button.dataset.share;
+                const url = encodeURIComponent(window.location.href);
+                const title = encodeURIComponent(document.title);
+                
+                let shareUrl;
+                switch (platform) {
+                    case 'twitter':
+                        shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+                        break;
+                    case 'facebook':
+                        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                        break;
+                    case 'linkedin':
+                        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+                        break;
+                    default:
+                        return;
+                }
+                
+                window.open(shareUrl, 'share', 'width=600,height=400');
+            });
+        });
+    }
+
+    initTableOfContents() {
+        const headings = utils.$$('h2, h3, h4');
+        const tocContainer = utils.$('#table-of-contents');
+        
+        if (headings.length > 0 && tocContainer) {
+            const tocList = document.createElement('ul');
+            
+            headings.forEach((heading, index) => {
+                // Ajouter un ID si pas présent
+                if (!heading.id) {
+                    heading.id = `heading-${index}`;
+                }
+                
+                const tocItem = document.createElement('li');
+                const tocLink = document.createElement('a');
+                tocLink.href = `#${heading.id}`;
+                tocLink.textContent = heading.textContent;
+                tocItem.appendChild(tocLink);
+                tocList.appendChild(tocItem);
+            });
+            
+            tocContainer.appendChild(tocList);
+        }
+    }
+}
+
+// ==========================================
+// DÉMARRAGE DE L'APPLICATION
+// ==========================================
+
+// Initialisation immédiate
+const app = new TechEssentialsApp();
+
+// Exposition globale pour le debug
+if (config.debug) {
+    window.TechEssentialsApp = app;
+    window.utils = utils;
 }

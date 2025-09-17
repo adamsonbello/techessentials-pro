@@ -1,132 +1,516 @@
 {
-  "nav": {
-    "home": { "en": "Home", "fr": "Accueil" },
-    "products": { "en": "Products", "fr": "Produits" },
-    "reviews": { "en": "Reviews", "fr": "Tests" },
-    "blog": { "en": "Blog", "fr": "Blog" },
-    "deals": { "en": "Deals", "fr": "Offres" },
-    "contact": { "en": "Contact", "fr": "Contact" }
+  "site": {
+    "title": {
+      "en": "TechEssentials Pro - Best Tech for Remote Workers",
+      "fr": "TechEssentials Pro - La Meilleure Tech pour Télétravail"
+    },
+    "description": {
+      "en": "Discover essential tech accessories and productivity tools for remote workers. Expert reviews, honest recommendations.",
+      "fr": "Découvrez les accessoires tech essentiels et outils de productivité pour télétravailleurs. Avis d'experts, recommandations honnêtes."
+    },
+    "copyright": {
+      "en": "All rights reserved",
+      "fr": "Tous droits réservés"
+    }
+  },
+  "navigation": {
+    "home": {
+      "en": "Home",
+      "fr": "Accueil"
+    },
+    "reviews": {
+      "en": "Reviews",
+      "fr": "Tests"
+    },
+    "blog": {
+      "en": "Blog",
+      "fr": "Blog"
+    },
+    "deals": {
+      "en": "Best Deals",
+      "fr": "Bonnes Affaires"
+    },
+    "contact": {
+      "en": "Contact",
+      "fr": "Contact"
+    },
+    "about": {
+      "en": "About",
+      "fr": "À Propos"
+    },
+    "newsletter": {
+      "en": "Newsletter",
+      "fr": "Newsletter"
+    }
   },
   "hero": {
     "title": {
-      "en": "The Ultimate Tech Setup for Remote Success",
-      "fr": "L'équipement ultime pour réussir en télétravail"
+      "en": "Find the Perfect Tech for Your Remote Workspace",
+      "fr": "Trouvez la Tech Parfaite pour Votre Espace de Télétravail"
     },
     "subtitle": {
-      "en": "Discover hand-picked tech accessories that boost productivity and enhance your work-from-home experience.",
-      "fr": "Découvrez des accessoires technologiques sélectionnés qui boostent votre productivité et améliorent votre expérience de télétravail."
+      "en": "Expert reviews, honest recommendations, and exclusive deals on the best productivity tools for remote workers.",
+      "fr": "Avis d'experts, recommandations honnêtes et offres exclusives sur les meilleurs outils de productivité pour télétravailleurs."
     },
-    "cta": {
-      "en": "Explore Best Picks",
-      "fr": "Découvrir les meilleures sélections"
+    "cta_primary": {
+      "en": "Explore Reviews",
+      "fr": "Explorer les Tests"
+    },
+    "cta_secondary": {
+      "en": "Get Newsletter",
+      "fr": "S'abonner à la Newsletter"
     }
   },
-  "sections": {
-    "productsTitle": {
-      "en": "Our Product Selection",
-      "fr": "Notre Sélection de Produits"
+  "stats": {
+    "reviews": {
+      "en": "Product Reviews",
+      "fr": "Tests Produits"
     },
-    "productsSubtitle": {
-      "en": "20 carefully selected tech essentials for remote workers & digital nomads",
-      "fr": "20 essentiels technologiques soigneusement sélectionnés pour les télétravailleurs et les nomades digitaux"
+    "subscribers": {
+      "en": "Newsletter Subscribers",
+      "fr": "Abonnés Newsletter"
     },
-    "trustedTitle": {
-      "en": "Trusted by Remote Workers Worldwide",
-      "fr": "Plébiscité par les Télétravailleurs du Monde Entier"
+    "articles": {
+      "en": "Blog Articles",
+      "fr": "Articles de Blog"
     },
-    "trustedSubtitle": {
-      "en": "Join thousands of professionals who've optimized their home office setup",
-      "fr": "Rejoignez des milliers de professionnels qui ont optimisé leur bureau à domicile"
+    "rating": {
+      "en": "Average Rating",
+      "fr": "Note Moyenne"
     }
   },
-  "buttons": {
-    "viewDetails": {
-      "en": "View Details →",
-      "fr": "Voir le détail →"
-    },
-    "bestDeal": {
-      "en": "🔥 Get Best Deal",
-      "fr": "🔥 Voir le meilleur prix"
-    },
-    "bestDealNow": {
-      "en": "🔥 Get Best Deal Now",
-      "fr": "🔥 Obtenir l'offre maintenant"
-    }
-  },
-  "productPage": {
-    "featuresTitle": { "en": "Key Features", "fr": "Caractéristiques Clés" },
-    "descriptionTitle": { "en": "Description", "fr": "Description" },
-    "priceComparisonTitle": { "en": "Price Comparison", "fr": "Comparateur de Prix" },
-    "breadcrumbHome": { "en": "Home", "fr": "Accueil" },
-    "breadcrumbProducts": { "en": "Products", "fr": "Produits" }
-  },
-  "footer": {
-    "aboutTitle": { "en": "About TechEssentials Pro", "fr": "À propos de TechEssentials Pro" },
-    "aboutText": { 
-      "en": "We help remote workers build the perfect home office setup with honest reviews and expert recommendations. Every product is personally tested by our team.",
-      "fr": "Nous aidons les télétravailleurs à créer le bureau à domicile parfait avec des avis honnêtes et recommandations d'experts. Chaque produit est testé personnellement par notre équipe."
-    },
-    "quickLinks": { "en": "Quick Links", "fr": "Liens Rapides" },
-    "linkReviews": { "en": "Product Reviews", "fr": "Tests Produits" },
-    "linkDeals": { "en": "Best Deals", "fr": "Meilleures Offres" },
-    "linkContact": { "en": "Contact Us", "fr": "Nous Contacter" },
-    "linkPrivacy": { "en": "Privacy Policy", "fr": "Politique de Confidentialité" },
-    "contactTitle": { "en": "Contact", "fr": "Contact" },
-    "contactEmail": { "en": "Email: hello@techessentialspro.com", "fr": "Email: hello@techessentialspro.com" },
-    "contactTime": { "en": "Response time: 24 hours", "fr": "Temps de réponse: 24 heures" },
-    "contactBased": { "en": "Based in: France 🇫🇷", "fr": "Basé en: France 🇫🇷" },
-    "legal": {
-      "en": "© 2025 TechEssentials Pro. Affiliate disclosure: We earn commission from qualifying purchases at no extra cost to you.",
-      "fr": "© 2025 TechEssentials Pro. Divulgation d'affiliation: Nous gagnons une commission sur les achats qualifiés sans coût supplémentaire pour vous."
-    }
-  },
-  "dealsPage": {
+  "features": {
     "title": {
-      "en": "Best Tech Deals",
-      "fr": "Meilleures Offres Tech"
+      "en": "Why Choose TechEssentials Pro?",
+      "fr": "Pourquoi Choisir TechEssentials Pro ?"
     },
-    "subtitle": {
-      "en": "Exclusive discounts and smart bundles for remote workers.",
-      "fr": "Réductions exclusives et bundles intelligents pour les télétravailleurs."
+    "expert_reviews": {
+      "title": {
+        "en": "Expert Reviews",
+        "fr": "Avis d'Experts"
+      },
+      "description": {
+        "en": "In-depth testing and honest reviews from remote work professionals.",
+        "fr": "Tests approfondis et avis honnêtes de professionnels du télétravail."
+      }
+    },
+    "real_deals": {
+      "title": {
+        "en": "Real Deals",
+        "fr": "Vraies Bonnes Affaires"
+      },
+      "description": {
+        "en": "Exclusive discounts and deals negotiated just for our community.",
+        "fr": "Réductions exclusives et offres négociées spécialement pour notre communauté."
+      }
+    },
+    "community_driven": {
+      "title": {
+        "en": "Community Driven",
+        "fr": "Orienté Communauté"
+      },
+      "description": {
+        "en": "Real feedback from thousands of remote workers worldwide.",
+        "fr": "Vrais retours de milliers de télétravailleurs dans le monde entier."
+      }
     }
   },
-  
   "newsletter": {
     "title": {
-      "en": "Get Exclusive Tech Deals & Reviews",
-      "fr": "Obtenez des Offres Tech Exclusives & Avis"
+      "en": "Stay Updated with the Latest Tech",
+      "fr": "Restez à Jour avec les Dernières Technologies"
     },
-    "subtitle": {
-      "en": "Join 15,000+ remote workers getting weekly recommendations and early access to deals",
-      "fr": "Rejoignez plus de 15 000 télétravailleurs qui reçoivent des recommandations hebdomadaires et un accès anticipé aux offres"
+    "description": {
+      "en": "Get weekly updates on new reviews, exclusive deals, and productivity tips delivered straight to your inbox.",
+      "fr": "Recevez des mises à jour hebdomadaires sur les nouveaux tests, offres exclusives et conseils de productivité directement dans votre boîte mail."
     },
-    "placeholder": {
-      "en": "Enter your email address",
-      "fr": "Entrez votre adresse email"
+    "form": {
+      "email_placeholder": {
+        "en": "Enter your email address",
+        "fr": "Entrez votre adresse email"
+      },
+      "name_placeholder": {
+        "en": "Your name (optional)",
+        "fr": "Votre nom (optionnel)"
+      },
+      "subscribe_button": {
+        "en": "Subscribe Now",
+        "fr": "S'abonner Maintenant"
+      },
+      "privacy_text": {
+        "en": "We respect your privacy. Unsubscribe at any time.",
+        "fr": "Nous respectons votre vie privée. Désabonnez-vous à tout moment."
+      }
     },
-    "button": {
-      "en": "Subscribe Free",
-      "fr": "S'abonner Gratuitement"
+    "success": {
+      "en": "Thanks for subscribing! Please check your email to confirm.",
+      "fr": "Merci de votre inscription ! Veuillez vérifier votre email pour confirmer."
     },
-    "submitting": {
-      "en": "Subscribing...",
-      "fr": "Inscription..."
+    "error": {
+      "en": "Something went wrong. Please try again.",
+      "fr": "Quelque chose s'est mal passé. Veuillez réessayer."
+    }
+  },
+  "reviews_section": {
+    "title": {
+      "en": "Latest Product Reviews",
+      "fr": "Derniers Tests Produits"
     },
-    "successMessage": {
-      "en": "Thank you! You're now subscribed to our newsletter.",
-      "fr": "Merci ! Vous êtes maintenant inscrit à notre newsletter."
+    "view_all": {
+      "en": "View All Reviews",
+      "fr": "Voir Tous les Tests"
     },
-    "errorGeneric": {
-      "en": "An error occurred. Please try again.",
-      "fr": "Une erreur s'est produite. Veuillez réessayer."
+    "rating": {
+      "en": "Rating",
+      "fr": "Note"
     },
-    "errorInvalidEmail": {
-      "en": "Please enter a valid email address.",
-      "fr": "Veuillez entrer une adresse email valide."
+    "read_review": {
+      "en": "Read Review",
+      "fr": "Lire le Test"
     },
-    "errorAlreadySubscribed": {
-      "en": "This email is already subscribed to our newsletter.",
-      "fr": "Cet email est déjà inscrit à notre newsletter."
+    "check_price": {
+      "en": "Check Price",
+      "fr": "Voir le Prix"
+    },
+    "featured": {
+      "en": "Featured",
+      "fr": "À la Une"
+    }
+  },
+  "blog_section": {
+    "title": {
+      "en": "Latest Articles & Tips",
+      "fr": "Derniers Articles & Conseils"
+    },
+    "read_more": {
+      "en": "Read More",
+      "fr": "Lire Plus"
+    },
+    "view_all": {
+      "en": "View All Articles",
+      "fr": "Voir Tous les Articles"
+    },
+    "reading_time": {
+      "en": "min read",
+      "fr": "min de lecture"
+    }
+  },
+  "trust_badges": {
+    "title": {
+      "en": "Trusted by Remote Workers Worldwide",
+      "fr": "Fait Confiance par les Télétravailleurs du Monde Entier"
+    },
+    "transparent": {
+      "en": "100% Transparent Reviews",
+      "fr": "Avis 100% Transparents"
+    },
+    "tested": {
+      "en": "Thoroughly Tested",
+      "fr": "Testés Minutieusement"
+    },
+    "community": {
+      "en": "Community Verified",
+      "fr": "Vérifiés par la Communauté"
+    },
+    "deals": {
+      "en": "Exclusive Deals",
+      "fr": "Offres Exclusives"
+    }
+  },
+  "contact": {
+    "title": {
+      "en": "Get in Touch",
+      "fr": "Contactez-nous"
+    },
+    "description": {
+      "en": "Have a question or want to suggest a product for review? We'd love to hear from you!",
+      "fr": "Vous avez une question ou voulez suggérer un produit à tester ? Nous aimerions avoir de vos nouvelles !"
+    },
+    "form": {
+      "name": {
+        "en": "Name",
+        "fr": "Nom"
+      },
+      "email": {
+        "en": "Email",
+        "fr": "Email"
+      },
+      "subject": {
+        "en": "Subject",
+        "fr": "Sujet"
+      },
+      "message": {
+        "en": "Message",
+        "fr": "Message"
+      },
+      "send_button": {
+        "en": "Send Message",
+        "fr": "Envoyer le Message"
+      }
+    },
+    "success": {
+      "en": "Message sent successfully! We'll get back to you soon.",
+      "fr": "Message envoyé avec succès ! Nous vous répondrons bientôt."
+    }
+  },
+  "footer": {
+    "about": {
+      "title": {
+        "en": "About TechEssentials Pro",
+        "fr": "À Propos de TechEssentials Pro"
+      },
+      "description": {
+        "en": "Your trusted source for honest reviews and recommendations on the best tech accessories and productivity tools for remote work.",
+        "fr": "Votre source de confiance pour des avis honnêtes et recommandations sur les meilleurs accessoires tech et outils de productivité pour le télétravail."
+      }
+    },
+    "quick_links": {
+      "title": {
+        "en": "Quick Links",
+        "fr": "Liens Rapides"
+      },
+      "privacy": {
+        "en": "Privacy Policy",
+        "fr": "Politique de Confidentialité"
+      },
+      "terms": {
+        "en": "Terms of Service",
+        "fr": "Conditions d'Utilisation"
+      },
+      "sitemap": {
+        "en": "Sitemap",
+        "fr": "Plan du Site"
+      }
+    },
+    "categories": {
+      "title": {
+        "en": "Categories",
+        "fr": "Catégories"
+      },
+      "audio": {
+        "en": "Audio & Headphones",
+        "fr": "Audio & Casques"
+      },
+      "monitors": {
+        "en": "Monitors & Displays",
+        "fr": "Écrans & Moniteurs"
+      },
+      "keyboards": {
+        "en": "Keyboards & Mice",
+        "fr": "Claviers & Souris"
+      },
+      "webcams": {
+        "en": "Webcams & Lighting",
+        "fr": "Webcams & Éclairage"
+      },
+      "desks": {
+        "en": "Desks & Chairs",
+        "fr": "Bureaux & Chaises"
+      }
+    },
+    "social": {
+      "title": {
+        "en": "Follow Us",
+        "fr": "Suivez-nous"
+      }
+    }
+  },
+  "common": {
+    "loading": {
+      "en": "Loading...",
+      "fr": "Chargement..."
+    },
+    "error": {
+      "en": "Error",
+      "fr": "Erreur"
+    },
+    "success": {
+      "en": "Success",
+      "fr": "Succès"
+    },
+    "close": {
+      "en": "Close",
+      "fr": "Fermer"
+    },
+    "save": {
+      "en": "Save",
+      "fr": "Enregistrer"
+    },
+    "cancel": {
+      "en": "Cancel",
+      "fr": "Annuler"
+    },
+    "edit": {
+      "en": "Edit",
+      "fr": "Modifier"
+    },
+    "delete": {
+      "en": "Delete",
+      "fr": "Supprimer"
+    },
+    "search": {
+      "en": "Search",
+      "fr": "Rechercher"
+    },
+    "filter": {
+      "en": "Filter",
+      "fr": "Filtrer"
+    },
+    "sort": {
+      "en": "Sort",
+      "fr": "Trier"
+    },
+    "next": {
+      "en": "Next",
+      "fr": "Suivant"
+    },
+    "previous": {
+      "en": "Previous",
+      "fr": "Précédent"
+    },
+    "page": {
+      "en": "Page",
+      "fr": "Page"
+    },
+    "of": {
+      "en": "of",
+      "fr": "sur"
+    },
+    "results": {
+      "en": "results",
+      "fr": "résultats"
+    },
+    "no_results": {
+      "en": "No results found",
+      "fr": "Aucun résultat trouvé"
+    }
+  },
+  "meta": {
+    "home": {
+      "title": {
+        "en": "TechEssentials Pro - Best Tech Reviews for Remote Workers",
+        "fr": "TechEssentials Pro - Meilleurs Tests Tech pour Télétravailleurs"
+      },
+      "description": {
+        "en": "Discover the best tech accessories and productivity tools for remote work. Expert reviews, exclusive deals, and honest recommendations from remote work professionals.",
+        "fr": "Découvrez les meilleurs accessoires tech et outils de productivité pour le télétravail. Avis d'experts, offres exclusives et recommandations honnêtes de professionnels du télétravail."
+      }
+    },
+    "reviews": {
+      "title": {
+        "en": "Product Reviews - TechEssentials Pro",
+        "fr": "Tests Produits - TechEssentials Pro"
+      },
+      "description": {
+        "en": "In-depth reviews of the best tech accessories for remote workers. Honest testing, detailed analysis, and real-world performance insights.",
+        "fr": "Tests approfondis des meilleurs accessoires tech pour télétravailleurs. Tests honnêtes, analyses détaillées et aperçus de performance réelle."
+      }
+    },
+    "blog": {
+      "title": {
+        "en": "Tech Blog & Tips - TechEssentials Pro",
+        "fr": "Blog Tech & Conseils - TechEssentials Pro"
+      },
+      "description": {
+        "en": "Latest tech trends, productivity tips, and remote work guides. Stay updated with the best practices for your home office setup.",
+        "fr": "Dernières tendances tech, conseils de productivité et guides de télétravail. Restez à jour avec les meilleures pratiques pour votre bureau à domicile."
+      }
+    },
+    "contact": {
+      "title": {
+        "en": "Contact Us - TechEssentials Pro",
+        "fr": "Contactez-nous - TechEssentials Pro"
+      },
+      "description": {
+        "en": "Get in touch with our team. Questions, suggestions, or product review requests welcome.",
+        "fr": "Contactez notre équipe. Questions, suggestions ou demandes de tests produits bienvenues."
+      }
+    }
+  },
+  "language": {
+    "switch_to_french": {
+      "en": "Français",
+      "fr": "Français"
+    },
+    "switch_to_english": {
+      "en": "English",
+      "fr": "English"
+    },
+    "current_language": {
+      "en": "EN",
+      "fr": "FR"
+    }
+  },
+  "dates": {
+    "months": {
+      "en": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+      "fr": ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
+    },
+    "days": {
+      "en": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "fr": ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
+    },
+    "relative": {
+      "just_now": {
+        "en": "Just now",
+        "fr": "À l'instant"
+      },
+      "minutes_ago": {
+        "en": "{count} minute{s} ago",
+        "fr": "Il y a {count} minute{s}"
+      },
+      "hours_ago": {
+        "en": "{count} hour{s} ago",
+        "fr": "Il y a {count} heure{s}"
+      },
+      "days_ago": {
+        "en": "{count} day{s} ago",
+        "fr": "Il y a {count} jour{s}"
+      }
+    }
+  },
+  "errors": {
+    "404": {
+      "title": {
+        "en": "Page Not Found",
+        "fr": "Page Non Trouvée"
+      },
+      "message": {
+        "en": "The page you're looking for doesn't exist.",
+        "fr": "La page que vous cherchez n'existe pas."
+      },
+      "back_home": {
+        "en": "Back to Home",
+        "fr": "Retour à l'Accueil"
+      }
+    },
+    "500": {
+      "title": {
+        "en": "Server Error",
+        "fr": "Erreur Serveur"
+      },
+      "message": {
+        "en": "Something went wrong on our end. Please try again later.",
+        "fr": "Quelque chose s'est mal passé de notre côté. Veuillez réessayer plus tard."
+      }
+    },
+    "validation": {
+      "required": {
+        "en": "This field is required",
+        "fr": "Ce champ est obligatoire"
+      },
+      "invalid_email": {
+        "en": "Please enter a valid email address",
+        "fr": "Veuillez entrer une adresse email valide"
+      },
+      "min_length": {
+        "en": "Must be at least {count} characters",
+        "fr": "Doit contenir au moins {count} caractères"
+      },
+      "max_length": {
+        "en": "Must not exceed {count} characters",
+        "fr": "Ne doit pas dépasser {count} caractères"
+      }
     }
   }
 }

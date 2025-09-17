@@ -1,5 +1,5 @@
 <?php
-// admin-blog/articles/new.php - Éditeur d'articles v3 avec médiathèque intégrée
+// admin-blog/articles/editor.php - Éditeur unifié (création + édition)
 session_start();
 
 // Vérification auth
@@ -28,6 +28,31 @@ try {
     die("Erreur connexion BDD: " . $e->getMessage());
 }
 
+// Déterminer le mode (création ou édition)
+$article_id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+$article = null;
+$selected_tags = [];
+$mode = 'create'; // Par défaut création
+
+// Si ID fourni, charger l'article pour édition
+if ($article_id) {
+    $stmt = $blogDB->prepare("SELECT * FROM articles WHERE id = ?");
+    $stmt->execute([$article_id]);
+    $article = $stmt->fetch();
+    
+    if (!$article) {
+        header('Location: index.php');
+        exit;
+    }
+    
+    $mode = 'edit';
+    
+    // Charger les tags de l'article
+    $stmt = $blogDB->prepare("SELECT tag_id FROM article_tags WHERE article_id = ?");
+    $stmt->execute([$article_id]);
+    $selected_tags = $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
 // Récupérer catégories et tags
 $categories = $blogDB->query("SELECT * FROM categories WHERE is_active = 1 ORDER BY name")->fetchAll();
 $tags = $blogDB->query("SELECT * FROM tags ORDER BY usage_count DESC, name")->fetchAll();
@@ -35,85 +60,182 @@ $tags = $blogDB->query("SELECT * FROM tags ORDER BY usage_count DESC, name")->fe
 $message = '';
 $error = '';
 
-// Traitement du formulaire
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_article'])) {
-    try {
-        $title = trim($_POST['title'] ?? '');
-        $slug = trim($_POST['slug'] ?? '');
-        $excerpt = trim($_POST['excerpt'] ?? '');
-        $content = trim($_POST['content'] ?? '');
-        $category_id = (int)($_POST['category_id'] ?? 0);
-        $meta_title = trim($_POST['meta_title'] ?? '');
-        $meta_description = trim($_POST['meta_description'] ?? '');
-        $status = $_POST['status'] ?? 'draft';
-        $is_featured = isset($_POST['is_featured']) ? 1 : 0;
-        $read_time = (int)($_POST['read_time'] ?? 5);
-        $selected_tags = $_POST['tags'] ?? [];
+// Traitement du formulaire (création ou mise à jour)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Auto-save AJAX
+    if (isset($_POST['autosave'])) {
+        header('Content-Type: application/json');
         
-        // Validation
-        if (empty($title)) throw new Exception("Le titre est requis");
-        if (empty($content)) throw new Exception("Le contenu est requis");
-        if ($category_id <= 0) throw new Exception("Une catégorie est requise");
-        
-        // Génération auto du slug si vide
-        if (empty($slug)) {
-            $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title), '-'));
-        }
-        
-        // Début transaction
-        $blogDB->beginTransaction();
-        
-        // Insertion article
-        $stmt = $blogDB->prepare("
-            INSERT INTO articles (
-                title, slug, excerpt, content, category_id, author_name, author_email,
-                meta_title, meta_description, status, is_featured, read_time_minutes,
-                published_at, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
-        ");
-        
-        $published_at = ($status === 'published') ? date('Y-m-d H:i:s') : null;
-        $author_name = $_SESSION['blog_admin_user'] ?? 'Admin';
-        $author_email = 'admin@techessentialspro.com';
-        
-        $stmt->execute([
-            $title, $slug, $excerpt, $content, $category_id, $author_name, $author_email,
-            $meta_title, $meta_description, $status, $is_featured, $read_time,
-            $published_at
-        ]);
-        
-        $article_id = $blogDB->lastInsertId();
-        
-        // Gestion des tags
-        if (!empty($selected_tags)) {
-            foreach ($selected_tags as $tag_id) {
-                $stmt = $blogDB->prepare("INSERT IGNORE INTO article_tags (article_id, tag_id) VALUES (?, ?)");
-                $stmt->execute([$article_id, (int)$tag_id]);
+        try {
+            $title = trim($_POST['title'] ?? '');
+            $content = trim($_POST['content'] ?? '');
+            $excerpt = trim($_POST['excerpt'] ?? '');
+            
+            if ($article_id) {
+                $stmt = $blogDB->prepare("
+                    UPDATE articles 
+                    SET title = ?, content = ?, excerpt = ?, updated_at = NOW() 
+                    WHERE id = ?
+                ");
+                $stmt->execute([$title, $content, $excerpt, $article_id]);
             }
+            
+            echo json_encode(['success' => true, 'message' => 'Auto-saved']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         }
-        
-        $blogDB->commit();
-        $message = "Article créé avec succès ! ID: " . $article_id;
-        
-        // Redirection après création
-        if ($status === 'published') {
-            $message .= " (Article publié)";
+        exit;
+    }
+    
+    // Sauvegarde normale
+    if (isset($_POST['save_article'])) {
+        try {
+            $title = trim($_POST['title'] ?? '');
+            $slug = trim($_POST['slug'] ?? '');
+            $excerpt = trim($_POST['excerpt'] ?? '');
+            $content = trim($_POST['content'] ?? '');
+            $category_id = (int)($_POST['category_id'] ?? 0);
+            $meta_title = trim($_POST['meta_title'] ?? '');
+            $meta_description = trim($_POST['meta_description'] ?? '');
+            $status = $_POST['status'] ?? 'draft';
+            $is_featured = isset($_POST['is_featured']) ? 1 : 0;
+            $read_time = (int)($_POST['read_time'] ?? 5);
+            $post_tags = $_POST['tags'] ?? [];
+            
+            // Validation
+            if (empty($title)) throw new Exception("Le titre est requis");
+            if (empty($content)) throw new Exception("Le contenu est requis");
+            if ($category_id <= 0) throw new Exception("Une catégorie est requise");
+            
+            // Génération auto du slug si vide
+            if (empty($slug)) {
+                $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title), '-'));
+            }
+            
+            // Vérifier unicité du slug
+            $stmt = $blogDB->prepare("SELECT id FROM articles WHERE slug = ? AND id != ?");
+            $stmt->execute([$slug, $article_id ?: 0]);
+            if ($stmt->fetch()) {
+                $slug = $slug . '-' . time();
+            }
+            
+            // Début transaction
+            $blogDB->beginTransaction();
+            
+            if ($mode === 'edit') {
+                // UPDATE article existant
+                $stmt = $blogDB->prepare("
+                    UPDATE articles SET
+                        title = ?, slug = ?, excerpt = ?, content = ?, 
+                        category_id = ?, meta_title = ?, meta_description = ?,
+                        status = ?, is_featured = ?, read_time_minutes = ?,
+                        updated_at = NOW()
+                        " . ($status === 'published' && $article['status'] !== 'published' ? ", published_at = NOW()" : "") . "
+                    WHERE id = ?
+                ");
+                
+                $stmt->execute([
+                    $title, $slug, $excerpt, $content, $category_id,
+                    $meta_title, $meta_description, $status, $is_featured, $read_time,
+                    $article_id
+                ]);
+                
+                // Supprimer les anciens tags
+                $stmt = $blogDB->prepare("DELETE FROM article_tags WHERE article_id = ?");
+                $stmt->execute([$article_id]);
+                
+                $message = "Article mis à jour avec succès !";
+                
+            } else {
+                // INSERT nouvel article
+                $stmt = $blogDB->prepare("
+                    INSERT INTO articles (
+                        title, slug, excerpt, content, category_id, author_name, author_email,
+                        meta_title, meta_description, status, is_featured, read_time_minutes,
+                        published_at, created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+                ");
+                
+                $published_at = ($status === 'published') ? date('Y-m-d H:i:s') : null;
+                $author_name = $_SESSION['blog_admin_user'] ?? 'Admin';
+                $author_email = 'admin@techessentialspro.com';
+                
+                $stmt->execute([
+                    $title, $slug, $excerpt, $content, $category_id, $author_name, $author_email,
+                    $meta_title, $meta_description, $status, $is_featured, $read_time,
+                    $published_at
+                ]);
+                
+                $article_id = $blogDB->lastInsertId();
+                $message = "Article créé avec succès ! ID: " . $article_id;
+            }
+            
+            // Gestion des tags (pour les deux modes)
+            if (!empty($post_tags)) {
+                $stmt = $blogDB->prepare("INSERT IGNORE INTO article_tags (article_id, tag_id) VALUES (?, ?)");
+                foreach ($post_tags as $tag_id) {
+                    $stmt->execute([$article_id, (int)$tag_id]);
+                }
+                
+                // Mettre à jour le compteur d'usage des tags
+                $blogDB->exec("
+                    UPDATE tags t 
+                    SET usage_count = (
+                        SELECT COUNT(*) FROM article_tags WHERE tag_id = t.id
+                    )
+                ");
+            }
+            
+            $blogDB->commit();
+            
+            if ($status === 'published') {
+                $message .= " (Article publié)";
+            }
+            
+            // Si save_and_close, rediriger vers la liste
+            if (isset($_POST['save_and_close'])) {
+                header('Location: index.php?message=' . urlencode($message));
+                exit;
+            }
+            
+            // Si création, passer en mode édition
+            if ($mode === 'create') {
+                header('Location: editor.php?id=' . $article_id . '&message=' . urlencode($message));
+                exit;
+            }
+            
+        } catch (Exception $e) {
+            $blogDB->rollback();
+            $error = "Erreur: " . $e->getMessage();
         }
-        
-    } catch (Exception $e) {
-        $blogDB->rollback();
-        $error = "Erreur: " . $e->getMessage();
     }
 }
 
+// Préparer les valeurs pour le formulaire
+$form_data = [
+    'title' => $article['title'] ?? ($_POST['title'] ?? ''),
+    'slug' => $article['slug'] ?? ($_POST['slug'] ?? ''),
+    'excerpt' => $article['excerpt'] ?? ($_POST['excerpt'] ?? ''),
+    'content' => $article['content'] ?? ($_POST['content'] ?? ''),
+    'category_id' => $article['category_id'] ?? ($_POST['category_id'] ?? 0),
+    'meta_title' => $article['meta_title'] ?? ($_POST['meta_title'] ?? ''),
+    'meta_description' => $article['meta_description'] ?? ($_POST['meta_description'] ?? ''),
+    'status' => $article['status'] ?? ($_POST['status'] ?? 'draft'),
+    'is_featured' => $article['is_featured'] ?? (isset($_POST['is_featured']) ? 1 : 0),
+    'read_time' => $article['read_time_minutes'] ?? ($_POST['read_time'] ?? 5),
+    'tags' => !empty($_POST['tags']) ? $_POST['tags'] : $selected_tags
+];
+
 $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
+$page_title = $mode === 'edit' ? 'Éditer l\'article' : 'Nouvel Article';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nouvel Article - Blog Admin</title>
+    <title><?= $page_title ?> - Blog Admin</title>
     <style>
         * {
             margin: 0;
@@ -176,6 +298,24 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
         .header h1 {
             color: var(--text-color);
             font-size: 1.5rem;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-published {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-draft {
+            background: #fed7d7;
+            color: #742a2a;
         }
 
         .container {
@@ -508,7 +648,7 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
         .message {
             padding: 15px 20px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin: 20px 30px;
             font-weight: 500;
         }
 
@@ -528,6 +668,33 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
             font-size: 0.85rem;
             color: var(--text-light);
             margin-top: 5px;
+        }
+
+        .autosave-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: #48bb78;
+            color: white;
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Article info pour mode édition */
+        .article-info {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .article-info p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: var(--text-color);
         }
 
         /* Responsive */
@@ -566,43 +733,59 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
 <body>
     <div class="header">
         <div class="header-left">
-            <a href="../dashboard.php" class="back-btn">← Retour Dashboard</a>
-            <h1>Nouvel Article</h1>
+            <a href="index.php" class="back-btn">← Retour aux articles</a>
+            <h1><?= $page_title ?></h1>
+            <?php if ($mode === 'edit'): ?>
+                <span class="status-badge status-<?= $article['status'] ?>"><?= $article['status'] ?></span>
+            <?php endif; ?>
         </div>
-        <div>Connecté: <?php echo htmlspecialchars($admin_user); ?></div>
+        <div>Connecté: <?= htmlspecialchars($admin_user) ?></div>
     </div>
 
     <div class="container">
         <div class="main-editor">
             <div class="editor-header">
-                <h2>✏️ Créer un nouvel article</h2>
-                <p>Rédigez et publiez votre contenu sur TechEssentials Pro</p>
+                <h2><?= $mode === 'edit' ? '✏️ Modifier l\'article' : '✏️ Créer un nouvel article' ?></h2>
+                <p><?= $mode === 'edit' ? 'Modifiez et mettez à jour votre contenu' : 'Rédigez et publiez votre contenu sur TechEssentials Pro' ?></p>
             </div>
 
-            <?php if ($message): ?>
-                <div class="message success"><?php echo htmlspecialchars($message); ?></div>
+            <?php if ($message || isset($_GET['message'])): ?>
+                <div class="message success"><?= htmlspecialchars($message ?: $_GET['message']) ?></div>
             <?php endif; ?>
 
             <?php if ($error): ?>
-                <div class="message error"><?php echo htmlspecialchars($error); ?></div>
+                <div class="message error"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
             <form method="POST" class="editor-content" id="articleForm">
+                <?php if ($mode === 'edit'): ?>
+                <div class="article-info">
+                    <p><strong>📅 Créé le:</strong> <?= date('d/m/Y à H:i', strtotime($article['created_at'])) ?></p>
+                    <?php if ($article['updated_at']): ?>
+                    <p><strong>🔄 Dernière modification:</strong> <?= date('d/m/Y à H:i', strtotime($article['updated_at'])) ?></p>
+                    <?php endif; ?>
+                    <?php if ($article['published_at']): ?>
+                    <p><strong>📤 Publié le:</strong> <?= date('d/m/Y à H:i', strtotime($article['published_at'])) ?></p>
+                    <?php endif; ?>
+                    <p><strong>👁️ Vues:</strong> <?= number_format($article['views'] ?? 0) ?></p>
+                </div>
+                <?php endif; ?>
+
                 <div class="form-group">
                     <label for="title">📝 Titre de l'article *</label>
-                    <input type="text" id="title" name="title" required placeholder="Ex: Test complet iPhone 16 : Notre verdict" value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>">
+                    <input type="text" id="title" name="title" required placeholder="Ex: Test complet iPhone 16 : Notre verdict" value="<?= htmlspecialchars($form_data['title']) ?>">
                     <div class="help-text">Le titre principal qui apparaîtra sur votre site</div>
                 </div>
 
                 <div class="form-group">
                     <label for="slug">🔗 URL (slug)</label>
-                    <input type="text" id="slug" name="slug" placeholder="test-iphone-16-verdict" value="<?php echo htmlspecialchars($_POST['slug'] ?? ''); ?>">
+                    <input type="text" id="slug" name="slug" placeholder="test-iphone-16-verdict" value="<?= htmlspecialchars($form_data['slug']) ?>">
                     <div class="help-text">Laisser vide pour génération automatique</div>
                 </div>
 
                 <div class="form-group">
                     <label for="excerpt">📄 Extrait</label>
-                    <textarea id="excerpt" name="excerpt" rows="3" placeholder="Résumé de l'article qui apparaîtra dans les listes et partages..."><?php echo htmlspecialchars($_POST['excerpt'] ?? ''); ?></textarea>
+                    <textarea id="excerpt" name="excerpt" rows="3" placeholder="Résumé de l'article qui apparaîtra dans les listes et partages..."><?= htmlspecialchars($form_data['excerpt']) ?></textarea>
                     <div class="help-text">Résumé affiché sur la page d'accueil et réseaux sociaux</div>
                 </div>
 
@@ -624,34 +807,30 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
                         <button type="button" class="toolbar-btn" onclick="insertHTML('<ul><li>', '</li></ul>')">
                             Liste
                         </button>
+                        <button type="button" class="toolbar-btn" onclick="insertLink()">
+                            🔗 Lien
+                        </button>
                     </div>
-                    <textarea id="content" name="content" required placeholder="Rédigez votre article ici...
-
-Vous pouvez utiliser du HTML :
-<h2>Titre de section</h2>
-<p>Paragraphe de texte...</p>
-<ul><li>Liste à puces</li></ul>
-<strong>Texte en gras</strong>
-<em>Texte en italique</em>"><?php echo htmlspecialchars($_POST['content'] ?? ''); ?></textarea>
-                    <div class="help-text">HTML supporté. Utilisez la barre d'outils pour insérer des éléments</div>
+                    <textarea id="content" name="content" required placeholder="Rédigez votre article ici..."><?= htmlspecialchars($form_data['content']) ?></textarea>
+                    <div class="help-text">HTML supporté. Utilisez la barre d'outils pour insérer des éléments. Ctrl+S pour sauvegarder</div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="meta_title">🔍 Titre SEO</label>
-                        <input type="text" id="meta_title" name="meta_title" placeholder="Titre optimisé pour Google" value="<?php echo htmlspecialchars($_POST['meta_title'] ?? ''); ?>">
+                        <input type="text" id="meta_title" name="meta_title" placeholder="Titre optimisé pour Google" value="<?= htmlspecialchars($form_data['meta_title']) ?>">
                         <div class="help-text">Titre affiché dans les résultats Google</div>
                     </div>
                     <div class="form-group">
                         <label for="read_time">⏱️ Temps de lecture (min)</label>
-                        <input type="number" id="read_time" name="read_time" value="<?php echo (int)($_POST['read_time'] ?? 5); ?>" min="1" max="60">
+                        <input type="number" id="read_time" name="read_time" value="<?= (int)$form_data['read_time'] ?>" min="1" max="60">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="meta_description">📋 Description SEO</label>
-                    <textarea id="meta_description" name="meta_description" rows="2" placeholder="Description pour les moteurs de recherche et réseaux sociaux"><?php echo htmlspecialchars($_POST['meta_description'] ?? ''); ?></textarea>
-                    <div class="help-text">160 caractères max recommandés</div>
+                    <textarea id="meta_description" name="meta_description" rows="2" placeholder="Description pour les moteurs de recherche et réseaux sociaux"><?= htmlspecialchars($form_data['meta_description']) ?></textarea>
+                    <div class="help-text">160 caractères max recommandés - <span id="meta_desc_count">0</span>/160</div>
                 </div>
 
                 <div class="actions">
@@ -659,7 +838,10 @@ Vous pouvez utiliser du HTML :
                         💾 Enregistrer Brouillon
                     </button>
                     <button type="submit" name="save_article" value="published" class="btn btn-success" onclick="document.querySelector('[name=status]').value='published'">
-                        🚀 Publier Article
+                        🚀 <?= $mode === 'edit' && $article['status'] === 'published' ? 'Mettre à jour' : 'Publier' ?> Article
+                    </button>
+                    <button type="submit" name="save_and_close" value="1" class="btn btn-primary" onclick="document.querySelector('[name=status]').value='<?= $form_data['status'] ?>'">
+                        ✅ Sauvegarder et Fermer
                     </button>
                     <input type="hidden" name="status" value="draft">
                 </div>
@@ -676,8 +858,8 @@ Vous pouvez utiliser du HTML :
                     <select name="category_id" form="articleForm" required>
                         <option value="">Choisir une catégorie</option>
                         <?php foreach ($categories as $cat): ?>
-                            <option value="<?php echo $cat['id']; ?>" <?php echo (($_POST['category_id'] ?? 0) == $cat['id']) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($cat['icon'] . ' ' . $cat['name']); ?>
+                            <option value="<?= $cat['id'] ?>" <?= ($form_data['category_id'] == $cat['id']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($cat['icon'] . ' ' . $cat['name']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -691,7 +873,7 @@ Vous pouvez utiliser du HTML :
                 </div>
                 <div class="sidebar-content">
                     <div class="checkbox-group">
-                        <input type="checkbox" id="is_featured" name="is_featured" form="articleForm" <?php echo (isset($_POST['is_featured']) ? 'checked' : ''); ?>>
+                        <input type="checkbox" id="is_featured" name="is_featured" form="articleForm" <?= $form_data['is_featured'] ? 'checked' : '' ?>>
                         <label for="is_featured">⭐ Article à la une</label>
                     </div>
                     <div class="help-text">L'article apparaîtra en premier sur la page d'accueil</div>
@@ -707,25 +889,45 @@ Vous pouvez utiliser du HTML :
                     <div class="tags-grid">
                         <?php foreach ($tags as $tag): ?>
                             <div class="tag-item">
-                                <input type="checkbox" id="tag_<?php echo $tag['id']; ?>" name="tags[]" value="<?php echo $tag['id']; ?>" form="articleForm" <?php echo (in_array($tag['id'], $_POST['tags'] ?? []) ? 'checked' : ''); ?>>
-                                <label for="tag_<?php echo $tag['id']; ?>"><?php echo htmlspecialchars($tag['name']); ?></label>
+                                <input type="checkbox" id="tag_<?= $tag['id'] ?>" name="tags[]" value="<?= $tag['id'] ?>" form="articleForm" <?= in_array($tag['id'], $form_data['tags']) ? 'checked' : '' ?>>
+                                <label for="tag_<?= $tag['id'] ?>"><?= htmlspecialchars($tag['name']) ?></label>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
             </div>
 
+            <!-- Actions rapides -->
+            <?php if ($mode === 'edit'): ?>
+            <div class="sidebar-section">
+                <div class="sidebar-header">
+                    <h3>🚀 Actions rapides</h3>
+                </div>
+                <div class="sidebar-content">
+                    <a href="../view-article.php?id=<?= $article_id ?>" target="_blank" class="btn btn-secondary" style="width: 100%; margin-bottom: 10px;">
+                        👁️ Prévisualiser
+                    </a>
+                    <a href="index.php" class="btn btn-secondary" style="width: 100%;">
+                        📋 Retour à la liste
+                    </a>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <!-- Aide -->
             <div class="sidebar-section">
                 <div class="sidebar-header">
-                    <h3>💡 Aide</h3>
+                    <h3>💡 Aide & Raccourcis</h3>
                 </div>
                 <div class="sidebar-content">
+                    <p><strong>Ctrl+S :</strong> Sauvegarde rapide</p>
+                    <p><strong>Ctrl+B :</strong> Texte en gras</p>
+                    <p><strong>Ctrl+I :</strong> Texte en italique</p>
+                    <br>
                     <p><strong>Brouillon :</strong> Article sauvé mais non visible</p>
                     <p><strong>Publié :</strong> Article visible sur le site</p>
                     <br>
-                    <p><strong>SEO :</strong> Optimisez titre et description pour Google</p>
-                    <p><strong>Images :</strong> Cliquez sur "🖼️ Insérer Image" pour ajouter des visuels</p>
+                    <p><strong>Auto-save :</strong> Sauvegarde automatique toutes les 30 secondes</p>
                 </div>
             </div>
         </div>
@@ -768,15 +970,21 @@ Vous pouvez utiliser du HTML :
         </div>
     </div>
 
+    <!-- Indicateur auto-save -->
+    <div id="autosaveIndicator" class="autosave-indicator">💾 Sauvegarde automatique...</div>
+
     <script>
         // Variables globales
         let selectedImage = null;
         let mediaList = [];
+        let formModified = false;
+        let autoSaveTimer = null;
+        const articleId = <?= $article_id ? $article_id : 'null' ?>;
 
         // Auto-génération du slug depuis le titre
         document.getElementById('title').addEventListener('input', function() {
             const slugField = document.getElementById('slug');
-            if (slugField.value === '') {
+            if (slugField.value === '' || <?= $mode === 'create' ? 'true' : 'false' ?>) {
                 let slug = this.value
                     .toLowerCase()
                     .replace(/[àáäâ]/g, 'a')
@@ -803,20 +1011,72 @@ Vous pouvez utiliser du HTML :
         });
 
         // Compteur de caractères pour meta description
-        document.getElementById('meta_description').addEventListener('input', function() {
-            const length = this.value.length;
-            const color = length > 160 ? 'red' : (length > 140 ? 'orange' : 'green');
+        const metaDesc = document.getElementById('meta_description');
+        function updateMetaDescCount() {
+            const length = metaDesc.value.length;
+            const counter = document.getElementById('meta_desc_count');
+            counter.textContent = length;
+            counter.style.color = length > 160 ? 'red' : (length > 140 ? 'orange' : 'green');
+        }
+        metaDesc.addEventListener('input', updateMetaDescCount);
+        updateMetaDescCount();
+
+        // AUTO-SAVE (seulement en mode édition)
+        <?php if ($mode === 'edit'): ?>
+        function autoSave() {
+            if (!formModified) return;
             
-            let helpText = this.parentNode.querySelector('.help-text');
-            helpText.innerHTML = `${length}/160 caractères - <span style="color: ${color}">${length > 160 ? 'Trop long' : 'OK'}</span>`;
+            const indicator = document.getElementById('autosaveIndicator');
+            indicator.style.display = 'block';
+            
+            const formData = new FormData();
+            formData.append('autosave', 'true');
+            formData.append('title', document.getElementById('title').value);
+            formData.append('content', document.getElementById('content').value);
+            formData.append('excerpt', document.getElementById('excerpt').value);
+            
+            fetch('editor.php?id=<?= $article_id ?>', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                indicator.textContent = '✅ Sauvegardé automatiquement';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+                formModified = false;
+            })
+            .catch(error => {
+                indicator.textContent = '❌ Erreur de sauvegarde';
+                indicator.style.background = '#f44336';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 3000);
+            });
+        }
+
+        // Déclencher auto-save
+        function triggerAutoSave() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(autoSave, 30000); // 30 secondes
+        }
+
+        // Écouter les modifications
+        document.querySelectorAll('#title, #content, #excerpt').forEach(field => {
+            field.addEventListener('input', () => {
+                formModified = true;
+                triggerAutoSave();
+            });
         });
 
-        // Confirmation avant quitter si contenu
-        let formModified = false;
-        document.querySelectorAll('input, textarea, select').forEach(field => {
-            field.addEventListener('change', () => formModified = true);
-        });
+        // Auto-save toutes les 60 secondes si modifications
+        setInterval(() => {
+            if (formModified) autoSave();
+        }, 60000);
+        <?php endif; ?>
 
+        // Confirmation avant quitter si contenu modifié
         window.addEventListener('beforeunload', function(e) {
             if (formModified) {
                 e.preventDefault();
@@ -827,6 +1087,31 @@ Vous pouvez utiliser du HTML :
         // Désactiver confirmation après soumission
         document.querySelectorAll('button[type="submit"]').forEach(btn => {
             btn.addEventListener('click', () => formModified = false);
+        });
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S ou Cmd+S pour sauvegarder
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                <?php if ($mode === 'edit'): ?>
+                autoSave();
+                <?php else: ?>
+                document.querySelector('button[name="save_article"]').click();
+                <?php endif; ?>
+            }
+            
+            // Ctrl+B pour gras
+            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                e.preventDefault();
+                insertHTML('<strong>', '</strong>');
+            }
+            
+            // Ctrl+I pour italique
+            if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+                e.preventDefault();
+                insertHTML('<em>', '</em>');
+            }
         });
 
         // === FONCTIONS MÉDIATHÈQUE ===
@@ -885,12 +1170,10 @@ Vous pouvez utiliser du HTML :
 
         // Sélectionner une image
         function selectImage(mediaId) {
-            // Désélectionner toutes les images
             document.querySelectorAll('.media-item-modal').forEach(item => {
                 item.classList.remove('selected');
             });
             
-            // Sélectionner la nouvelle image
             const selectedItem = document.querySelector(`[data-id="${mediaId}"]`);
             if (selectedItem) {
                 selectedItem.classList.add('selected');
@@ -899,7 +1182,7 @@ Vous pouvez utiliser du HTML :
             }
         }
 
-        // Insérer l'image sélectionnée dans l'éditeur
+        // Insérer l'image sélectionnée
         function insertSelectedImage() {
             if (!selectedImage) return;
 
@@ -907,16 +1190,10 @@ Vous pouvez utiliser du HTML :
             const imageUrl = uploadUrl + selectedImage.filename;
             const altText = selectedImage.alt_text || selectedImage.original_name;
             
-            // Construire le HTML de l'image
             const imageHTML = `<img src="${imageUrl}" alt="${altText}" style="max-width: 100%; height: auto;">`;
             
-            // Insérer dans le textarea
             insertTextAtCursor(document.getElementById('content'), imageHTML);
-            
-            // Fermer la modal
             closeMediaLibrary();
-            
-            // Marquer le formulaire comme modifié
             formModified = true;
         }
 
@@ -950,10 +1227,8 @@ Vous pouvez utiliser du HTML :
                     statusDiv.style.background = '#d4edda';
                     statusDiv.style.color = '#155724';
                     
-                    // Recharger la galerie
                     await loadMediaLibrary();
                     
-                    // Sélectionner automatiquement la nouvelle image
                     if (result.media_id) {
                         selectImage(result.media_id);
                     }
@@ -967,12 +1242,10 @@ Vous pouvez utiliser du HTML :
                 statusDiv.style.color = '#721c24';
             }
             
-            // Masquer le message après 5 secondes
             setTimeout(() => {
                 statusDiv.style.display = 'none';
             }, 5000);
             
-            // Reset input
             fileInput.value = '';
         }
 
@@ -987,18 +1260,29 @@ Vous pouvez utiliser du HTML :
             insertTextAtCursor(textarea, replacement);
         }
 
+        function insertLink() {
+            const url = prompt('URL du lien:');
+            if (url) {
+                const textarea = document.getElementById('content');
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const selectedText = textarea.value.substring(start, end) || 'Texte du lien';
+                
+                const linkHTML = `<a href="${url}" target="_blank">${selectedText}</a>`;
+                insertTextAtCursor(textarea, linkHTML);
+            }
+        }
+
         function insertTextAtCursor(textarea, text) {
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
             
             textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(end);
             
-            // Repositionner le curseur
             const newCursorPos = start + text.length;
             textarea.setSelectionRange(newCursorPos, newCursorPos);
             textarea.focus();
             
-            // Marquer comme modifié
             formModified = true;
         }
 

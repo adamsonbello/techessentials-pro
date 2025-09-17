@@ -621,7 +621,7 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Blog Admin';
                     <div class="nav-item-icon">🏠</div>
                     <div class="nav-item-text">Dashboard</div>
                 </a>
-                <a href="analytics.php" class="nav-item">
+                <a href="analytics" class="nav-item">
                     <div class="nav-item-icon">📊</div>
                     <div class="nav-item-text">Analytics</div>
                 </a>
@@ -695,8 +695,8 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Blog Admin';
                     <a href="articles/new.php" class="btn btn-primary">
                         ✏️ Nouvel Article
                     </a>
-                    <a href="newsletter/send.php" class="btn btn-success">
-                        💌 Newsletter
+                    <a href="newsletter/templates.php" class="btn btn-success">
+                         Templates
                     </a>
                 </div>
                 <div class="user-profile">
