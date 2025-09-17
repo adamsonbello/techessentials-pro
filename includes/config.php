@@ -305,3 +305,9 @@ if (DEBUG) {
     ini_set('log_errors', 1);
     ini_set('error_log', ROOT_PATH . 'logs/php_errors.log');
 }
+
+
+// Dans includes/config.php
+define('ENV', 'production'); // ⚠️ Changer en production
+$DB_CONFIG['main']['password'] = 'VOTRE_MDP'; // ⚠️ Configurer DB
+$EMAIL_CONFIG['smtp']['username'] = 'VOTRE_EMAIL'; // ⚠️ Configurer SMTP

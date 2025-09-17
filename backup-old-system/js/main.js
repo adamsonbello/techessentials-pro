@@ -832,15 +832,3 @@ if (config.debug) {
     window.TechEssentialsApp = app;
     window.utils = utils;
 }
-
-
-
-// Côté JavaScript - Usage simple
-const response = await fetch('/api/newsletter/subscribe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-        email: 'contact@techessentials.com',
-        language: 'fr'
-    })
-});
