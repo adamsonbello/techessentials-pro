@@ -1,947 +1,2005 @@
 <?php
 /**
- * TechEssentials Pro - Template Liste Produits
- * @author Adams (Fred) - CTO
- * @version 2.0
- * @date 2025-09-16
- * 
- * 🎯 PAGE CRUCIALE - CŒUR DU BUSINESS
- * Génère les revenus via liens d'affiliation
+ * TechEssentials Pro V2.0 - Products Catalog
+ * Architecture MVC - Page Products
  */
 
 // Empêcher l'accès direct
 if (!defined('TECHESSENTIALS_PRO')) {
     die('Direct access not allowed');
 }
+
+// Gestion pagination
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$products_per_page = 20;
+$offset = ($page - 1) * $products_per_page;
+
+// Données des 20 produits avec vrais noms de fichiers
+$all_products = [
+    [
+        'id' => 'anker-737-charger',
+        'slug' => 'anker-737-powercore-24k',
+        'images' => [
+            'assets/images/products/anker-737.jpg'
+        ],
+        'badge' => 'BESTSELLER',
+        'name' => [
+            'en' => 'Anker 737 PowerCore 24K Power Bank',
+            'fr' => 'Batterie Externe Anker 737 PowerCore 24K'
+        ],
+        'description' => [
+            'en' => 'High-capacity 24,000mAh power bank with 140W output for laptops, tablets and phones. Fast charging with digital display.',
+            'fr' => 'Batterie externe haute capacité 24 000mAh avec sortie 140W pour portables, tablettes et téléphones. Charge rapide avec écran numérique.'
+        ],
+        'features' => [
+            'en' => ['24,000mAh capacity', '140W total output', 'Digital display', 'Smart temperature control'],
+            'fr' => ['Capacité 24 000mAh', 'Sortie totale 140W', 'Écran numérique', 'Contrôle température intelligent']
+        ],
+        'specs' => [
+            'en' => ['Capacity: 24,000mAh / 86.4Wh', 'USB-C: 140W max', 'USB-A: 18W max', 'Dimensions: 156 × 55 × 50mm'],
+            'fr' => ['Capacité: 24 000mAh / 86.4Wh', 'USB-C: 140W max', 'USB-A: 18W max', 'Dimensions: 156 × 55 × 50mm']
+        ],
+        'price' => '€149.99',
+        'price_old' => '€199.99',
+        'rating' => 4.8,
+        'reviews_count' => 2847,
+        'availability' => 'in_stock',
+        'category' => 'accessories',
+        'vendors' => [
+            'amazon' => 'https://amazon.fr/anker-737',
+            'fnac' => 'https://fnac.com/anker-737',
+            'bestbuy' => 'https://bestbuy.com/anker-737'
+        ]
+    ],
+    [
+        'id' => 'anker-dock-hub',
+        'slug' => 'anker-powerexpand-elite-13in1',
+        'images' => [
+            'assets/images/products/anker-dock.jpg'
+        ],
+        'badge' => 'PREMIUM',
+        'name' => [
+            'en' => 'Anker PowerExpand Elite 13-in-1 Dock',
+            'fr' => 'Station Anker PowerExpand Elite 13-en-1'
+        ],
+        'description' => [
+            'en' => 'Ultimate 13-in-1 docking station with dual 4K displays, high-speed charging, and comprehensive connectivity.',
+            'fr' => 'Station d\'accueil ultime 13-en-1 avec double écrans 4K, charge haute vitesse et connectivité complète.'
+        ],
+        'features' => [
+            'en' => ['Dual 4K display support', '85W laptop charging', '13 ports total', 'Gigabit Ethernet'],
+            'fr' => ['Support double 4K', 'Charge portable 85W', '13 ports au total', 'Ethernet Gigabit']
+        ],
+        'specs' => [
+            'en' => ['HDMI: Dual 4K@60Hz', 'USB-C PD: 85W', 'USB 3.0: 4 ports', 'Ethernet: 1Gbps'],
+            'fr' => ['HDMI: Double 4K@60Hz', 'USB-C PD: 85W', 'USB 3.0: 4 ports', 'Ethernet: 1Gbps']
+        ],
+        'price' => '€199.99',
+        'price_old' => '€249.99',
+        'rating' => 4.7,
+        'reviews_count' => 1923,
+        'availability' => 'in_stock',
+        'category' => 'accessories',
+        'vendors' => [
+            'amazon' => 'https://amazon.fr/anker-dock',
+            'fnac' => 'https://fnac.com/anker-dock',
+            'bestbuy' => 'https://bestbuy.com/anker-dock'
+        ]
+    ],
+    [
+        'id' => 'asus-proart-monitor',
+        'slug' => 'asus-proart-pa248qv-24-professional',
+        'images' => [
+            'assets/images/products/asus-proart-pa248QV.jpg'
+        ],
+        'badge' => 'PRO',
+        'name' => [
+            'en' => 'ASUS ProArt PA248QV 24" Professional Monitor',
+            'fr' => 'Moniteur Professionnel ASUS ProArt PA248QV 24"'
+        ],
+        'description' => [
+            'en' => 'Professional 24" monitor with 100% sRGB color space, factory calibration, and ergonomic design for creators.',
+            'fr' => 'Moniteur professionnel 24" avec espace colorimétrique 100% sRGB, calibrage usine et design ergonomique pour créateurs.'
+        ],
+        'features' => [
+            'en' => ['100% sRGB coverage', 'Factory pre-calibrated', 'USB-C connectivity', 'Height adjustable stand'],
+            'fr' => ['Couverture 100% sRGB', 'Pré-calibré en usine', 'Connectivité USB-C', 'Support réglable hauteur']
+        ],
+        'specs' => [
+            'en' => ['Size: 24.1" (61.2cm)', 'Resolution: 1920 x 1200 WUXGA', 'Refresh rate: 75Hz', 'Response time: 5ms'],
+            'fr' => ['Taille: 24.1" (61.2cm)', 'Résolution: 1920 x 1200 WUXGA', 'Taux rafraîchissement: 75Hz', 'Temps réponse: 5ms']
+        ],
+        'price' => '€349.99',
+        'price_old' => '€449.99',
+        'rating' => 4.7,
+        'reviews_count' => 1834,
+        'availability' => 'in_stock',
+        'category' => 'displays',
+        'vendors' => [
+            'amazon' => 'https://amazon.fr/asus-proart',
+            'fnac' => 'https://fnac.com/asus-proart',
+            'bestbuy' => 'https://bestbuy.com/asus-proart'
+        ]
+    ],
+    [
+        'id' => 'dell-ultrasharp-u2720q',
+        'slug' => 'dell-ultrasharp-u2720q-27-4k',
+        'images' => [
+            'assets/images/products/dell-ultrasharp-u2720q.jpg'
+        ],
+        'badge' => 'PROFESSIONAL',
+        'name' => [
+            'en' => 'Dell UltraSharp U2720Q 27" 4K Monitor',
+            'fr' => 'Moniteur 4K Dell UltraSharp U2720Q 27"'
+        ],
+        'description' => [
+            'en' => 'Professional 27" 4K monitor with 99% sRGB, USB-C connectivity with 90W power delivery, and premium build quality.',
+            'fr' => 'Moniteur 4K professionnel 27" avec 99% sRGB, connectivité USB-C avec power delivery 90W et qualité construction premium.'
+        ],
+        'features' => [
+            'en' => ['27" 4K IPS display', '99% sRGB coverage', 'USB-C with 90W PD', 'Height adjustable stand'],
+            'fr' => ['Écran IPS 4K 27"', 'Couverture 99% sRGB', 'USB-C avec PD 90W', 'Support réglable hauteur']
+        ],
+        'specs' => [
+            'en' => ['Resolution: 3840x2160 4K', 'Refresh rate: 60Hz', 'Response time: 5ms', 'Brightness: 350 cd/m²'],
+            'fr' => ['Résolution: 3840x2160 4K', 'Taux rafraîchissement: 60Hz', 'Temps réponse: 5ms', 'Luminosité: 350 cd/m²']
+        ],
+        'price' => '€649.99',
+        'price_old' => '€749.99',
+        'rating' => 4.8,
+        'reviews_count' => 1276,
+        'availability' => 'in_stock',
+        'category' => 'displays',
+        'vendors' => [
+            'amazon' => 'https://amazon.fr/dell-u2720q',
+            'fnac' => 'https://fnac.com/dell-monitor',
+            'bestbuy' => 'https://bestbuy.com/dell-u2720q'
+        ]
+    ],
+    [
+        'id' => 'herman-miller-sayl',
+        'slug' => 'herman-miller-sayl-ergonomic-chair',
+        'images' => [
+            'assets/images/products/herman-miller-sayl.jpg'
+        ],
+        'badge' => 'ERGONOMIC',
+        'name' => [
+            'en' => 'Herman Miller Sayl Ergonomic Office Chair',
+            'fr' => 'Chaise Bureau Ergonomique Herman Miller Sayl'
+        ],
+        'description' => [
+            'en' => 'Innovative ergonomic chair with suspension back design, modern aesthetics, and exceptional support for all-day comfort.',
+            'fr' => 'Chaise ergonomique innovante avec design dossier suspension, esthétique moderne et support exceptionnel pour confort toute la journée.'
+        ],
+        'features' => [
+            'en' => ['Suspension back design', 'PostureFit sacral support', '12-year warranty', 'Adjustable arms'],
+            'fr' => ['Design dossier suspension', 'Support sacré PostureFit', 'Garantie 12 ans', 'Bras ajustables']
+        ],
+        'specs' => [
+            'en' => ['Weight capacity: 350 lbs', 'Seat height: 15.75"-20.5"', 'Width: 27"', 'Depth: 27"'],
+            'fr' => ['Capacité poids: 159kg', 'Hauteur siège: 40-52cm', 'Largeur: 68cm', 'Profondeur: 68cm']
+        ],
+        'price' => '€695.00',
+        'price_old' => '€895.00',
+        'rating' => 4.7,
+        'reviews_count' => 892,
+        'availability' => 'in_stock',
+        'category' => 'accessories',
+        'vendors' => [
+            'amazon' => 'https://amazon.fr/herman-miller-sayl',
+            'fnac' => 'https://fnac.com/herman-miller-sayl',
+            'bestbuy' => 'https://bestbuy.com/herman-miller-sayl'
+        ]
+    ]
+    // Ajouter les 15 autres produits...
+];
+
+// Pagination
+$total_products = count($all_products);
+$total_pages = ceil($total_products / $products_per_page);
+$products = array_slice($all_products, $offset, $products_per_page);
+
+// Traductions pour cette page
+$page_translations = [
+    'en' => [
+        'page_title' => 'Products Catalog',
+        'page_subtitle' => 'Expert-curated tech products for modern remote workers',
+        'filter_all' => 'All Products',
+        'filter_accessories' => 'Accessories',
+        'filter_audio' => 'Audio',
+        'filter_displays' => 'Displays',
+        'filter_input' => 'Input Devices',
+        'view_details' => 'View Details',
+        'read_review' => 'Read Review',
+        'in_stock' => 'In Stock',
+        'limited_stock' => 'Limited Stock',
+        'out_of_stock' => 'Out of Stock',
+        'reviews' => 'reviews',
+        'specifications' => 'Specifications',
+        'features' => 'Key Features',
+        'close' => 'Close',
+        'showing' => 'Showing',
+        'products' => 'products',
+        'of' => 'of',
+        'previous' => 'Previous',
+        'next' => 'Next'
+    ],
+    'fr' => [
+        'page_title' => 'Catalogue Produits',
+        'page_subtitle' => 'Produits tech sélectionnés par experts pour télétravailleurs modernes',
+        'filter_all' => 'Tous Produits',
+        'filter_accessories' => 'Accessoires',
+        'filter_audio' => 'Audio',
+        'filter_displays' => 'Écrans',
+        'filter_input' => 'Périphériques',
+        'view_details' => 'Voir Détails',
+        'read_review' => 'Lire Test',
+        'in_stock' => 'En Stock',
+        'limited_stock' => 'Stock Limité',
+        'out_of_stock' => 'Rupture Stock',
+        'reviews' => 'avis',
+        'specifications' => 'Spécifications',
+        'features' => 'Caractéristiques',
+        'close' => 'Fermer',
+        'showing' => 'Affichage',
+        'products' => 'produits',
+        'of' => 'sur',
+        'previous' => 'Précédent',
+        'next' => 'Suivant'
+    ]
+];
+
+// Utiliser la langue actuelle de ton système
+$current_lang = Language::getInstance()->getCurrentLanguage();
+$t = $page_translations[$current_lang];
+
+// Données pour le template
+$data = [
+    'meta_title' => $t['page_title'] . ' - TechEssentials Pro',
+    'meta_description' => 'Browse our curated collection of tech products for remote workers. Expert reviews, detailed specs, and best prices.',
+    'meta_keywords' => 'tech products, remote work accessories, productivity tools',
+    'page_title' => $t['page_title'],
+    'page_subtitle' => $t['page_subtitle'],
+    'products' => $products,
+    'all_products' => $all_products,
+    'current_page' => $page,
+    'total_pages' => $total_pages,
+    'total_products' => $total_products,
+    'products_per_page' => $products_per_page,
+    'offset' => $offset,
+    'translations' => $t,
+    'current_lang' => $current_lang
+];
+
+// Générer le contenu de la page
+ob_start();
 ?>
 
-<!-- Products Hero -->
-<section class="products-hero">
+<style>
+    /* Page Header */
+    .page-header {
+        text-align: center;
+        padding: 3rem 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+    
+    .page-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    /* Controls */
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .filters {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.9rem;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    /* Products Grid */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 200px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        position: relative;
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #ff6b6b;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: bold;
+    }
+    
+    .product-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+    
+    .product-description {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stars {
+        color: #ffc107;
+        font-size: 0.9rem;
+    }
+    
+    .rating-text {
+        font-size: 0.8rem;
+        color: #666;
+    }
+    
+    .product-price {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+    
+    .price-old {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 1rem;
+        margin-right: 0.5rem;
+    }
+    
+    .availability {
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+    
+    .availability.in_stock { color: #28a745; }
+    .availability.limited_stock { color: #ffc107; }
+    .availability.out_of_stock { color: #dc3545; }
+    
+    .product-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+        text-decoration: none;
+        text-align: center;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: #667eea;
+        color: white;
+        flex: 1;
+    }
+    
+    .btn-primary:hover {
+        background: #5a6fd8;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: #667eea;
+        border: 1px solid #667eea;
+        flex: 1;
+    }
+    
+    .btn-outline:hover {
+        background: #667eea;
+        color: white;
+    }
+    
+    /* Modal Popup */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        overflow-y: auto;
+    }
+    
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        max-width: 900px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+        from { opacity: 0; transform: translateY(50px) scale(0.9); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s;
+    }
+    
+    .modal-close:hover {
+        background: #f8f9fa;
+        color: #333;
+    }
+    
+    .modal-body {
+        padding: 2rem;
+    }
+    
+    .modal-product-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .modal-main-image {
+        width: 100%;
+        height: 300px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        cursor: zoom-in;
+        transition: transform 0.3s;
+    }
+    
+    .modal-main-image:hover {
+        transform: scale(1.05);
+    }
+    
+    .modal-info-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .modal-badge {
+        background: #ff6b6b;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        align-self: flex-start;
+    }
+    
+    .modal-product-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .modal-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .modal-price {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+    
+    .modal-description {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .modal-section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+    
+    .modal-list {
+        list-style: none;
+    }
+    
+    .modal-list li {
+        padding: 0.3rem 0;
+        padding-left: 20px;
+        position: relative;
+        color: #666;
+    }
+    
+    .modal-list li::before {
+        content: '✓';
+        color: #28a745;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+    }
+    
+    .modal-vendors {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .modal-vendor-btn {
+        flex: 1;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        background: white;
+        color: #333;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 500;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    
+    .modal-vendor-btn:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    /* Zoom Modal */
+    .zoom-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 20000;
+        cursor: zoom-out;
+    }
+    
+    .zoom-modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .zoom-image {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filters {
+            justify-content: center;
+        }
+        
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .modal-content {
+            margin: 1rem;
+            max-height: 95vh;
+        }
+        
+        .modal-product-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .modal-vendors {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<section class="page-header">
     <div class="container">
-        <div class="hero-content">
-            <h1>Best Tech Products for Remote Workers</h1>
-            <p>Curated selection of productivity tools, tested by experts, with exclusive deals and honest reviews.</p>
-            
-            <!-- Trust Indicators -->
-            <div class="trust-indicators">
-                <div class="trust-item">
-                    <strong><?= number_format($site_stats['reviews']) ?>+</strong>
-                    <span>Products Tested</span>
-                </div>
-                <div class="trust-item">
-                    <strong>4.8/5</strong>
-                    <span>Average Rating</span>
-                </div>
-                <div class="trust-item">
-                    <strong>100%</strong>
-                    <span>Honest Reviews</span>
-                </div>
-            </div>
-        </div>
+        <h1><?= $t['page_title'] ?></h1>
+        <p><?= $t['page_subtitle'] ?></p>
     </div>
 </section>
 
-<!-- Filters & Search -->
-<section class="products-filters">
-    <div class="container">
-        <div class="filters-header">
-            <h2>Find Your Perfect Tech</h2>
-            <div class="results-count">
-                <?= count($products) ?> products found
-            </div>
+<div class="container">
+    <!-- Controls -->
+    <div class="controls">
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all"><?= $t['filter_all'] ?></button>
+            <button class="filter-btn" data-filter="accessories"><?= $t['filter_accessories'] ?></button>
+            <button class="filter-btn" data-filter="audio"><?= $t['filter_audio'] ?></button>
+            <button class="filter-btn" data-filter="displays"><?= $t['filter_displays'] ?></button>
+            <button class="filter-btn" data-filter="input"><?= $t['filter_input'] ?></button>
         </div>
-        
-        <div class="filters-grid">
-            <!-- Category Filters -->
-            <div class="filter-group">
-                <h3>Categories</h3>
-                <div class="filter-options">
-                    <button class="filter-btn <?= empty($current_category) ? 'active' : '' ?>" data-filter="all">
-                        All Products
-                    </button>
-                    <?php if (!empty($categories)): ?>
-                    <?php foreach ($categories as $category): ?>
-                    <button class="filter-btn <?= $current_category === $category['category'] ? 'active' : '' ?>" 
-                            data-filter="<?= $category['category'] ?>">
-                        <?= ucfirst($category['category']) ?> (<?= $category['count'] ?>)
-                    </button>
-                    <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid" id="productsGrid">
+        <?php foreach ($products as $index => $product): ?>
+        <div class="product-card" data-product-index="<?= $index ?>" data-category="<?= $product['category'] ?>">
+            <div class="product-image" style="background-image: url('<?= asset($product['images'][0]) ?>');">
+                <div class="product-badge"><?= $product['badge'] ?></div>
             </div>
             
-            <!-- Price Range -->
-            <div class="filter-group">
-                <h3>Price Range</h3>
-                <div class="price-filters">
-                    <button class="filter-btn" data-price="under-50">Under $50</button>
-                    <button class="filter-btn" data-price="50-100">$50 - $100</button>
-                    <button class="filter-btn" data-price="100-200">$100 - $200</button>
-                    <button class="filter-btn" data-price="200-500">$200 - $500</button>
-                    <button class="filter-btn" data-price="over-500">$500+</button>
+            <h3 class="product-title"><?= $product['name'][$current_lang] ?></h3>
+            <p class="product-description"><?= $product['description'][$current_lang] ?></p>
+            
+            <div class="product-rating">
+                <div class="stars">
+                    <?php 
+                    $rating = $product['rating'];
+                    for ($i = 1; $i <= 5; $i++) {
+                        echo $i <= $rating ? '★' : '☆';
+                    }
+                    ?>
                 </div>
+                <span class="rating-text"><?= $product['rating'] ?> (<?= number_format($product['reviews_count']) ?> <?= $t['reviews'] ?>)</span>
             </div>
             
-            <!-- Rating Filter -->
-            <div class="filter-group">
-                <h3>Minimum Rating</h3>
-                <div class="rating-filters">
-                    <button class="filter-btn" data-rating="4.5">4.5+ Stars</button>
-                    <button class="filter-btn" data-rating="4.0">4.0+ Stars</button>
-                    <button class="filter-btn" data-rating="3.5">3.5+ Stars</button>
-                </div>
+            <div class="product-price">
+                <?php if (isset($product['price_old'])): ?>
+                <span class="price-old"><?= $product['price_old'] ?></span>
+                <?php endif; ?>
+                <?= $product['price'] ?>
             </div>
             
-            <!-- Sort Options -->
-            <div class="filter-group">
-                <h3>Sort By</h3>
-                <select class="sort-select" id="product-sort">
-                    <option value="featured">Featured Products</option>
-                    <option value="rating">Highest Rated</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="newest">Newest First</option>
-                    <option value="most-popular">Most Popular</option>
-                </select>
+            <div class="availability <?= $product['availability'] ?>">
+                ● <?= $t[$product['availability']] ?>
             </div>
-        </div>
-        
-        <!-- Search Bar -->
-        <div class="product-search">
-            <div class="search-box">
-                <input type="search" 
-                       id="product-search" 
-                       placeholder="Search products by name, brand, or feature..."
-                       autocomplete="off">
-                <button class="search-btn">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
+            
+            <div class="product-actions">
+                <button class="btn btn-primary" onclick="openProductModal(<?= $index ?>)">
+                    <?= $t['view_details'] ?>
                 </button>
+                <a href="?page=product-detail&id=<?= $product['slug'] ?>" class="btn btn-outline">
+                    <?= $t['read_review'] ?>
+                </a>
             </div>
         </div>
+        <?php endforeach; ?>
     </div>
-</section>
 
-<!-- Products Grid -->
-<section class="products-grid-section">
-    <div class="container">
-        <?php if (!empty($products)): ?>
-        
-        <!-- Featured Products Banner -->
-        <div class="featured-products-banner">
-            <h2>🏆 Editor's Choice</h2>
-            <p>Top-rated products hand-picked by our experts</p>
+    <!-- Pagination -->
+    <?php if ($total_pages > 1): ?>
+    <?= generatePagination($page, $total_pages, '?page=products') ?>
+    
+    <div style="text-align: center; color: #666; margin-bottom: 2rem;">
+        <?= $t['showing'] ?> <?= $offset + 1 ?>-<?= min($offset + $products_per_page, $total_products) ?> <?= $t['of'] ?> <?= $total_products ?> <?= $t['products'] ?>
+    </div>
+    <?php endif; ?>
+</div>
+
+<!-- Product Modal -->
+<div class="modal" id="productModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <button class="modal-close" onclick="closeProductModal()">&times;</button>
         </div>
-        
-        <div class="products-grid" id="products-grid">
-            <?php foreach ($products as $product): ?>
-            <article class="product-card <?= $product['is_featured'] ? 'featured' : '' ?>" 
-                     data-category="<?= $product['category'] ?>"
-                     data-price="<?= $product['current_price'] ?? $product['price'] ?>"
-                     data-rating="<?= $product['rating'] ?>">
-                
-                <!-- Product Image & Badges -->
-                <div class="product-image">
-                    <a href="<?= url('products/' . $product['slug']) ?>">
-                        <img src="<?= $product['featured_image'] ?>" 
-                             alt="<?= clean($product['title']) ?>"
-                             width="300" height="200"
-                             loading="lazy">
-                    </a>
-                    
-                    <!-- Badges -->
-                    <div class="product-badges">
-                        <?php if ($product['is_featured']): ?>
-                        <span class="badge badge-featured">Editor's Choice</span>
-                        <?php endif; ?>
-                        
-                        <?php if (isset($product['discount_price']) && $product['discount_price']): ?>
-                        <?php $savings = round((($product['price'] - $product['discount_price']) / $product['price']) * 100); ?>
-                        <span class="badge badge-sale">-<?= $savings ?>%</span>
-                        <?php endif; ?>
-                        
-                        <?php if ($product['rating'] >= 4.5): ?>
-                        <span class="badge badge-bestseller">Best Seller</span>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <!-- Quick Actions -->
-                    <div class="product-actions-overlay">
-                        <button class="action-btn compare-btn" 
-                                data-product-id="<?= $product['id'] ?>" 
-                                title="Add to Compare">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                            </svg>
-                        </button>
-                        <button class="action-btn wishlist-btn" 
-                                data-product-id="<?= $product['id'] ?>" 
-                                title="Save to Wishlist">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                            </svg>
-                        </button>
-                    </div>
+        <div class="modal-body">
+            <div class="modal-product-grid">
+                <div class="modal-image-section">
+                    <div class="modal-main-image" id="modalMainImage" onclick="openZoomModal()"></div>
                 </div>
                 
-                <!-- Product Info -->
-                <div class="product-content">
-                    <div class="product-meta">
-                        <span class="product-category"><?= ucfirst($product['category']) ?></span>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <?php for ($i = 1; $i <= 5; $i++): ?>
-                                <span class="star <?= $i <= $product['rating'] ? 'filled' : '' ?>">★</span>
-                                <?php endfor; ?>
-                            </div>
-                            <span class="rating-text"><?= $product['rating'] ?> (<?= rand(45, 328) ?> reviews)</span>
-                        </div>
+                <div class="modal-info-section">
+                    <div class="modal-badge" id="modalBadge"></div>
+                    <h3 class="modal-product-title" id="modalProductTitle"></h3>
+                    
+                    <div class="modal-rating" id="modalRating"></div>
+                    
+                    <div class="modal-price" id="modalPrice"></div>
+                    
+                    <div class="modal-availability" id="modalAvailability"></div>
+                    
+                    <p class="modal-description" id="modalDescription"></p>
+                    
+                    <div class="modal-features">
+                        <h4 class="modal-section-title"><?= $t['features'] ?></h4>
+                        <ul class="modal-list" id="modalFeatures"></ul>
                     </div>
                     
-                    <h3 class="product-title">
-                        <a href="<?= url('products/' . $product['slug']) ?>">
-                            <?= clean($product['title']) ?>
-                        </a>
-                    </h3>
-                    
-                    <p class="product-excerpt"><?= clean($product['excerpt']) ?></p>
-                    
-                    <!-- Key Features -->
-                    <?php if (!empty($product['key_features'])): ?>
-                    <ul class="product-features">
-                        <?php foreach (array_slice($product['key_features'], 0, 3) as $feature): ?>
-                        <li>✓ <?= clean($feature) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                    <?php endif; ?>
-                    
-                    <!-- Price & CTA -->
-                    <div class="product-pricing">
-                        <?php if (isset($product['discount_price']) && $product['discount_price']): ?>
-                        <div class="price-section">
-                            <span class="original-price">$<?= number_format($product['price'], 2) ?></span>
-                            <span class="current-price">$<?= number_format($product['discount_price'], 2) ?></span>
-                            <span class="savings">Save $<?= number_format($product['price'] - $product['discount_price'], 2) ?></span>
-                        </div>
-                        <?php else: ?>
-                        <div class="price-section">
-                            <span class="current-price">$<?= number_format($product['price'], 2) ?></span>
-                        </div>
-                        <?php endif; ?>
-                        
-                        <!-- CTA Buttons - CRITICAL FOR REVENUE -->
-                        <div class="product-cta-buttons">
-                            <a href="<?= url('products/' . $product['slug']) ?>" 
-                               class="btn btn-outline btn-sm">
-                                Read Review
-                            </a>
-                            
-                            <?php if ($product['affiliate_link']): ?>
-                            <a href="<?= $product['affiliate_link'] ?>" 
-                               class="btn btn-primary btn-sm buy-btn"
-                               target="_blank" 
-                               rel="nofollow noopener"
-                               data-product-id="<?= $product['id'] ?>"
-                               data-product-name="<?= clean($product['title']) ?>"
-                               onclick="trackPurchaseClick(this)">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5M17 17a2 2 0 11-4 0 2 2 0 014 0zM9 17a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                </svg>
-                                Buy Now
-                            </a>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    
-                    <!-- Social Proof -->
-                    <div class="product-social-proof">
-                        <div class="recent-buyers">
-                            <div class="buyer-avatars">
-                                <div class="avatar"></div>
-                                <div class="avatar"></div>
-                                <div class="avatar"></div>
-                            </div>
-                            <span><?= rand(12, 47) ?> people bought this week</span>
-                        </div>
+                    <div class="modal-specs">
+                        <h4 class="modal-section-title"><?= $t['specifications'] ?></h4>
+                        <ul class="modal-list" id="modalSpecs"></ul>
                     </div>
                 </div>
-            </article>
-            <?php endforeach; ?>
-        </div>
-        
-        <!-- Load More -->
-        <div class="load-more-section">
-            <button class="btn btn-outline btn-lg" id="load-more-products">
-                Load More Products
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-                </svg>
-            </button>
-        </div>
-        
-        <?php else: ?>
-        <!-- Empty State -->
-        <div class="empty-state">
-            <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-            </svg>
-            <h3>No Products Found</h3>
-            <p>Try adjusting your filters or search terms.</p>
-            <button class="btn btn-primary" onclick="clearAllFilters()">Clear Filters</button>
-        </div>
-        <?php endif; ?>
-    </div>
-</section>
-
-<!-- Comparison Panel -->
-<div class="comparison-panel" id="comparison-panel" style="display: none;">
-    <div class="container">
-        <div class="comparison-header">
-            <h3>Compare Products</h3>
-            <button class="close-comparison" onclick="clearComparison()">×</button>
-        </div>
-        <div class="comparison-products" id="comparison-products">
-            <!-- Filled by JavaScript -->
-        </div>
-        <div class="comparison-actions">
-            <button class="btn btn-primary" id="compare-button" disabled>
-                Compare Now
-            </button>
-            <button class="btn btn-outline" onclick="clearComparison()">
-                Clear All
-            </button>
+            </div>
+            
+            <div class="modal-vendors" id="modalVendors"></div>
         </div>
     </div>
 </div>
 
-<!-- Newsletter CTA -->
-<section class="products-newsletter-cta">
+<!-- Zoom Modal -->
+<div class="zoom-modal" id="zoomModal" onclick="closeZoomModal()">
+    <img class="zoom-image" id="zoomImage" alt="Product zoom">
+</div>
+
+<script>
+    // Données produits pour JavaScript
+    const products = <?= json_encode($products) ?>;
+    const allProducts = <?= json_encode($all_products) ?>;
+    const translations = <?= json_encode($t) ?>;
+    const currentLang = '<?= $current_lang ?>';
+    let currentModalIndex = 0;
+
+    // Ouvrir modal produit
+    function openProductModal(index) {
+        currentModalIndex = index;
+        const product = products[index];
+        
+        // Remplir le modal
+        document.getElementById('modalTitle').textContent = product.name[currentLang];
+        document.getElementById('modalBadge').textContent = product.badge;
+        document.getElementById('modalProductTitle').textContent = product.name[currentLang];
+        document.getElementById('modalDescription').textContent = product.description[currentLang];
+        
+        // Rating
+        const modalRating = document.getElementById('modalRating');
+        let starsHtml = '<div class="stars">';
+        for (let i = 1; i <= 5; i++) {
+            starsHtml += i <= product.rating ? '★' : '☆';
+        }
+        starsHtml += `</div><span class="rating-text">${product.rating} (${product.reviews_count.toLocaleString()} ${translations.reviews})</span>`;
+        modalRating.innerHTML = starsHtml;
+        
+        // Prix
+        let priceHtml = '';
+        if (product.price_old) {
+            priceHtml += `<span class="price-old">${product.price_old}</span>`;
+        }
+        priceHtml += product.price;
+        document.getElementById('modalPrice').innerHTML = priceHtml;
+        
+        // Disponibilité
+        const availability = document.getElementById('modalAvailability');
+        availability.textContent = '● ' + translations[product.availability];
+        availability.className = 'modal-availability ' + product.availability;
+        
+        // Image principale
+        document.getElementById('modalMainImage').style.backgroundImage = `url('<?= BASE_URL ?>/${product.images[0]}')`;
+        
+        // Caractéristiques
+        const featuresEl = document.getElementById('modalFeatures');
+        featuresEl.innerHTML = '';
+        product.features[currentLang].forEach(feature => {
+            const li = document.createElement('li');
+            li.textContent = feature;
+            featuresEl.appendChild(li);
+        });
+        
+        // Spécifications
+        const specsEl = document.getElementById('modalSpecs');
+        specsEl.innerHTML = '';
+        product.specs[currentLang].forEach(spec => {
+            const li = document.createElement('li');
+            li.textContent = spec;
+            specsEl.appendChild(li);
+        });
+        
+        // Boutons vendors
+        const vendorsEl = document.getElementById('modalVendors');
+        vendorsEl.innerHTML = `
+            <a href="${product.vendors.amazon}" class="modal-vendor-btn" target="_blank" rel="nofollow">
+                Amazon
+            </a>
+            <a href="${product.vendors.fnac}" class="modal-vendor-btn" target="_blank" rel="nofollow">
+                Fnac
+            </a>
+            <a href="${product.vendors.bestbuy}" class="modal-vendor-btn" target="_blank" rel="nofollow">
+                Best Buy
+            </a>
+        `;
+        
+        // Afficher le modal
+        document.getElementById('productModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Fermer modal produit
+    function closeProductModal() {
+        document.getElementById('productModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Zoom modal
+    function openZoomModal() {
+        const product = products[currentModalIndex];
+        const zoomImage = document.getElementById('zoomImage');
+        zoomImage.src = '<?= BASE_URL ?>/' + product.images[0];
+        document.getElementById('zoomModal').classList.add('active');
+    }
+
+    function closeZoomModal() {
+        document.getElementById('zoomModal').classList.remove('active');
+    }
+
+    // Filtres par catégorie
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filterValue = this.dataset.filter;
+            const productCards = document.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                if (filterValue === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const category = card.dataset.category;
+                    card.style.display = category === filterValue ? 'block' : 'none';
+                }
+            });
+        });
+    });
+
+    // Fermer modal avec Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeProductModal();
+            closeZoomModal();
+        }
+    });
+
+    // Fermer modal en cliquant à l'extérieur
+    document.getElementById('productModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeProductModal();
+        }
+    });
+
+    // Animation au scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.product-card').forEach(card => {
+        observer.observe(card);
+    });
+</script>
+
+<?php
+// Stocker le contenu pour le template
+$content = ob_get_clean();
+
+// Rendre la page avec le layout principal
+renderPage('products', array_merge($data, ['content' => $content]));
+?><?php
+/**
+ * TechEssentials Pro V2.0 - Products Catalog
+ * Architecture MVC - Page Products
+ */
+
+// Configuration et includes
+require_once '../../config.php';
+require_once '../../functions.php';
+
+// Gestion pagination
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$products_per_page = 20;
+$offset = ($page - 1) * $products_per_page;
+
+// Données des 20 produits avec vrais noms de fichiers
+$all_products = [
+    [
+        'id' => 'anker-737-charger',
+        'images' => [
+            'assets/images/products/anker-737.jpg'
+        ],
+        'badge' => 'BESTSELLER',
+        'name' => [
+            'en' => 'Anker 737 PowerCore 24K Power Bank',
+            'fr' => 'Batterie Externe Anker 737 PowerCore 24K'
+        ],
+        'description' => [
+            'en' => 'High-capacity 24,000mAh power bank with 140W output for laptops, tablets and phones. Fast charging with digital display.',
+            'fr' => 'Batterie externe haute capacité 24 000mAh avec sortie 140W pour portables, tablettes et téléphones. Charge rapide avec écran numérique.'
+        ],
+        'features' => [
+            'en' => ['24,000mAh capacity', '140W total output', 'Digital display', 'Smart temperature control'],
+            'fr' => ['Capacité 24 000mAh', 'Sortie totale 140W', 'Écran numérique', 'Contrôle température intelligent']
+        ],
+        'specs' => [
+            'en' => ['Capacity: 24,000mAh / 86.4Wh', 'USB-C: 140W max', 'USB-A: 18W max', 'Dimensions: 156 × 55 × 50mm'],
+            'fr' => ['Capacité: 24 000mAh / 86.4Wh', 'USB-C: 140W max', 'USB-A: 18W max', 'Dimensions: 156 × 55 × 50mm']
+        ],
+        'price' => '€149.99',
+        'price_old' => '€199.99',
+        'rating' => 4.8,
+        'reviews_count' => 2847,
+        'availability' => 'in_stock',
+        'category' => 'accessories',
+        'vendors' => [
+            'amazon' => 'https://amazon.fr/anker-737',
+            'fnac' => 'https://fnac.com/anker-737',
+            'bestbuy' => 'https://bestbuy.com/anker-737'
+        ]
+    ],
+    [
+        'id' => 'anker-dock-hub',
+        'images' => [
+            'assets/images/products/anker-dock.jpg'
+        ],
+        'badge' => 'PREMIUM',
+        'name' => [
+            'en' => 'Anker PowerExpand Elite 13-in-1 Dock',
+            'fr' => 'Station Anker PowerExpand Elite 13-en-1'
+        ],
+        'description' => [
+            'en' => 'Ultimate 13-in-1 docking station with dual 4K displays, high-speed charging, and comprehensive connectivity.',
+            'fr' => 'Station d\'accueil ultime 13-en-1 avec double écrans 4K, charge haute vitesse et connectivité complète.'
+        ],
+        'features' => [
+            'en' => ['Dual 4K display support', '85W laptop charging', '13 ports total', 'Gigabit Ethernet'],
+            'fr' => ['Support double 4K', 'Charge portable 85W', '13 ports au total', 'Ethernet Gigabit']
+        ],
+        'specs' => [
+            'en' => ['HDMI: Dual 4K@60Hz', 'USB-C PD: 85W', 'USB 3.0: 4 ports', 'Ethernet: 1Gbps'],
+            'fr' => ['HDMI: Double 4K@60Hz', 'USB-C PD: 85W', 'USB 3.0: 4 ports', 'Ethernet: 1Gbps']
+        ],
+        'price' => '€199.99',
+        'price_old' => '€249.99',
+        'rating' => 4.7,
+        'reviews_count' => 1923,
+        'availability' => 'in_stock',
+        'category' => 'accessories',
+        'vendors' => [
+            'amazon' => 'https://amazon.fr/anker-dock',
+            'fnac' => 'https://fnac.com/anker-dock',
+            'bestbuy' => 'https://bestbuy.com/anker-dock'
+        ]
+    ],
+    [
+        'id' => 'asus-proart-monitor',
+        'images' => [
+            'assets/images/products/asus-proart-pa248QV.jpg'
+        ],
+        'badge' => 'PRO',
+        'name' => [
+            'en' => 'ASUS ProArt PA248QV 24" Professional Monitor',
+            'fr' => 'Moniteur Professionnel ASUS ProArt PA248QV 24"'
+        ],
+        'description' => [
+            'en' => 'Professional 24" monitor with 100% sRGB color space, factory calibration, and ergonomic design for creators.',
+            'fr' => 'Moniteur professionnel 24" avec espace colorimétrique 100% sRGB, calibrage usine et design ergonomique pour créateurs.'
+        ],
+        'features' => [
+            'en' => ['100% sRGB coverage', 'Factory pre-calibrated', 'USB-C connectivity', 'Height adjustable stand'],
+            'fr' => ['Couverture 100% sRGB', 'Pré-calibré en usine', 'Connectivité USB-C', 'Support réglable hauteur']
+        ],
+        'specs' => [
+            'en' => ['Size: 24.1" (61.2cm)', 'Resolution: 1920 x 1200 WUXGA', 'Refresh rate: 75Hz', 'Response time: 5ms'],
+            'fr' => ['Taille: 24.1" (61.2cm)', 'Résolution: 1920 x 1200 WUXGA', 'Taux rafraîchissement: 75Hz', 'Temps réponse: 5ms']
+        ],
+        'price' => '€349.99',
+        'price_old' => '€449.99',
+        'rating' => 4.7,
+        'reviews_count' => 1834,
+        'availability' => 'in_stock',
+        'category' => 'displays',
+        'vendors' => [
+            'amazon' => 'https://amazon.fr/asus-proart',
+            'fnac' => 'https://fnac.com/asus-proart',
+            'bestbuy' => 'https://bestbuy.com/asus-proart'
+        ]
+    ],
+    [
+        'id' => 'dell-ultrasharp-u2720q',
+        'images' => [
+            'assets/images/products/dell-ultrasharp-u2720q.jpg'
+        ],
+        'badge' => 'PROFESSIONAL',
+        'name' => [
+            'en' => 'Dell UltraSharp U2720Q 27" 4K Monitor',
+            'fr' => 'Moniteur 4K Dell UltraSharp U2720Q 27"'
+        ],
+        'description' => [
+            'en' => 'Professional 27" 4K monitor with 99% sRGB, USB-C connectivity with 90W power delivery, and premium build quality.',
+            'fr' => 'Moniteur 4K professionnel 27" avec 99% sRGB, connectivité USB-C avec power delivery 90W et qualité construction premium.'
+        ],
+        'features' => [
+            'en' => ['27" 4K IPS display', '99% sRGB coverage', 'USB-C with 90W PD', 'Height adjustable stand'],
+            'fr' => ['Écran IPS 4K 27"', 'Couverture 99% sRGB', 'USB-C avec PD 90W', 'Support réglable hauteur']
+        ],
+        'specs' => [
+            'en' => ['Resolution: 3840x2160 4K', 'Refresh rate: 60Hz', 'Response time: 5ms', 'Brightness: 350 cd/m²'],
+            'fr' => ['Résolution: 3840x2160 4K', 'Taux rafraîchissement: 60Hz', 'Temps réponse: 5ms', 'Luminosité: 350 cd/m²']
+        ],
+        'price' => '€649.99',
+        'price_old' => '€749.99',
+        'rating' => 4.8,
+        'reviews_count' => 1276,
+        'availability' => 'in_stock',
+        'category' => 'displays',
+        'vendors' => [
+            'amazon' => 'https://amazon.fr/dell-u2720q',
+            'fnac' => 'https://fnac.com/dell-monitor',
+            'bestbuy' => 'https://bestbuy.com/dell-u2720q'
+        ]
+    ],
+    [
+        'id' => 'herman-miller-sayl',
+        'images' => [
+            'assets/images/products/herman-miller-sayl.jpg'
+        ],
+        'badge' => 'ERGONOMIC',
+        'name' => [
+            'en' => 'Herman Miller Sayl Ergonomic Office Chair',
+            'fr' => 'Chaise Bureau Ergonomique Herman Miller Sayl'
+        ],
+        'description' => [
+            'en' => 'Innovative ergonomic chair with suspension back design, modern aesthetics, and exceptional support for all-day comfort.',
+            'fr' => 'Chaise ergonomique innovante avec design dossier suspension, esthétique moderne et support exceptionnel pour confort toute la journée.'
+        ],
+        'features' => [
+            'en' => ['Suspension back design', 'PostureFit sacral support', '12-year warranty', 'Adjustable arms'],
+            'fr' => ['Design dossier suspension', 'Support sacré PostureFit', 'Garantie 12 ans', 'Bras ajustables']
+        ],
+        'specs' => [
+            'en' => ['Weight capacity: 350 lbs', 'Seat height: 15.75"-20.5"', 'Width: 27"', 'Depth: 27"'],
+            'fr' => ['Capacité poids: 159kg', 'Hauteur siège: 40-52cm', 'Largeur: 68cm', 'Profondeur: 68cm']
+        ],
+        'price' => '€695.00',
+        'price_old' => '€895.00',
+        'rating' => 4.7,
+        'reviews_count' => 892,
+        'availability' => 'in_stock',
+        'category' => 'accessories',
+        'vendors' => [
+            'amazon' => 'https://amazon.fr/herman-miller-sayl',
+            'fnac' => 'https://fnac.com/herman-miller-sayl',
+            'bestbuy' => 'https://bestbuy.com/herman-miller-sayl'
+        ]
+    ],
+    // Ajouter les 15 autres produits...
+];
+
+// Pagination
+$total_products = count($all_products);
+$total_pages = ceil($total_products / $products_per_page);
+$products = array_slice($all_products, $offset, $products_per_page);
+
+// Traductions
+$page_translations = [
+    'en' => [
+        'page_title' => 'Products Catalog',
+        'page_subtitle' => 'Expert-curated tech products for modern remote workers',
+        'filter_all' => 'All Products',
+        'filter_accessories' => 'Accessories',
+        'filter_audio' => 'Audio',
+        'filter_displays' => 'Displays',
+        'filter_input' => 'Input Devices',
+        'view_details' => 'View Details',
+        'read_review' => 'Read Review',
+        'in_stock' => 'In Stock',
+        'limited_stock' => 'Limited Stock',
+        'out_of_stock' => 'Out of Stock',
+        'reviews' => 'reviews',
+        'specifications' => 'Specifications',
+        'features' => 'Key Features',
+        'close' => 'Close',
+        'showing' => 'Showing',
+        'products' => 'products',
+        'of' => 'of'
+    ],
+    'fr' => [
+        'page_title' => 'Catalogue Produits',
+        'page_subtitle' => 'Produits tech sélectionnés par experts pour télétravailleurs modernes',
+        'filter_all' => 'Tous Produits',
+        'filter_accessories' => 'Accessoires',
+        'filter_audio' => 'Audio',
+        'filter_displays' => 'Écrans',
+        'filter_input' => 'Périphériques',
+        'view_details' => 'Voir Détails',
+        'read_review' => 'Lire Test',
+        'in_stock' => 'En Stock',
+        'limited_stock' => 'Stock Limité',
+        'out_of_stock' => 'Rupture Stock',
+        'reviews' => 'avis',
+        'specifications' => 'Spécifications',
+        'features' => 'Caractéristiques',
+        'close' => 'Fermer',
+        'showing' => 'Affichage',
+        'products' => 'produits',
+        'of' => 'sur'
+    ]
+];
+
+$t = $page_translations[getCurrentLanguage()];
+$meta_data = [
+    'title' => $t['page_title'] . ' - TechEssentials Pro',
+    'description' => 'Browse our curated collection of tech products for remote workers. Expert reviews, detailed specs, and best prices.',
+    'keywords' => 'tech products, remote work accessories, productivity tools'
+];
+?>
+
+<?php include '../../layouts/header.php'; ?>
+
+<style>
+    /* Page Header */
+    .page-header {
+        text-align: center;
+        padding: 3rem 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+    
+    .page-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    /* Controls */
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .filters {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.9rem;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    /* Products Grid */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 200px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        position: relative;
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #ff6b6b;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: bold;
+    }
+    
+    .product-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+    
+    .product-description {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stars {
+        color: #ffc107;
+        font-size: 0.9rem;
+    }
+    
+    .rating-text {
+        font-size: 0.8rem;
+        color: #666;
+    }
+    
+    .product-price {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+    
+    .price-old {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 1rem;
+        margin-right: 0.5rem;
+    }
+    
+    .availability {
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+    
+    .availability.in_stock { color: #28a745; }
+    .availability.limited_stock { color: #ffc107; }
+    .availability.out_of_stock { color: #dc3545; }
+    
+    .product-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+        text-decoration: none;
+        text-align: center;
+        font-size: 0.85rem;
+    }
+    
+    .btn-primary {
+        background: #667eea;
+        color: white;
+        flex: 1;
+    }
+    
+    .btn-primary:hover {
+        background: #5a6fd8;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: #667eea;
+        border: 1px solid #667eea;
+        flex: 1;
+    }
+    
+    .btn-outline:hover {
+        background: #667eea;
+        color: white;
+    }
+    
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin: 3rem 0;
+    }
+    
+    .pagination a, .pagination span {
+        padding: 0.5rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s;
+    }
+    
+    .pagination a:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .pagination .current {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    /* Modal Popup */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        overflow-y: auto;
+    }
+    
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        max-width: 900px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+        from { opacity: 0; transform: translateY(50px) scale(0.9); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #999;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s;
+    }
+    
+    .modal-close:hover {
+        background: #f8f9fa;
+        color: #333;
+    }
+    
+    .modal-body {
+        padding: 2rem;
+    }
+    
+    .modal-product-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .modal-main-image {
+        width: 100%;
+        height: 300px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        cursor: zoom-in;
+        transition: transform 0.3s;
+    }
+    
+    .modal-main-image:hover {
+        transform: scale(1.05);
+    }
+    
+    .modal-info-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .modal-badge {
+        background: #ff6b6b;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        align-self: flex-start;
+    }
+    
+    .modal-product-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .modal-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .modal-price {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+    
+    .modal-description {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .modal-section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+    
+    .modal-list {
+        list-style: none;
+    }
+    
+    .modal-list li {
+        padding: 0.3rem 0;
+        padding-left: 20px;
+        position: relative;
+        color: #666;
+    }
+    
+    .modal-list li::before {
+        content: '✓';
+        color: #28a745;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+    }
+    
+    .modal-vendors {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .modal-vendor-btn {
+        flex: 1;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        background: white;
+        color: #333;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 500;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    
+    .modal-vendor-btn:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    /* Zoom Modal */
+    .zoom-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 20000;
+        cursor: zoom-out;
+    }
+    
+    .zoom-modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .zoom-image {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filters {
+            justify-content: center;
+        }
+        
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .modal-content {
+            margin: 1rem;
+            max-height: 95vh;
+        }
+        
+        .modal-product-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .modal-vendors {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<section class="page-header">
     <div class="container">
-        <div class="cta-content">
-            <h2>🎯 Get Exclusive Product Deals</h2>
-            <p>Be the first to know about new products, price drops, and exclusive discounts.</p>
-            <form class="inline-newsletter-form" data-action="newsletter/subscribe">
-                <input type="email" name="email" placeholder="Enter your email" required>
-                <input type="hidden" name="source" value="products_page">
-                <input type="hidden" name="language" value="<?= $current_lang ?>">
-                <button type="submit" class="btn btn-primary">Get Deals</button>
-            </form>
-        </div>
+        <h1><?= $t['page_title'] ?></h1>
+        <p><?= $t['page_subtitle'] ?></p>
     </div>
 </section>
 
-<!-- Products Schema.org -->
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "Tech Products for Remote Workers",
-    "description": "Best curated tech products for remote work productivity",
-    "url": "<?= url('products') ?>",
-    "mainEntity": {
-        "@type": "ItemList",
-        "numberOfItems": <?= count($products) ?>,
-        "itemListElement": [
-            <?php foreach ($products as $index => $product): ?>
-            {
-                "@type": "ListItem",
-                "position": <?= $index + 1 ?>,
-                "item": {
-                    "@type": "Product",
-                    "name": "<?= clean($product['title']) ?>",
-                    "image": "<?= $product['featured_image'] ?>",
-                    "description": "<?= clean($product['excerpt']) ?>",
-                    "url": "<?= url('products/' . $product['slug']) ?>",
-                    "offers": {
-                        "@type": "Offer",
-                        "price": "<?= $product['discount_price'] ?? $product['price'] ?>",
-                        "priceCurrency": "USD",
-                        "availability": "InStock"
-                    },
-                    "aggregateRating": {
-                        "@type": "AggregateRating",
-                        "ratingValue": <?= $product['rating'] ?>,
-                        "bestRating": 5,
-                        "reviewCount": <?= rand(20, 200) ?>
+<div class="container">
+    <!-- Controls -->
+    <div class="controls">
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all"><?= $t['filter_all'] ?></button>
+            <button class="filter-btn" data-filter="accessories"><?= $t['filter_accessories'] ?></button>
+            <button class="filter-btn" data-filter="audio"><?= $t['filter_audio'] ?></button>
+            <button class="filter-btn" data-filter="displays"><?= $t['filter_displays'] ?></button>
+            <button class="filter-btn" data-filter="input"><?= $t['filter_input'] ?></button>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid" id="productsGrid">
+        <?php foreach ($products as $index => $product): ?>
+        <div class="product-card" data-product-index="<?= $index ?>" data-category="<?= $product['category'] ?>">
+            <div class="product-image" style="background-image: url('<?= $product['images'][0] ?>');">
+                <div class="product-badge"><?= $product['badge'] ?></div>
+            </div>
+            
+            <h3 class="product-title"><?= $product['name'][getCurrentLanguage()] ?></h3>
+            <p class="product-description"><?= $product['description'][getCurrentLanguage()] ?></p>
+            
+            <div class="product-rating">
+                <div class="stars">
+                    <?php 
+                    $rating = $product['rating'];
+                    for ($i = 1; $i <= 5; $i++) {
+                        echo $i <= $rating ? '★' : '☆';
                     }
-                }
-            }<?= $index < count($products) - 1 ? ',' : '' ?>
-            <?php endforeach; ?>
-        ]
-    }
-}
-</script>
-
-<style>
-.products-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: var(--space-20) 0;
-    text-align: center;
-}
-
-.hero-content h1 {
-    font-size: var(--font-size-4xl);
-    margin-bottom: var(--space-4);
-}
-
-.trust-indicators {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-8);
-    margin-top: var(--space-8);
-}
-
-.trust-item {
-    text-align: center;
-}
-
-.trust-item strong {
-    display: block;
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--space-1);
-}
-
-.products-filters {
-    background: var(--gray-50);
-    padding: var(--space-12) 0;
-}
-
-.filters-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-8);
-}
-
-.filters-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-6);
-    margin-bottom: var(--space-8);
-}
-
-.filter-group h3 {
-    margin-bottom: var(--space-4);
-    color: var(--gray-800);
-}
-
-.filter-options,
-.price-filters,
-.rating-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-}
-
-.filter-btn {
-    padding: var(--space-2) var(--space-4);
-    border: 1px solid var(--gray-300);
-    background: white;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: var(--transition);
-    font-size: var(--font-size-sm);
-}
-
-.filter-btn.active,
-.filter-btn:hover {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-.product-search {
-    margin-top: var(--space-8);
-}
-
-.search-box {
-    display: flex;
-    max-width: 600px;
-    margin: 0 auto;
-    border-radius: var(--border-radius-lg);
-    overflow: hidden;
-    box-shadow: var(--box-shadow);
-}
-
-.search-box input {
-    flex: 1;
-    padding: var(--space-4) var(--space-6);
-    border: none;
-    font-size: var(--font-size-lg);
-}
-
-.search-btn {
-    padding: var(--space-4) var(--space-6);
-    background: var(--primary);
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.products-grid-section {
-    padding: var(--space-16) 0;
-}
-
-.featured-products-banner {
-    text-align: center;
-    margin-bottom: var(--space-12);
-    padding: var(--space-8);
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-    border-radius: var(--border-radius-lg);
-}
-
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: var(--space-8);
-}
-
-.product-card {
-    background: white;
-    border-radius: var(--border-radius-lg);
-    overflow: hidden;
-    box-shadow: var(--box-shadow);
-    transition: var(--transition-slow);
-    position: relative;
-}
-
-.product-card.featured {
-    border: 2px solid var(--accent);
-}
-
-.product-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--box-shadow-lg);
-}
-
-.product-image {
-    position: relative;
-    aspect-ratio: 4/3;
-    overflow: hidden;
-}
-
-.product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: var(--transition-slow);
-}
-
-.product-card:hover .product-image img {
-    transform: scale(1.05);
-}
-
-.product-badges {
-    position: absolute;
-    top: var(--space-4);
-    left: var(--space-4);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-}
-
-.badge {
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--border-radius);
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    color: white;
-}
-
-.badge-featured { background: var(--accent); }
-.badge-sale { background: var(--error); }
-.badge-bestseller { background: var(--success); }
-
-.product-actions-overlay {
-    position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    opacity: 0;
-    transition: var(--transition);
-}
-
-.product-card:hover .product-actions-overlay {
-    opacity: 1;
-}
-
-.action-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: white;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: var(--box-shadow);
-    transition: var(--transition);
-}
-
-.action-btn:hover {
-    background: var(--primary);
-    color: white;
-}
-
-.product-content {
-    padding: var(--space-6);
-}
-
-.product-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-4);
-}
-
-.product-category {
-    background: var(--primary);
-    color: white;
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--border-radius);
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-}
-
-.product-rating {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-}
-
-.stars {
-    display: flex;
-    gap: 1px;
-}
-
-.star {
-    color: var(--gray-300);
-    font-size: var(--font-size-sm);
-}
-
-.star.filled {
-    color: #fbbf24;
-}
-
-.rating-text {
-    font-size: var(--font-size-sm);
-    color: var(--gray-600);
-}
-
-.product-title {
-    margin-bottom: var(--space-3);
-}
-
-.product-title a {
-    color: var(--gray-900);
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.product-title a:hover {
-    color: var(--primary);
-}
-
-.product-excerpt {
-    color: var(--gray-600);
-    margin-bottom: var(--space-4);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.product-features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 var(--space-6) 0;
-}
-
-.product-features li {
-    color: var(--success);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--space-1);
-}
-
-.product-pricing {
-    border-top: 1px solid var(--gray-100);
-    padding-top: var(--space-4);
-}
-
-.price-section {
-    margin-bottom: var(--space-4);
-}
-
-.original-price {
-    text-decoration: line-through;
-    color: var(--gray-500);
-    margin-right: var(--space-3);
-}
-
-.current-price {
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    color: var(--success);
-}
-
-.savings {
-    background: var(--success);
-    color: white;
-    padding: var(--space-1) var(--space-2);
-    border-radius: var(--border-radius);
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    margin-left: var(--space-3);
-}
-
-.product-cta-buttons {
-    display: flex;
-    gap: var(--space-3);
-}
-
-.buy-btn {
-    background: var(--success) !important;
-    border-color: var(--success) !important;
-    flex: 1;
-    justify-content: center;
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-}
-
-.buy-btn:hover {
-    background: #059669 !important;
-    transform: scale(1.02);
-}
-
-.product-social-proof {
-    margin-top: var(--space-4);
-    padding-top: var(--space-4);
-    border-top: 1px solid var(--gray-100);
-}
-
-.recent-buyers {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    font-size: var(--font-size-sm);
-    color: var(--gray-600);
-}
-
-.buyer-avatars {
-    display: flex;
-    margin-right: var(--space-2);
-}
-
-.avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    margin-left: -8px;
-    border: 2px solid white;
-}
-
-.avatar:first-child {
-    margin-left: 0;
-}
-
-.comparison-panel {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
-    z-index: 1000;
-    padding: var(--space-6) 0;
-}
-
-.comparison-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-4);
-}
-
-.comparison-products {
-    display: flex;
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
-}
-
-.comparison-actions {
-    display: flex;
-    gap: var(--space-4);
-    justify-content: center;
-}
-
-.products-newsletter-cta {
-    background: var(--gray-900);
-    color: white;
-    padding: var(--space-16) 0;
-    text-align: center;
-}
-
-.inline-newsletter-form {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-4);
-    margin-top: var(--space-6);
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.inline-newsletter-form input[type="email"] {
-    flex: 1;
-    padding: var(--space-3) var(--space-4);
-    border: 1px solid var(--gray-600);
-    border-radius: var(--border-radius);
-    background: var(--gray-800);
-    color: white;
-}
-
-@media (max-width: 768px) {
-    .products-grid {
-        grid-template-columns: 1fr;
-    }
+                    ?>
+                </div>
+                <span class="rating-text"><?= $product['rating'] ?> (<?= number_format($product['reviews_count']) ?> <?= $t['reviews'] ?>)</span>
+            </div>
+            
+            <div class="product-price">
+                <?php if (isset($product['price_old'])): ?>
+                <span class="price-old"><?= $product['price_old'] ?></span>
+                <?php endif; ?>
+                <?= $product['price'] ?>
+            </div>
+            
+            <div class="availability <?= $product['availability'] ?>">
+                ● <?= $t[$product['availability']] ?>
+            </div>
+            
+            <div class="product-actions">
+                <button class="btn btn-primary" onclick="openProductModal(<?= $index ?>)">
+                    <?= $t['view_details'] ?>
+                </button>
+                <a href="<?= createUrl('review-detail', ['id' => $product['id']]) ?>" class="btn btn-outline">
+                    <?= $t['read_review'] ?>
+                </a>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+
+    <!-- Pagination -->
+    <?php if ($total_pages > 1): ?>
+    <div class="pagination">
+        <?php if ($page > 1): ?>
+        <a href="<?= createUrl('products', ['page' => $page - 1]) ?>">‹ Previous</a>
+        <?php endif; ?>
+        
+        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <?php if ($i == $page): ?>
+            <span class="current"><?= $i ?></span>
+            <?php else: ?>
+            <a href="<?= createUrl('products', ['page' => $i]) ?>"><?= $i ?></a>
+            <?php endif; ?>
+        <?php endfor; ?>
+        
+        <?php if ($page < $total_pages): ?>
+        <a href="<?= createUrl('products', ['page' => $page + 1]) ?>">Next ›</a>
+        <?php endif; ?>
+    </div>
     
-    .filters-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .trust-indicators {
-        flex-direction: column;
-        gap: var(--space-4);
-    }
-    
-    .inline-newsletter-form {
-        flex-direction: column;
-    }
-}
-</style>
+    <div style="text-align: center; color: #666; margin-bottom: 2rem;">
+        <?= $t['showing'] ?> <?= $offset + 1 ?>-<?= min($offset + $products_per_page, $total_products) ?> <?= $t['of'] ?> <?= $total_products ?> <?= $t['products'] ?>
+    </div>
+    <?php endif; ?>
+</div>
+
+<!-- Product Modal -->
+<div class="modal" id="productModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <button class="modal-close" onclick="closeProductModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-product-grid">
+                <div class="modal-image-section">
+                    <div class="modal-main-image" id="modalMainImage" onclick="openZoomModal()"></div>
+                </div>
+                
+                <div class="modal-info-section">
+                    <div class="modal-badge" id="modalBadge"></div>
+                    <h3 class="modal-product-title" id="modalProductTitle"></h3>
+                    
+                    <div class="modal-rating" id="modalRating"></div>
+                    
+                    <div class="modal-price" id="modalPrice"></div>
+                    
+                    <div class="modal-availability" id="modalAvailability"></div>
+                    
+                    <p class="modal-description" id="modalDescription"></p>
+                    
+                    <div class="modal-features">
+                        <h4 class="modal-section-title"><?= $t['features'] ?></h4>
+                        <ul class="modal-list" id="modalFeatures"></ul>
+                    </div>
+                    
+                    <div class="modal-specs">
+                        <h4 class="modal-section-title"><?= $t['specifications'] ?></h4>
+                        <ul class="modal-list" id="modalSpecs"></ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-vendors" id="modalVendors"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Zoom Modal -->
+<div class="zoom-modal" id="zoomModal" onclick="closeZoomModal()">
+    <img class="zoom-image" id="zoomImage" alt="Product zoom">
+</div>
 
 <script>
-// Tracking des clics d'achat - CRITIQUE pour mesurer les conversions
-function trackPurchaseClick(button) {
-    const productId = button.dataset.productId;
-    const productName = button.dataset.productName;
-    
-    // Google Analytics / GTM
-    if (typeof gtag !== 'undefined') {
-        gtag('event', 'purchase_click', {
-            'event_category': 'ecommerce',
-            'event_label': productName,
-            'product_id': productId,
-            'currency': 'USD'
+    // Données produits pour JavaScript
+    const products = <?= json_encode($products) ?>;
+    const translations = <?= json_encode($t) ?>;
+    const currentLang = '<?= getCurrentLanguage() ?>';
+    let currentModalIndex = 0;
+
+    // Ouvrir modal produit
+    function openProductModal(index) {
+        currentModalIndex = index;
+        const product = products[index];
+        
+        // Remplir le modal
+        document.getElementById('modalTitle').textContent = product.name[currentLang];
+        document.getElementById('modalBadge').textContent = product.badge;
+        document.getElementById('modalProductTitle').textContent = product.name[currentLang];
+        document.getElementById('modalDescription').textContent = product.description[currentLang];
+        
+        // Rating
+        const modalRating = document.getElementById('modalRating');
+        let starsHtml = '<div class="stars">';
+        for (let i = 1; i <= 5; i++) {
+            starsHtml += i <= product.rating ? '★' : '☆';
+        }
+        starsHtml += `</div><span class="rating-text">${product.rating} (${product.reviews_count.toLocaleString()} ${translations.reviews})</span>`;
+        modalRating.innerHTML = starsHtml;
+        
+        // Prix
+        let priceHtml = '';
+        if (product.price_old) {
+            priceHtml += `<span class="price-old">${product.price_old}</span>`;
+        }
+        priceHtml += product.price;
+        document.getElementById('modalPrice').innerHTML = priceHtml;
+        
+        // Disponibilité
+        const availability = document.getElementById('modalAvailability');
+        availability.textContent = '● ' + translations[product.availability];
+        availability.className = 'modal-availability ' + product.availability;
+        
+        // Image principale
+        document.getElementById('modalMainImage').style.backgroundImage = `url('${product.images[0]}')`;
+        
+        // Caractéristiques
+        const featuresEl = document.getElementById('modalFeatures');
+        featuresEl.innerHTML = '';
+        product.features[currentLang].forEach(feature => {
+            const li = document.createElement('li');
+            li.textContent = feature;
+            featuresEl.appendChild(li);
         });
-    }
-    
-    // Tracking interne via API
-    fetch('/api/products/track-click', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            product_id: productId,
-            product_name: productName,
-            action: 'purchase_click',
-            timestamp: new Date().toISOString()
-        })
-    }).catch(console.error);
-    
-    console.log('Purchase click tracked:', productName);
-}
-
-// Système de comparaison
-let comparisonProducts = [];
-
-function addToComparison(productId) {
-    if (comparisonProducts.length >= 3) {
-        alert('You can compare up to 3 products at once.');
-        return;
-    }
-    
-    if (!comparisonProducts.includes(productId)) {
-        comparisonProducts.push(productId);
-        updateComparisonPanel();
-    }
-}
-
-function removeFromComparison(productId) {
-    comparisonProducts = comparisonProducts.filter(id => id !== productId);
-    updateComparisonPanel();
-}
-
-function updateComparisonPanel() {
-    const panel = document.getElementById('comparison-panel');
-    const compareButton = document.getElementById('compare-button');
-    
-    if (comparisonProducts.length > 0) {
-        panel.style.display = 'block';
-        compareButton.disabled = comparisonProducts.length < 2;
-        compareButton.textContent = `Compare ${comparisonProducts.length} Products`;
-    } else {
-        panel.style.display = 'none';
-    }
-}
-
-function clearComparison() {
-    comparisonProducts = [];
-    updateComparisonPanel();
-    
-    // Reset visual states
-    document.querySelectorAll('.compare-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-}
-
-// Event listeners pour la comparaison
-document.addEventListener('click', (e) => {
-    if (e.target.closest('.compare-btn')) {
-        const button = e.target.closest('.compare-btn');
-        const productId = button.dataset.productId;
         
-        if (button.classList.contains('active')) {
-            button.classList.remove('active');
-            removeFromComparison(productId);
-        } else {
-            button.classList.add('active');
-            addToComparison(productId);
-        }
-    }
-});
-
-// Filtres de produits
-document.querySelectorAll('.filter-btn').forEach(button => {
-    button.addEventListener('click', () => {
-        // Logic de filtrage - à implémenter selon les besoins
-        console.log('Filter:', button.dataset);
-    });
-});
-
-// Search fonctionnality
-document.getElementById('product-search')?.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase();
-    const products = document.querySelectorAll('.product-card');
-    
-    products.forEach(product => {
-        const title = product.querySelector('.product-title').textContent.toLowerCase();
-        const excerpt = product.querySelector('.product-excerpt').textContent.toLowerCase();
+        // Spécifications
+        const specsEl = document.getElementById('modalSpecs');
+        specsEl.innerHTML = '';
+        product.specs[currentLang].forEach(spec => {
+            const li = document.createElement('li');
+            li.textContent = spec;
+            specsEl.appendChild(li);
+        });
         
-        if (title.includes(query) || excerpt.includes(query)) {
-            product.style.display = 'block';
-        } else {
-            product.style.display = 'none';
+        // Boutons vendors
+        const vendorsEl = document.getElementById('modalVendors');
+        vendorsEl.innerHTML = `
+            <a href="${product.vendors.amazon}" class="modal-vendor-btn" target="_blank" rel="nofollow">
+                Amazon
+            </a>
+            <a href="${product.vendors.fnac}" class="modal-vendor-btn" target="_blank" rel="nofollow">
+                Fnac
+            </a>
+            <a href="${product.vendors.bestbuy}" class="modal-vendor-btn" target="_blank" rel="nofollow">
+                Best Buy
+            </a>
+        `;
+        
+        // Afficher le modal
+        document.getElementById('productModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Fermer modal produit
+    function closeProductModal() {
+        document.getElementById('productModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Zoom modal
+    function openZoomModal() {
+        const product = products[currentModalIndex];
+        const zoomImage = document.getElementById('zoomImage');
+        zoomImage.src = product.images[0];
+        document.getElementById('zoomModal').classList.add('active');
+    }
+
+    function closeZoomModal() {
+        document.getElementById('zoomModal').classList.remove('active');
+    }
+
+    // Filtres par catégorie
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filterValue = this.dataset.filter;
+            const productCards = document.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                if (filterValue === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const category = card.dataset.category;
+                    card.style.display = category === filterValue ? 'block' : 'none';
+                }
+            });
+        });
+    });
+
+    // Fermer modal avec Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeProductModal();
+            closeZoomModal();
         }
     });
-});
+
+    // Fermer modal en cliquant à l'extérieur
+    document.getElementById('productModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeProductModal();
+        }
+    });
+
+    // Animation au scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.product-card').forEach(card => {
+        observer.observe(card);
+    });
 </script>
-</body>
-</html>
+
+<?php include '../../layouts/footer.php'; ?>

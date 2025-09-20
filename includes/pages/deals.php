@@ -191,7 +191,7 @@ if (!defined('TECHESSENTIALS_PRO')) {
                         <div class="stars" data-rating="<?= $deal['rating'] ?>">
                             <?php for ($i = 1; $i <= 5; $i++): ?>
                             <span class="star <?= $i <= $deal['rating'] ? 'filled' : '' ?>">★</span>
-        <?php foreach; ?>
+                            <?php endfor; ?>
                         </div>
                         <span class="rating-text"><?= $deal['rating'] ?>/5</span>
                     </div>
@@ -221,7 +221,7 @@ if (!defined('TECHESSENTIALS_PRO')) {
                     </div>
                 </div>
             </div>
-        <?php endforeach; ?>
+        <?php endforeach ?>
         </div>
         
         <?php else: ?>

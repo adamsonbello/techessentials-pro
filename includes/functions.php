@@ -1,677 +1,449 @@
 <?php
 /**
- * TechEssentials Pro - Fonctions Utilitaires
- * @author Adams (Fred) - CTO  
- * @version 2.0
- * @date 2025-09-16
+ * TechEssentials Pro - Fonctions Produits
+ * À ajouter dans includes/functions.php
  */
 
-// Empêcher l'accès direct
-if (!defined('TECHESSENTIALS_PRO')) {
-    die('Direct access not allowed');
-}
-
 // ===============================
-// TEMPLATE ENGINE SIMPLE
+// FONCTIONS PRODUITS - CORE
 // ===============================
 
 /**
- * Rendre une page avec template
+ * Récupérer les produits avec pagination et filtres
  */
-function renderPage($template, $data = [], $layout = 'main') {
-    global $current_lang;
-    
-    // Extraire les données pour les variables de template
-    extract($data);
-    
-    // Charger la langue
-    Language::load($current_lang ?? DEFAULT_LANG);
-    
-    // Inclure le layout principal
-    include INCLUDES_PATH . "layouts/{$layout}.php";
-}
-
-/**
- * Rendre une partie de template
- */
-function renderPartial($partial, $data = []) {
-    extract($data);
-    
-    $partial_file = INCLUDES_PATH . "partials/{$partial}.php";
-    if (file_exists($partial_file)) {
-        include $partial_file;
-    } else {
-        logError("Partial not found: {$partial}");
-    }
-}
-
-/**
- * Inclure une section
- */
-function includeSection($section, $data = []) {
-    extract($data);
-    
-    $section_file = INCLUDES_PATH . "sections/{$section}.php";
-    if (file_exists($section_file)) {
-        include $section_file;
-    } else {
-        logError("Section not found: {$section}");
-    }
-}
-
-// ===============================
-// SEO HELPERS
-// ===============================
-
-/**
- * Générer les meta tags SEO
- */
-function generateSEOMeta($title = '', $description = '', $keywords = '', $image = '', $url = '') {
-    global $SEO_CONFIG;
-    
-    $title = $title ?: $SEO_CONFIG['default_title'];
-    $description = $description ?: $SEO_CONFIG['default_description'];
-    $keywords = $keywords ?: $SEO_CONFIG['default_keywords'];
-    $image = $image ?: $SEO_CONFIG['og_image'];
-    $url = $url ?: getCurrentURL();
-    
-    $meta = [];
-    
-    // Meta tags basiques
-    $meta[] = '<title>' . clean($title) . '</title>';
-    $meta[] = '<meta name="description" content="' . clean($description) . '">';
-    $meta[] = '<meta name="keywords" content="' . clean($keywords) . '">';
-    $meta[] = '<meta name="author" content="' . $SEO_CONFIG['author'] . '">';
-    
-    // Open Graph
-    $meta[] = '<meta property="og:title" content="' . clean($title) . '">';
-    $meta[] = '<meta property="og:description" content="' . clean($description) . '">';
-    $meta[] = '<meta property="og:image" content="' . $image . '">';
-    $meta[] = '<meta property="og:url" content="' . $url . '">';
-    $meta[] = '<meta property="og:type" content="website">';
-    $meta[] = '<meta property="og:site_name" content="TechEssentials Pro">';
-    
-    // Twitter Card
-    $meta[] = '<meta name="twitter:card" content="summary_large_image">';
-    $meta[] = '<meta name="twitter:site" content="' . $SEO_CONFIG['twitter_handle'] . '">';
-    $meta[] = '<meta name="twitter:title" content="' . clean($title) . '">';
-    $meta[] = '<meta name="twitter:description" content="' . clean($description) . '">';
-    $meta[] = '<meta name="twitter:image" content="' . $image . '">';
-    
-    // Canonical URL
-    $meta[] = '<link rel="canonical" href="' . $url . '">';
-    
-    return implode("\n", $meta);
-}
-
-/**
- * Générer le breadcrumb JSON-LD
- */
-function generateBreadcrumb($items) {
-    $breadcrumb = [
-        "@context" => "https://schema.org",
-        "@type" => "BreadcrumbList",
-        "itemListElement" => []
-    ];
-    
-    foreach ($items as $position => $item) {
-        $breadcrumb["itemListElement"][] = [
-            "@type" => "ListItem",
-            "position" => $position + 1,
-            "name" => $item['name'],
-            "item" => $item['url'] ?? null
-        ];
-    }
-    
-    return '<script type="application/ld+json">' . json_encode($breadcrumb) . '</script>';
-}
-
-// ===============================
-// URL & ROUTING HELPERS
-// ===============================
-
-/**
- * Obtenir l'URL actuelle
- */
-function getCurrentURL() {
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-    return $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-}
-
-/**
- * Obtenir le slug de l'URL
- */
-function getCurrentSlug() {
-    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    return trim(str_replace('/techessentialspro', '', $path), '/');
-}
-
-/**
- * Vérifier si une URL est active
- */
-function isActiveURL($url_pattern) {
-    $current = getCurrentSlug();
-    
-    if ($url_pattern === '' && $current === '') {
-        return true; // Page d'accueil
-    }
-    
-    return strpos($current, $url_pattern) === 0;
-}
-
-/**
- * Générer une URL propre
- */
-function generateSlug($text) {
-    // Remplacer les caractères spéciaux
-    $text = strtolower($text);
-    $text = preg_replace('/[^a-z0-9\-]/', '-', $text);
-    $text = preg_replace('/-+/', '-', $text);
-    $text = trim($text, '-');
-    
-    return $text;
-}
-
-// ===============================
-// DATA HELPERS
-// ===============================
-
-/**
- * Récupérer les reviews avec cache
- */
-function getReviews($limit = 10, $category = null, $featured_only = false) {
-    static $cache = [];
-    $cache_key = "reviews_{$limit}_{$category}_{$featured_only}";
-    
-    if (isset($cache[$cache_key])) {
-        return $cache[$cache_key];
-    }
-    
+function getProducts($limit = 20, $offset = 0, $category = '', $sort = 'featured', $search = '') {
     try {
         $db = getDB('main');
         
-        $where_clauses = ["status = 'published'"];
+        // Construction de la requête
+        $where = "WHERE status = 'published'";
         $params = [];
         
-        if ($category) {
-            $where_clauses[] = "category = ?";
+        // Filtre par catégorie
+        if (!empty($category)) {
+            $where .= " AND category = ?";
             $params[] = $category;
         }
         
-        if ($featured_only) {
-            $where_clauses[] = "is_featured = 1";
+        // Filtre par recherche
+        if (!empty($search)) {
+            $where .= " AND (name LIKE ? OR short_description LIKE ? OR brand LIKE ?)";
+            $search_term = "%{$search}%";
+            $params[] = $search_term;
+            $params[] = $search_term;
+            $params[] = $search_term;
         }
         
-        $where_sql = implode(' AND ', $where_clauses);
-        $params[] = (int)$limit;
-        
-        $stmt = $db->prepare("
-            SELECT id, title, slug, excerpt, rating, featured_image, 
-                   price, discount_price, created_at
-            FROM reviews 
-            WHERE {$where_sql}
-            ORDER BY created_at DESC 
-            LIMIT ?
-        ");
-        
-        $stmt->execute($params);
-        $reviews = $stmt->fetchAll();
-        
-        $cache[$cache_key] = $reviews;
-        return $reviews;
-        
-    } catch (Exception $e) {
-        logError("Error fetching reviews: " . $e->getMessage());
-        return [];
-    }
-}
-
-/**
- * Récupérer les articles de blog avec cache
- */
-function getBlogPosts($limit = 5, $category = null) {
-    static $cache = [];
-    $cache_key = "blog_{$limit}_{$category}";
-    
-    if (isset($cache[$cache_key])) {
-        return $cache[$cache_key];
-    }
-    
-    try {
-        $db = getDB('blog');
-        
-        $where_clause = "status = 'published'";
-        $params = [];
-        
-        if ($category) {
-            $where_clause .= " AND category = ?";
-            $params[] = $category;
+        // Tri
+        $order = "ORDER BY ";
+        switch ($sort) {
+            case 'price-low':
+                $order .= "current_price ASC";
+                break;
+            case 'price-high':
+                $order .= "current_price DESC";
+                break;
+            case 'newest':
+                $order .= "created_at DESC";
+                break;
+            case 'rating':
+                $order .= "rating DESC, review_count DESC";
+                break;
+            case 'popularity':
+                $order .= "view_count DESC";
+                break;
+            default: // 'featured'
+                $order .= "is_featured DESC, rating DESC, sort_order ASC";
         }
         
-        $params[] = (int)$limit;
+        // Compter le total
+        $count_stmt = $db->prepare("SELECT COUNT(*) as total FROM products " . $where);
+        $count_stmt->execute($params);
+        $total = $count_stmt->fetch()['total'];
         
-        $stmt = $db->prepare("
-            SELECT id, title, slug, excerpt, featured_image, 
-                   views, reading_time, created_at
-            FROM articles 
-            WHERE {$where_clause}
-            ORDER BY created_at DESC 
-            LIMIT ?
-        ");
+        // Récupérer les produits
+        $sql = "
+            SELECT 
+                id, name, slug, short_description, brand, category,
+                current_price, discount_price, discount_percentage,
+                featured_image, rating, review_count, is_featured,
+                view_count, stock_status,
+                amazon_url, fnac_url, bestbuy_url,
+                amazon_price, fnac_price, bestbuy_price,
+                created_at
+            FROM products 
+            {$where} 
+            {$order} 
+            LIMIT ? OFFSET ?
+        ";
         
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        $stmt = $db->prepare($sql);
         $stmt->execute($params);
-        $posts = $stmt->fetchAll();
+        $products = $stmt->fetchAll();
         
-        $cache[$cache_key] = $posts;
-        return $posts;
-        
-    } catch (Exception $e) {
-        logError("Error fetching blog posts: " . $e->getMessage());
-        return [];
-    }
-}
-
-/**
- * Récupérer les statistiques du site
- */
-function getSiteStats() {
-    static $stats = null;
-    
-    if ($stats !== null) {
-        return $stats;
-    }
-    
-    try {
-        $db_main = getDB('main');
-        $db_blog = getDB('blog');
-        
-        // Statistiques reviews
-        $stmt = $db_main->prepare("SELECT COUNT(*) as count FROM reviews WHERE status = 'published'");
-        $stmt->execute();
-        $reviews_count = $stmt->fetch()['count'];
-        
-        // Statistiques newsletter
-        $stmt = $db_main->prepare("SELECT COUNT(*) as count FROM newsletter_subscribers WHERE status = 'active'");
-        $stmt->execute();
-        $subscribers_count = $stmt->fetch()['count'];
-        
-        // Statistiques blog
-        $stmt = $db_blog->prepare("SELECT COUNT(*) as count FROM articles WHERE status = 'published'");
-        $stmt->execute();
-        $articles_count = $stmt->fetch()['count'];
-        
-        // Note moyenne des reviews
-        $stmt = $db_main->prepare("SELECT AVG(rating) as avg_rating FROM reviews WHERE status = 'published'");
-        $stmt->execute();
-        $avg_rating = round($stmt->fetch()['avg_rating'] ?? 0, 1);
-        
-        $stats = [
-            'reviews' => (int)$reviews_count,
-            'subscribers' => (int)$subscribers_count,
-            'articles' => (int)$articles_count,
-            'avg_rating' => $avg_rating
-        ];
-        
-        return $stats;
-        
-    } catch (Exception $e) {
-        logError("Error fetching site stats: " . $e->getMessage());
         return [
-            'reviews' => 0,
-            'subscribers' => 0,
-            'articles' => 0,
-            'avg_rating' => 0
+            'products' => $products,
+            'total' => $total
         ];
-    }
-}
-
-// ===============================
-// FORM HELPERS
-// ===============================
-
-/**
- * Générer un champ de formulaire avec validation
- */
-function renderFormField($type, $name, $value = '', $attributes = [], $errors = []) {
-    $id = $attributes['id'] ?? $name;
-    $class = $attributes['class'] ?? '';
-    $placeholder = $attributes['placeholder'] ?? '';
-    $required = isset($attributes['required']) ? 'required' : '';
-    
-    $error_class = isset($errors[$name]) ? 'error' : '';
-    $field_class = trim("form-field {$class} {$error_class}");
-    
-    $html = "<div class=\"{$field_class}\">";
-    
-    // Label
-    if (isset($attributes['label'])) {
-        $html .= "<label for=\"{$id}\">{$attributes['label']}</label>";
-    }
-    
-    // Champ
-    switch ($type) {
-        case 'textarea':
-            $rows = $attributes['rows'] ?? 4;
-            $html .= "<textarea id=\"{$id}\" name=\"{$name}\" rows=\"{$rows}\" placeholder=\"{$placeholder}\" {$required}>" . clean($value) . "</textarea>";
-            break;
-            
-        case 'select':
-            $options = $attributes['options'] ?? [];
-            $html .= "<select id=\"{$id}\" name=\"{$name}\" {$required}>";
-            foreach ($options as $option_value => $option_label) {
-                $selected = ($value === $option_value) ? 'selected' : '';
-                $html .= "<option value=\"{$option_value}\" {$selected}>{$option_label}</option>";
-            }
-            $html .= "</select>";
-            break;
-            
-        default:
-            $html .= "<input type=\"{$type}\" id=\"{$id}\" name=\"{$name}\" value=\"" . clean($value) . "\" placeholder=\"{$placeholder}\" {$required}>";
-    }
-    
-    // Message d'erreur
-    if (isset($errors[$name])) {
-        $html .= "<span class=\"error-message\">{$errors[$name]}</span>";
-    }
-    
-    $html .= "</div>";
-    
-    return $html;
-}
-
-/**
- * Valider les données de formulaire
- */
-function validateForm($rules, $data) {
-    $errors = [];
-    
-    foreach ($rules as $field => $rule_set) {
-        $value = $data[$field] ?? '';
         
-        foreach ($rule_set as $rule) {
-            $rule_parts = explode(':', $rule);
-            $rule_name = $rule_parts[0];
-            $rule_param = $rule_parts[1] ?? null;
-            
-            switch ($rule_name) {
-                case 'required':
-                    if (empty($value)) {
-                        $errors[$field] = ucfirst($field) . ' is required';
-                        continue 2;
-                    }
-                    break;
-                    
-                case 'email':
-                    if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                        $errors[$field] = 'Invalid email format';
-                    }
-                    break;
-                    
-                case 'min':
-                    if (strlen($value) < (int)$rule_param) {
-                        $errors[$field] = ucfirst($field) . " must be at least {$rule_param} characters";
-                    }
-                    break;
-                    
-                case 'max':
-                    if (strlen($value) > (int)$rule_param) {
-                        $errors[$field] = ucfirst($field) . " must not exceed {$rule_param} characters";
-                    }
-                    break;
-            }
-        }
-    }
-    
-    return $errors;
-}
-
-// ===============================
-// IMAGE HELPERS
-// ===============================
-
-/**
- * Optimiser et redimensionner une image
- */
-function optimizeImage($source_path, $destination_path, $max_width = 800, $max_height = 600, $quality = 85) {
-    if (!file_exists($source_path)) {
-        return false;
-    }
-    
-    $image_info = getimagesize($source_path);
-    if (!$image_info) {
-        return false;
-    }
-    
-    $mime_type = $image_info['mime'];
-    
-    // Créer l'image source
-    switch ($mime_type) {
-        case 'image/jpeg':
-            $source_image = imagecreatefromjpeg($source_path);
-            break;
-        case 'image/png':
-            $source_image = imagecreatefrompng($source_path);
-            break;
-        case 'image/webp':
-            $source_image = imagecreatefromwebp($source_path);
-            break;
-        default:
-            return false;
-    }
-    
-    $source_width = imagesx($source_image);
-    $source_height = imagesy($source_image);
-    
-    // Calculer les nouvelles dimensions
-    $ratio = min($max_width / $source_width, $max_height / $source_height);
-    $new_width = round($source_width * $ratio);
-    $new_height = round($source_height * $ratio);
-    
-    // Créer la nouvelle image
-    $new_image = imagecreatetruecolor($new_width, $new_height);
-    
-    // Préserver la transparence pour PNG
-    if ($mime_type === 'image/png') {
-        imagealphablending($new_image, false);
-        imagesavealpha($new_image, true);
-        $transparent = imagecolorallocatealpha($new_image, 255, 255, 255, 127);
-        imagefilledrectangle($new_image, 0, 0, $new_width, $new_height, $transparent);
-    }
-    
-    // Redimensionner
-    imagecopyresampled($new_image, $source_image, 0, 0, 0, 0, $new_width, $new_height, $source_width, $source_height);
-    
-    // Sauvegarder
-    $result = false;
-    switch ($mime_type) {
-        case 'image/jpeg':
-            $result = imagejpeg($new_image, $destination_path, $quality);
-            break;
-        case 'image/png':
-            $result = imagepng($new_image, $destination_path, 9);
-            break;
-        case 'image/webp':
-            $result = imagewebp($new_image, $destination_path, $quality);
-            break;
-    }
-    
-    // Nettoyer
-    imagedestroy($source_image);
-    imagedestroy($new_image);
-    
-    return $result;
-}
-
-/**
- * Générer une image responsive
- */
-function generateResponsiveImage($image_path, $alt_text = '', $sizes = ['400', '800', '1200']) {
-    $base_path = pathinfo($image_path, PATHINFO_DIRNAME);
-    $filename = pathinfo($image_path, PATHINFO_FILENAME);
-    $extension = pathinfo($image_path, PATHINFO_EXTENSION);
-    
-    $srcset = [];
-    
-    foreach ($sizes as $size) {
-        $responsive_path = "{$base_path}/{$filename}-{$size}w.{$extension}";
-        if (file_exists(ROOT_PATH . $responsive_path)) {
-            $srcset[] = asset($responsive_path) . " {$size}w";
-        }
-    }
-    
-    $srcset_attr = implode(', ', $srcset);
-    
-    return "<img src=\"" . asset($image_path) . "\" 
-                 srcset=\"{$srcset_attr}\" 
-                 sizes=\"(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw\" 
-                 alt=\"" . clean($alt_text) . "\" 
-                 loading=\"lazy\">";
-}
-
-// ===============================
-// PAGINATION HELPERS
-// ===============================
-
-/**
- * Générer la pagination
- */
-function generatePagination($current_page, $total_pages, $base_url = '', $range = 2) {
-    if ($total_pages <= 1) {
-        return '';
-    }
-    
-    $html = '<nav class="pagination">';
-    $html .= '<ul class="pagination-list">';
-    
-    // Bouton Précédent
-    if ($current_page > 1) {
-        $prev_url = $base_url . '?page=' . ($current_page - 1);
-        $html .= "<li><a href=\"{$prev_url}\" class=\"pagination-link prev\">&larr; Previous</a></li>";
-    }
-    
-    // Première page
-    if ($current_page > $range + 1) {
-        $html .= '<li><a href="' . $base_url . '?page=1" class="pagination-link">1</a></li>';
-        if ($current_page > $range + 2) {
-            $html .= '<li><span class="pagination-ellipsis">...</span></li>';
-        }
-    }
-    
-    // Pages autour de la page actuelle
-    for ($i = max(1, $current_page - $range); $i <= min($total_pages, $current_page + $range); $i++) {
-        $active_class = ($i === $current_page) ? ' active' : '';
-        $page_url = $base_url . '?page=' . $i;
-        $html .= "<li><a href=\"{$page_url}\" class=\"pagination-link{$active_class}\">{$i}</a></li>";
-    }
-    
-    // Dernière page
-    if ($current_page < $total_pages - $range) {
-        if ($current_page < $total_pages - $range - 1) {
-            $html .= '<li><span class="pagination-ellipsis">...</span></li>';
-        }
-        $last_url = $base_url . '?page=' . $total_pages;
-        $html .= "<li><a href=\"{$last_url}\" class=\"pagination-link\">{$total_pages}</a></li>";
-    }
-    
-    // Bouton Suivant
-    if ($current_page < $total_pages) {
-        $next_url = $base_url . '?page=' . ($current_page + 1);
-        $html .= "<li><a href=\"{$next_url}\" class=\"pagination-link next\">Next &rarr;</a></li>";
-    }
-    
-    $html .= '</ul>';
-    $html .= '</nav>';
-    
-    return $html;
-}
-
-// ===============================
-// DATE & TIME HELPERS
-// ===============================
-
-/**
- * Formater une date de façon relative
- */
-function timeAgo($datetime) {
-    $now = new DateTime();
-    $past = new DateTime($datetime);
-    $diff = $now->diff($past);
-    
-    if ($diff->days > 30) {
-        return $past->format('M j, Y');
-    } elseif ($diff->days > 0) {
-        return $diff->days . ' day' . ($diff->days > 1 ? 's' : '') . ' ago';
-    } elseif ($diff->h > 0) {
-        return $diff->h . ' hour' . ($diff->h > 1 ? 's' : '') . ' ago';
-    } elseif ($diff->i > 0) {
-        return $diff->i . ' minute' . ($diff->i > 1 ? 's' : '') . ' ago';
-    } else {
-        return 'Just now';
+    } catch (Exception $e) {
+        logError("Error fetching products: " . $e->getMessage());
+        return ['products' => [], 'total' => 0];
     }
 }
 
 /**
- * Calculer le temps de lecture estimé
+ * Récupérer les produits featured pour la home
  */
-function calculateReadingTime($content) {
-    $word_count = str_word_count(strip_tags($content));
-    $minutes = ceil($word_count / 200); // 200 mots par minute
-    return max(1, $minutes);
+function getFeaturedProducts($limit = 6) {
+    try {
+        $db = getDB('main');
+        $stmt = $db->prepare("
+            SELECT 
+                id, name, slug, short_description, brand, category,
+                current_price, discount_price, discount_percentage,
+                featured_image, rating, review_count,
+                amazon_url, fnac_url, bestbuy_url
+            FROM products 
+            WHERE status = 'published' AND is_featured = 1
+            ORDER BY sort_order ASC, rating DESC
+            LIMIT ?
+        ");
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll();
+    } catch (Exception $e) {
+        logError("Error fetching featured products: " . $e->getMessage());
+        return [];
+    }
 }
 
-// ===============================
-// CACHE HELPERS
-// ===============================
 
-/**
- * Cache simple basé sur les fichiers
- */
-function cacheGet($key) {
-    $cache_file = ROOT_PATH . 'cache/' . md5($key) . '.cache';
-    
-    if (!file_exists($cache_file)) {
-        return null;
-    }
-    
-    $data = file_get_contents($cache_file);
-    $cache_data = json_decode($data, true);
-    
-    if (!$cache_data || $cache_data['expires'] < time()) {
-        unlink($cache_file);
-        return null;
-    }
-    
-    return $cache_data['data'];
+
+function renderPage($template, $data = []) {
+    echo "Page: $template<br>";
+    echo "Data: ";
+    print_r($data);
 }
 
-/**
- * Sauvegarder en cache
- */
-function cacheSet($key, $data, $ttl = 3600) {
-    $cache_dir = ROOT_PATH . 'cache/';
-    if (!file_exists($cache_dir)) {
-        mkdir($cache_dir, 0777, true);
-    }
-    
-    $cache_file = $cache_dir . md5($key) . '.cache';
-    $cache_data = [
-        'data' => $data,
-        'expires' => time() + $ttl
+
+
+function getSiteStats() {
+    return [
+        'reviews' => 0,
+        'subscribers' => 0, 
+        'articles' => 0,
+        'avg_rating' => 0
     ];
-    
-    return file_put_contents($cache_file, json_encode($cache_data));
 }
 
 /**
- * Vider le cache
+ * Récupérer un produit par slug
  */
-function cacheClear($pattern = '*') {
-    $cache_dir = ROOT_PATH . 'cache/';
-    $files = glob($cache_dir . '*.cache');
+function getProductBySlug($slug) {
+    try {
+        $db = getDB('main');
+        $stmt = $db->prepare("
+            SELECT * FROM products 
+            WHERE slug = ? AND status = 'published'
+        ");
+        $stmt->execute([$slug]);
+        
+        $product = $stmt->fetch();
+        
+        if ($product) {
+            // Incrémenter le compteur de vues
+            $update_stmt = $db->prepare("
+                UPDATE products 
+                SET view_count = view_count + 1 
+                WHERE id = ?
+            ");
+            $update_stmt->execute([$product['id']]);
+        }
+        
+        return $product;
+        
+    } catch (Exception $e) {
+        logError("Error fetching product by slug: " . $e->getMessage());
+        return null;
+    }
+}
+
+/**
+ * Récupérer les catégories de produits
+ */
+function getProductCategories() {
+    try {
+        $db = getDB('main');
+        $stmt = $db->prepare("
+            SELECT 
+                category,
+                COUNT(*) as product_count,
+                MIN(current_price) as min_price,
+                MAX(current_price) as max_price,
+                AVG(rating) as avg_rating
+            FROM products 
+            WHERE status = 'published' 
+            GROUP BY category 
+            ORDER BY product_count DESC
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    } catch (Exception $e) {
+        logError("Error fetching product categories: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Récupérer produits similaires
+ */
+function getRelatedProducts($category, $exclude_id, $limit = 4) {
+    try {
+        $db = getDB('main');
+        $stmt = $db->prepare("
+            SELECT 
+                id, name, slug, current_price, discount_price, 
+                featured_image, rating, review_count, brand
+            FROM products 
+            WHERE category = ? AND id != ? AND status = 'published'
+            ORDER BY rating DESC, review_count DESC
+            LIMIT ?
+        ");
+        $stmt->execute([$category, $exclude_id, $limit]);
+        return $stmt->fetchAll();
+    } catch (Exception $e) {
+        logError("Error fetching related products: " . $e->getMessage());
+        return [];
+    }
+}
+
+// ===============================
+// FONCTIONS AFFILIATION & TRACKING
+// ===============================
+
+/**
+ * Tracker un clic d'affiliation
+ */
+function trackAffiliateClick($product_id, $vendor, $price = null) {
+    try {
+        $db = getDB('main');
+        
+        // Enregistrer le clic
+        $stmt = $db->prepare("
+            INSERT INTO affiliate_clicks 
+            (product_id, vendor, price_at_click, ip_address, user_agent, referrer, clicked_at) 
+            VALUES (?, ?, ?, ?, ?, ?, NOW())
+        ");
+        
+        $stmt->execute([
+            $product_id,
+            $vendor,
+            $price,
+            $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+            $_SERVER['HTTP_REFERER'] ?? ''
+        ]);
+        
+        // Incrémenter le compteur du produit
+        $counter_field = "click_count_{$vendor}";
+        $update_stmt = $db->prepare("
+            UPDATE products 
+            SET {$counter_field} = {$counter_field} + 1 
+            WHERE id = ?
+        ");
+        $update_stmt->execute([$product_id]);
+        
+        return $db->lastInsertId();
+        
+    } catch (Exception $e) {
+        logError("Error tracking affiliate click: " . $e->getMessage());
+        return null;
+    }
+}
+
+/**
+ * Récupérer l'URL d'affiliation avec tracking
+ */
+function getAffiliateUrl($product_id, $vendor) {
+    try {
+        $db = getDB('main');
+        $stmt = $db->prepare("
+            SELECT {$vendor}_url as affiliate_url, {$vendor}_price as price
+            FROM products 
+            WHERE id = ?
+        ");
+        $stmt->execute([$product_id]);
+        $result = $stmt->fetch();
+        
+        if ($result && $result['affiliate_url']) {
+            // Tracker le clic
+            trackAffiliateClick($product_id, $vendor, $result['price']);
+            
+            return $result['affiliate_url'];
+        }
+        
+        return '#';
+        
+    } catch (Exception $e) {
+        logError("Error getting affiliate URL: " . $e->getMessage());
+        return '#';
+    }
+}
+
+// ===============================
+// FONCTIONS PRIX & APIS (FUTURES)
+// ===============================
+
+/**
+ * Mettre à jour les prix depuis les APIs vendors
+ */
+function updateProductPrices($product_id = null) {
+    try {
+        $db = getDB('main');
+        
+        $where = $product_id ? "WHERE id = ?" : "";
+        $params = $product_id ? [$product_id] : [];
+        
+        $stmt = $db->prepare("
+            SELECT id, amazon_url, fnac_url, bestbuy_url 
+            FROM products 
+            {$where}
+            AND status = 'published'
+        ");
+        $stmt->execute($params);
+        $products = $stmt->fetchAll();
+        
+        foreach ($products as $product) {
+            // TODO: Implémenter APIs Amazon/Fnac/BestBuy
+            // Pour l'instant, simulation de mise à jour
+            
+            $updated_prices = [
+                'amazon_price' => null,
+                'fnac_price' => null,
+                'bestbuy_price' => null,
+                'amazon_updated_at' => null,
+                'fnac_updated_at' => null,
+                'bestbuy_updated_at' => null
+            ];
+            
+            // Mise à jour en base (quand APIs seront intégrées)
+            // updatePriceInDB($product['id'], $updated_prices);
+        }
+        
+        return true;
+        
+    } catch (Exception $e) {
+        logError("Error updating product prices: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Sauvegarder l'historique des prix
+ */
+function savePriceHistory($product_id, $vendor, $price, $availability = true) {
+    try {
+        $db = getDB('main');
+        $stmt = $db->prepare("
+            INSERT INTO product_price_history 
+            (product_id, vendor, price, availability, recorded_at) 
+            VALUES (?, ?, ?, ?, NOW())
+        ");
+        
+        $stmt->execute([$product_id, $vendor, $price, $availability]);
+        return true;
+        
+    } catch (Exception $e) {
+        logError("Error saving price history: " . $e->getMessage());
+        return false;
+    }
+}
+
+// ===============================
+// HELPERS & UTILITIES
+// ===============================
+
+/**
+ * Rechercher des produits
+ */
+function searchProducts($query, $limit = 20) {
+    try {
+        $db = getDB('main');
+        $stmt = $db->prepare("
+            SELECT 
+                id, name, slug, current_price, discount_price,
+                featured_image, brand, category, rating
+            FROM products 
+            WHERE status = 'published'
+            AND MATCH(name, short_description, brand, model) AGAINST(? IN NATURAL LANGUAGE MODE)
+            ORDER BY rating DESC, view_count DESC
+            LIMIT ?
+        ");
+        
+        $stmt->execute([$query, $limit]);
+        return $stmt->fetchAll();
+        
+    } catch (Exception $e) {
+        // Fallback vers LIKE si fulltext index pas disponible
+        $stmt = $db->prepare("
+            SELECT 
+                id, name, slug, current_price, discount_price,
+                featured_image, brand, category, rating
+            FROM products 
+            WHERE status = 'published'
+            AND (name LIKE ? OR short_description LIKE ? OR brand LIKE ?)
+            ORDER BY 
+                CASE 
+                    WHEN name LIKE ? THEN 1
+                    WHEN brand LIKE ? THEN 2
+                    ELSE 3
+                END,
+                rating DESC
+            LIMIT ?
+        ");
+        
+        $search_term = "%{$query}%";
+        $stmt->execute([
+            $search_term, $search_term, $search_term,
+            $search_term, $search_term, $limit
+        ]);
+        return $stmt->fetchAll();
+    }
+}
+
+/**
+ * Obtenir le meilleur prix parmi les vendors
+ */
+function getBestPrice($product) {
+    $prices = array_filter([
+        $product['amazon_price'] ?? null,
+        $product['fnac_price'] ?? null,
+        $product['bestbuy_price'] ?? null
+    ]);
     
-    foreach ($files as $file) {
-        unlink($file);
+    return empty($prices) ? $product['current_price'] : min($prices);
+}
+
+/**
+ * Formater le prix pour affichage
+ */
+function formatPrice($price, $currency = '€') {
+    if (!$price) return 'Prix non disponible';
+    
+    return number_format($price, 2, ',', ' ') . ' ' . $currency;
+}
+
+/**
+ * Calculer le pourcentage de réduction
+ */
+function calculateDiscount($original_price, $discount_price) {
+    if (!$original_price || !$discount_price || $discount_price >= $original_price) {
+        return 0;
     }
     
-    return true;
+    return round((($original_price - $discount_price) / $original_price) * 100);
 }
+?>

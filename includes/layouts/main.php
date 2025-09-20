@@ -11,8 +11,8 @@ if (!defined('TECHESSENTIALS_PRO')) {
     die('Direct access not allowed');
 }
 
-$page_title = $page_title ?? Language::get('site.title');
-$page_description = $page_description ?? Language::get('site.description');
+$page_title = $page_title ?? __('site.title');
+$page_description = $page_description ?? __('site.description');
 $page_image = $page_image ?? $SEO_CONFIG['og_image'];
 $current_url = getCurrentURL();
 ?>
@@ -57,8 +57,8 @@ $current_url = getCurrentURL();
     {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "<?= Language::get('site.title') ?>",
-        "description": "<?= Language::get('site.description') ?>",
+        "name": "<?= __('site.title') ?>",
+        "description": "<?= __('site.description') ?>",
         "url": "<?= url() ?>",
         "potentialAction": {
             "@type": "SearchAction",
@@ -91,9 +91,9 @@ $current_url = getCurrentURL();
             <div class="header-content">
                 <!-- Logo -->
                 <div class="site-logo">
-                    <a href="<?= url() ?>" aria-label="<?= Language::get('site.title') ?>">
+                    <a href="<?= url() ?>" aria-label="<?= __('site.title') ?>">
                         <img src="<?= asset('images/logo.svg') ?>" 
-                             alt="<?= Language::get('site.title') ?>" 
+                             alt="<?= __('site.title') ?>" 
                              width="200" height="40">
                     </a>
                 </div>
@@ -102,19 +102,19 @@ $current_url = getCurrentURL();
                 <nav class="main-nav" aria-label="Main navigation">
                     <ul class="nav-list">
                         <li class="nav-item<?= isActiveURL('') ? ' active' : '' ?>">
-                            <a href="<?= url() ?>"><?= Language::get('navigation.home') ?></a>
+                            <a href="<?= url() ?>"><?= __('navigation.home') ?></a>
                         </li>
                         <li class="nav-item<?= isActiveURL('reviews') ? ' active' : '' ?>">
-                            <a href="<?= url('reviews') ?>"><?= Language::get('navigation.reviews') ?></a>
+                            <a href="<?= url('reviews') ?>"><?= __('navigation.reviews') ?></a>
                         </li>
                         <li class="nav-item<?= isActiveURL('blog') ? ' active' : '' ?>">
-                            <a href="<?= url('blog') ?>"><?= Language::get('navigation.blog') ?></a>
+                            <a href="<?= url('blog') ?>"><?= __('navigation.blog') ?></a>
                         </li>
                         <li class="nav-item<?= isActiveURL('deals') ? ' active' : '' ?>">
-                            <a href="<?= url('deals') ?>"><?= Language::get('navigation.deals') ?></a>
+                            <a href="<?= url('deals') ?>"><?= __('navigation.deals') ?></a>
                         </li>
                         <li class="nav-item<?= isActiveURL('contact') ? ' active' : '' ?>">
-                            <a href="<?= url('contact') ?>"><?= Language::get('navigation.contact') ?></a>
+                            <a href="<?= url('contact') ?>"><?= __('navigation.contact') ?></a>
                         </li>
                     </ul>
                 </nav>
@@ -163,7 +163,7 @@ $current_url = getCurrentURL();
                 <form action="<?= url('search') ?>" method="get" class="search-form">
                     <input type="search" 
                            name="q" 
-                           placeholder="<?= Language::get('common.search') ?>..." 
+                           placeholder="<?= __('common.search') ?>..." 
                            class="search-input"
                            autocomplete="off">
                     <button type="submit" class="search-submit">
@@ -195,23 +195,23 @@ $current_url = getCurrentURL();
             <!-- Newsletter signup -->
             <section class="newsletter-section">
                 <div class="newsletter-content">
-                    <h2><?= Language::get('newsletter.title') ?></h2>
-                    <p><?= Language::get('newsletter.description') ?></p>
+                    <h2><?= __('newsletter.title') ?></h2>
+                    <p><?= __('newsletter.description') ?></p>
                 </div>
                 <form class="newsletter-form" data-action="api/newsletter/subscribe" method="post">
                     <div class="form-group">
                         <input type="email" 
                                name="email" 
-                               placeholder="<?= Language::get('newsletter.form.email_placeholder') ?>"
+                               placeholder="<?= __('newsletter.form.email_placeholder') ?>"
                                required>
                         <input type="text" 
                                name="name" 
-                               placeholder="<?= Language::get('newsletter.form.name_placeholder') ?>">
+                               placeholder="<?= __('newsletter.form.name_placeholder') ?>">
                         <input type="hidden" name="language" value="<?= $current_lang ?>">
                         <input type="hidden" name="source" value="footer">
-                        <button type="submit"><?= Language::get('newsletter.form.subscribe_button') ?></button>
+                        <button type="submit"><?= __('newsletter.form.subscribe_button') ?></button>
                     </div>
-                    <p class="privacy-notice"><?= Language::get('newsletter.form.privacy_text') ?></p>
+                    <p class="privacy-notice"><?= __('newsletter.form.privacy_text') ?></p>
                 </form>
             </section>
             
@@ -220,8 +220,8 @@ $current_url = getCurrentURL();
                 <div class="footer-grid">
                     <!-- À propos -->
                     <div class="footer-column">
-                        <h3><?= Language::get('footer.about.title') ?></h3>
-                        <p><?= Language::get('footer.about.description') ?></p>
+                        <h3><?= __('footer.about.title') ?></h3>
+                        <p><?= __('footer.about.description') ?></p>
                         <div class="social-links">
                             <a href="#" aria-label="Twitter"><svg><!-- Twitter icon --></svg></a>
                             <a href="#" aria-label="YouTube"><svg><!-- YouTube icon --></svg></a>
@@ -231,23 +231,23 @@ $current_url = getCurrentURL();
                     
                     <!-- Liens rapides -->
                     <div class="footer-column">
-                        <h3><?= Language::get('footer.quick_links.title') ?></h3>
+                        <h3><?= __('footer.quick_links.title') ?></h3>
                         <ul class="footer-links">
-                            <li><a href="<?= url('about') ?>"><?= Language::get('navigation.about') ?></a></li>
-                            <li><a href="<?= url('privacy') ?>"><?= Language::get('footer.quick_links.privacy') ?></a></li>
-                            <li><a href="<?= url('terms') ?>"><?= Language::get('footer.quick_links.terms') ?></a></li>
-                            <li><a href="<?= url('sitemap') ?>"><?= Language::get('footer.quick_links.sitemap') ?></a></li>
+                            <li><a href="<?= url('about') ?>"><?= __('navigation.about') ?></a></li>
+                            <li><a href="<?= url('privacy') ?>"><?= __('footer.quick_links.privacy') ?></a></li>
+                            <li><a href="<?= url('terms') ?>"><?= __('footer.quick_links.terms') ?></a></li>
+                            <li><a href="<?= url('sitemap') ?>"><?= __('footer.quick_links.sitemap') ?></a></li>
                         </ul>
                     </div>
                     
                     <!-- Catégories -->
                     <div class="footer-column">
-                        <h3><?= Language::get('footer.categories.title') ?></h3>
+                        <h3><?= __('footer.categories.title') ?></h3>
                         <ul class="footer-links">
-                            <li><a href="<?= url('reviews/category/audio') ?>"><?= Language::get('footer.categories.audio') ?></a></li>
-                            <li><a href="<?= url('reviews/category/monitors') ?>"><?= Language::get('footer.categories.monitors') ?></a></li>
-                            <li><a href="<?= url('reviews/category/keyboards') ?>"><?= Language::get('footer.categories.keyboards') ?></a></li>
-                            <li><a href="<?= url('reviews/category/webcams') ?>"><?= Language::get('footer.categories.webcams') ?></a></li>
+                            <li><a href="<?= url('reviews/category/audio') ?>"><?= __('footer.categories.audio') ?></a></li>
+                            <li><a href="<?= url('reviews/category/monitors') ?>"><?= __('footer.categories.monitors') ?></a></li>
+                            <li><a href="<?= url('reviews/category/keyboards') ?>"><?= __('footer.categories.keyboards') ?></a></li>
+                            <li><a href="<?= url('reviews/category/webcams') ?>"><?= __('footer.categories.webcams') ?></a></li>
                         </ul>
                     </div>
                     
@@ -257,15 +257,15 @@ $current_url = getCurrentURL();
                         <div class="site-stats">
                             <div class="stat-item">
                                 <strong><?= number_format($site_stats['reviews']) ?></strong>
-                                <span><?= Language::get('stats.reviews') ?></span>
+                                <span><?= __('stats.reviews') ?></span>
                             </div>
                             <div class="stat-item">
                                 <strong><?= number_format($site_stats['subscribers']) ?></strong>
-                                <span><?= Language::get('stats.subscribers') ?></span>
+                                <span><?= __('stats.subscribers') ?></span>
                             </div>
                             <div class="stat-item">
                                 <strong><?= $site_stats['avg_rating'] ?>/5</strong>
-                                <span><?= Language::get('stats.rating') ?></span>
+                                <span><?= __('stats.rating') ?></span>
                             </div>
                         </div>
                     </div>
@@ -275,7 +275,7 @@ $current_url = getCurrentURL();
             <!-- Copyright -->
             <div class="footer-bottom">
                 <div class="copyright">
-                    <p>&copy; <?= date('Y') ?> <?= Language::get('site.title') ?>. <?= Language::get('site.copyright') ?>.</p>
+                    <p>&copy; <?= date('Y') ?> <?= __('site.title') ?>. <?= __('site.copyright') ?>.</p>
                 </div>
                 <div class="footer-meta">
                     <p>Made with ❤️ by Adams (Fred) - CTO</p>
@@ -297,11 +297,11 @@ $current_url = getCurrentURL();
             debug: <?= DEBUG ? 'true' : 'false' ?>,
             csrfToken: '<?= generateCSRF() ?>',
             translations: {
-                loading: '<?= Language::get('common.loading') ?>',
-                error: '<?= Language::get('common.error') ?>',
-                success: '<?= Language::get('common.success') ?>',
-                newsletterSuccess: '<?= Language::get('newsletter.success') ?>',
-                newsletterError: '<?= Language::get('newsletter.error') ?>'
+                loading: '<?= __('common.loading') ?>',
+                error: '<?= __('common.error') ?>',
+                success: '<?= __('common.success') ?>',
+                newsletterSuccess: '<?= __('newsletter.success') ?>',
+                newsletterError: '<?= __('newsletter.error') ?>'
             }
         };
     </script>

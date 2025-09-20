@@ -28,13 +28,19 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? DEFAULT_LANG;
 if (in_array($lang, AVAILABLE_LANGS)) {
     $_SESSION['lang'] = $lang;
     $GLOBALS['current_lang'] = $lang;
+
 } else {
     $lang = DEFAULT_LANG;
     $GLOBALS['current_lang'] = $lang;
 }
 
-// Charger les traductions
-Language::load($lang);
+// Parser la route - VERSION CORRIGÉE
+$route_segments = array_filter(explode('/', $route_path));
+$main_route = $route_segments[1] ?? $route_segments[0] ?? 'home'; // Prendre le 2ème segment
+$sub_route = $route_segments[2] ?? null;
+$param = $route_segments[3] ?? null;
+
+// Language déjà initialisé automatiquement via le singleton
 
 // Parser la route
 $route_segments = array_filter(explode('/', $route_path));
@@ -46,7 +52,7 @@ $param = $route_segments[2] ?? null;
 $page_data = [
     'current_route' => $main_route,
     'current_lang' => $lang,
-    'site_stats' => getSiteStats()
+    'site_stats' => []
 ];
 
 // Router principal
@@ -55,6 +61,10 @@ try {
         case '':
         case 'home':
             handleHomePage();
+            break;
+
+        case 'products':
+            handleProductsPage();
             break;
             
         case 'reviews':
@@ -116,12 +126,37 @@ try {
 function handleHomePage() {
     global $page_data;
     
-    $page_data['page_title'] = Language::get('meta.home.title');
-    $page_data['page_description'] = Language::get('meta.home.description');
+    $page_data['page_title'] = __('meta.home.title');
+    $page_data['page_description'] = __('meta.home.description');
     $page_data['featured_reviews'] = getReviews(6, null, true);
     $page_data['recent_posts'] = getBlogPosts(4);
     
     renderPage('home', $page_data);
+}
+
+
+
+/**
+ * Products page
+ */
+function handleProductsPage() {
+    global $page_data;
+    
+    $page = (int)($_GET['page'] ?? 1);
+    $category = clean($_GET['category'] ?? '');
+    $sort = clean($_GET['sort'] ?? 'featured');
+    $limit = 20;
+    $offset = ($page - 1) * $limit;
+    
+    $products_data = getProducts($limit, $offset, $category, $sort);
+    
+    $page_data['page_title'] = 'Products Catalog - TechEssentials Pro';
+    $page_data['products'] = $products_data['products'];
+    $page_data['total_products'] = $products_data['total'];
+    $page_data['current_page'] = $page;
+    $page_data['total_pages'] = ceil($products_data['total'] / $limit);
+    
+    renderPage('products/index', $page_data);
 }
 
 /**
@@ -138,8 +173,8 @@ function handleReviewsPage($sub_route, $param) {
             $limit = 12;
             $offset = ($page - 1) * $limit;
             
-            $page_data['page_title'] = Language::get('meta.reviews.title');
-            $page_data['page_description'] = Language::get('meta.reviews.description');
+            $page_data['page_title'] = __('meta.reviews.title');
+            $page_data['page_description'] = __('meta.reviews.description');
             $page_data['reviews'] = getReviews($limit, $category);
             $page_data['categories'] = getReviewCategories();
             $page_data['current_category'] = $category;
@@ -196,8 +231,8 @@ function handleBlogPage($sub_route, $param) {
             $category = clean($_GET['category'] ?? '');
             $limit = 10;
             
-            $page_data['page_title'] = Language::get('meta.blog.title');
-            $page_data['page_description'] = Language::get('meta.blog.description');
+            $page_data['page_title'] = __('meta.blog.title');
+            $page_data['page_description'] = __('meta.blog.description');
             $page_data['articles'] = getBlogPosts($limit, $category);
             $page_data['categories'] = getBlogCategories();
             $page_data['current_category'] = $category;
@@ -256,8 +291,8 @@ function handleDealsPage() {
 function handleContactPage() {
     global $page_data;
     
-    $page_data['page_title'] = Language::get('meta.contact.title');
-    $page_data['page_description'] = Language::get('meta.contact.description');
+    $page_data['page_title'] = __('meta.contact.title');
+    $page_data['page_description'] = __('meta.contact.description');
     $page_data['csrf_token'] = generateCSRF();
     
     // Traiter le formulaire si POST
@@ -388,9 +423,9 @@ function handle404() {
     
     http_response_code(404);
     
-    $page_data['page_title'] = Language::get('errors.404.title');
+    $page_data['page_title'] = __('errors.404.title');
     $page_data['error_code'] = '404';
-    $page_data['error_message'] = Language::get('errors.404.message');
+    $page_data['error_message'] = __('errors.404.message');
     
     renderPage('errors/404', $page_data);
 }
@@ -403,9 +438,9 @@ function handle500() {
     
     http_response_code(500);
     
-    $page_data['page_title'] = Language::get('errors.500.title');
+    $page_data['page_title'] = __('errors.500.title');
     $page_data['error_code'] = '500';
-    $page_data['error_message'] = Language::get('errors.500.message');
+    $page_data['error_message'] = __('errors.500.message');
     
     renderPage('errors/500', $page_data);
 }
@@ -554,7 +589,7 @@ function processContactForm($data) {
         // Envoyer l'email de notification (optionnel)
         // sendContactNotification($data);
         
-        return ['success' => true, 'message' => Language::get('contact.success')];
+        return ['success' => true, 'message' => __('contact.success')];
         
     } catch (Exception $e) {
         logError("Contact form error: " . $e->getMessage());
@@ -586,7 +621,7 @@ function confirmNewsletterSubscription($token) {
         ");
         $stmt->execute([$subscriber['id']]);
         
-        return ['success' => true, 'message' => Language::get('newsletter.success')];
+        return ['success' => true, 'message' => __('newsletter.success')];
         
     } catch (Exception $e) {
         logError("Newsletter confirmation error: " . $e->getMessage());
@@ -681,7 +716,7 @@ function generateSitemap() {
     $sitemap .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
     
     // Pages principales
-    $pages = ['', 'reviews', 'blog', 'deals', 'contact', 'about'];
+    $pages = ['', 'products','reviews', 'blog', 'deals', 'contact', 'about'];
     foreach ($pages as $page) {
         $sitemap .= '<url>' . "\n";
         $sitemap .= '<loc>' . url($page) . '</loc>' . "\n";

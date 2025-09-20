@@ -308,6 +308,6 @@ if (DEBUG) {
 
 
 // Dans includes/config.php
-define('ENV', 'production'); // ⚠️ Changer en production
-$DB_CONFIG['main']['password'] = 'VOTRE_MDP'; // ⚠️ Configurer DB
-$EMAIL_CONFIG['smtp']['username'] = 'VOTRE_EMAIL'; // ⚠️ Configurer SMTP
+//define('ENV', 'production'); // ⚠️ Changer en production
+//$DB_CONFIG['main']['password'] = 'VOTRE_MDP'; // ⚠️ Configurer DB
+//$EMAIL_CONFIG['smtp']['username'] = 'VOTRE_EMAIL'; // ⚠️ Configurer SMTP
