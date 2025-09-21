@@ -78,10 +78,11 @@ footer {
                     <p><a href="deals.php?lang=<?= $lang ?>"><?= $lang === 'fr' ? 'Bons Plans' : 'Deals' ?></a></p>
                     <p><a href="contact.php?lang=<?= $lang ?>"><?= $lang === 'fr' ? 'Contact' : 'Contact' ?></a></p>
                     <p><a href="privacy.php?lang=<?= $lang ?>"><?= $lang === 'en' ? 'Privacy Policy' : 'Politique de Confidentialité' ?></a></p>
+                   <p><a href="cgu.php?lang=<?= $lang ?>"><?= $lang === 'en' ? 'Terms of Service' : 'CGU' ?></a></p>
                 </div>
                 <div class="footer-section">
                     <h3><?= $lang === 'fr' ? 'Contact' : 'Contact' ?></h3>
-                    <p><?= $lang === 'en' ? 'Email: hello@techessentialspro.com' : 'Email: bonjour@techessentialspro.com' ?></p>
+                    <p><?= $lang === 'en' ? 'Email: contact@techessentialspro.com' : 'Email: contact@techessentialspro.com' ?></p>
                     <p><?= $lang === 'en' ? 'Response time: 24h' : 'Délai de réponse: 24h' ?></p>
                     <p><?= $lang === 'en' ? 'Based in Paris, France & Toronto, Canada' : 'Basé à Paris, France & Toronto, Canada' ?></p>
                 </div>

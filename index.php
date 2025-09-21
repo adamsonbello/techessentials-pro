@@ -702,57 +702,12 @@ $translations = $t[$lang];
     </section>
 
     <!-- Newsletter Section -->
-    <section class="newsletter scroll-reveal">
-        <div class="container">
-            <h2><?= $translations['newsletter_title'] ?></h2>
-            <p><?= $translations['newsletter_subtitle'] ?></p>
-            <form class="newsletter-form" action="newsletter-subscribe.php" method="POST">
-                <input type="hidden" name="lang" value="<?= $lang ?>">
-                <input type="email" class="newsletter-input" name="email" 
-                       placeholder="<?= $translations['newsletter_placeholder'] ?>" required autocomplete="email">
-                <button type="submit" class="newsletter-button"><?= $translations['newsletter_button'] ?></button>
-            </form>
-        </div>
-    </section>
+    <?php 
+// Include newsletter et footer
+include 'includes/layouts/newsletter.php';
+include 'includes/layouts/footer.php';
+?>
 
     <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3><?= $translations['footer_about_title'] ?? ($lang === 'fr' ? 'À Propos' : 'About Us') ?></h3>
-                    <p><?= $translations['footer_about_text'] ?? ($lang === 'fr' ? 'Votre guide ultime pour les produits tech essentiels. Nous testons et recommandons les meilleurs équipements pour professionnels.' : 'Your ultimate guide to essential tech products. We test and recommend the best equipment for professionals.') ?></p>
-                </div>
-                <div class="footer-section">
-                    <h3><?= $translations['footer_quicklinks'] ?? ($lang === 'fr' ? 'Liens Rapides' : 'Quick Links') ?></h3>
-                    <p><a href="reviews.php?lang=<?= $lang ?>"><?= $translations['nav_reviews'] ?? ($lang === 'fr' ? 'Tests' : 'Reviews') ?></a></p>
-                    <p><a href="deals.php?lang=<?= $lang ?>"><?= $translations['nav_deals'] ?? ($lang === 'fr' ? 'Bons Plans' : 'Deals') ?></a></p>
-                    <p><a href="contact.php?lang=<?= $lang ?>"><?= $translations['nav_contact'] ?? ($lang === 'fr' ? 'Contact' : 'Contact') ?></a></p>
-                    <p><a href="privacy.php?lang=<?= $lang ?>"><?= $lang === 'en' ? 'Privacy Policy' : 'Politique de Confidentialité' ?></a></p>
-                </div>
-                <div class="footer-section">
-                    <h3><?= $translations['footer_contact_title'] ?? ($lang === 'fr' ? 'Contact' : 'Contact') ?></h3>
-                    <p><?= $lang === 'en' ? 'Email: hello@techessentialspro.com' : 'Email: bonjour@techessentialspro.com' ?></p>
-                    <p><?= $lang === 'en' ? 'Response time: 24h' : 'Délai de réponse: 24h' ?></p>
-                    <p><?= $lang === 'en' ? 'Based in Montreal, Canada' : 'Basé à Montréal, Canada' ?></p>
-                </div>
-            </div>
-
-            <!-- Admin Access Links -->
-            <div class="admin-access">
-                <a href="/techessentialspro/admin/">
-                    <?= $lang === 'en' ? 'Main Panel' : 'Panel Principal' ?>
-                </a>
-                <span style="color: #ccc;">|</span>
-                <a href="/techessentialspro/admin-blog/login.php">
-                    <?= $lang === 'en' ? 'Blog Panel' : 'Panel Blog' ?>
-                </a>
-            </div>
-
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #555;">
-                <p><?= $translations['footer_legal'] ?? ('&copy; 2025 ' . $translations['site_title'] . '. ' . ($lang === 'fr' ? 'Tous droits réservés' : 'All rights reserved') . '.') ?></p>
-            </div>
-        </div>
-    </footer>
 </body>
 </html>

@@ -12,6 +12,7 @@ require_once __DIR__ . '/includes/config.php';
 require_once INCLUDES_PATH . 'functions.php';
 require_once INCLUDES_PATH . 'language.php';
 
+
 // Initialiser la session si ce n'est pas déjà fait
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

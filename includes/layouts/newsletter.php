@@ -12,14 +12,14 @@ if (!isset($lang)) {
 // Traductions par défaut si pas définies
 $newsletter_translations = [
     'fr' => [
-        'title' => 'Restez informé',
-        'subtitle' => 'Recevez nos dernières recommandations et bons plans tech',
+        'title' => 'Restez informé - obtenez des offres et des avis tech exclusifs',
+        'subtitle' => 'Ne manquez pas notre newsletter bimestrielle. Rejoignez plus de 15 000 télétravailleurs et accédez en avant-première aux offres.',
         'placeholder' => 'Votre email',
         'button' => "S'abonner"
     ],
     'en' => [
-        'title' => 'Stay Updated',
-        'subtitle' => 'Get our latest recommendations and tech deals',
+        'title' => 'Stay Updated - Get Exclusive Tech Deals & Reviews',
+        'subtitle' => 'Never Miss Out On Our Bi-monthly Newsletter. Join 15 000+ Remote Workers And Have Early Access To Deals',
         'placeholder' => 'Your email',
         'button' => 'Subscribe'
     ]
