@@ -253,6 +253,8 @@ function cleanArray($array) {
     return array_map('clean', $array);
 }
 
+
+
 // ===============================
 // INITIALISATION SESSION
 // ===============================

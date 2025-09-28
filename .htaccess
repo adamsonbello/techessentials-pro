@@ -2,3 +2,16 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ router.php?route=$1 [QSA,L]
+
+RewriteEngine On
+
+# Sécurité basique - Empêcher l'accès aux dossiers sensibles
+RewriteRule ^(includes|config|vendor)/ - [F,L]
+
+# Vos règles actuelles
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ router.php?route=$1 [QSA,L]
+
+# Désactiver l'affichage des dossiers
+Options -Indexes

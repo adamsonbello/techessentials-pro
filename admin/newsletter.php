@@ -58,6 +58,23 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
             font-size: 1.5rem;
         }
         
+        .admin-nav {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: #e7f3ff;
+        }
+        
         .admin-user {
             display: flex;
             align-items: center;
@@ -196,6 +213,19 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
             background: #f8d7da;
             color: #721c24;
         }
+        
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .admin-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -205,9 +235,16 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
     <div class="admin-header">
-        <h1>📧 Newsletter Dashboard</h1>
+        <h1>📊 Newsletter Dashboard</h1>
+        <div class="admin-nav">
+            <a href="dashboard.php" class="nav-link">🏠 Dashboard</a>
+            <a href="newsletter.php" class="nav-link active">📊 Stats</a>
+            <a href="email-manager.php" class="nav-link">📧 Emails</a>
+            <a href="contact-manager.php" class="nav-link">💬 Messages</a>
+            <a href="verified-contacts.php" class="nav-link">✅ Contacts Vérifiés</a>
+        </div>
         <div class="admin-user">
-            <span>Connecté en tant que: <?php echo htmlspecialchars($admin_user); ?></span>
+            <span>Connecté : <?php echo htmlspecialchars($admin_user); ?></span>
             <a href="?logout=1" class="logout-btn">Déconnexion</a>
         </div>
     </div>
@@ -238,8 +275,8 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
     </div>
 
     <script>
-        // API URL relatif depuis le dossier admin
-        const API_URL = "../api.php";
+        // API URL corrigé pour le système unifié
+        const API_URL = "api.php";
 
         // Test de connectivité API
         async function testAPI() {

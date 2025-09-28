@@ -17,7 +17,7 @@ if (in_array($lang, ['fr', 'en'])) {
 
 // Variables pour le header
 $page_title = $lang === 'fr' ? 'Produits Tech Professionnels - TechEssentials Pro' : 'Professional Tech Products - TechEssentials Pro';
-$page_description = $lang === 'fr' ? 'Découvrez notre sélection de 20 produits tech essentiels pour professionnels. Moniteurs, claviers, souris, casques et plus.' : 'Discover our selection of 20 essential tech products for professionals. Monitors, keyboards, mice, headphones and more.';
+$page_description = $lang === 'fr' ? 'Découvrez notre sélection de  produits tech essentiels pour Télétravailleurs. Moniteurs, claviers, souris, casques et plus.' : 'Discover our selection of 20 essential tech products for professionals. Monitors, keyboards, mice, headphones and more.';
 
 
 
@@ -355,7 +355,7 @@ include 'includes/layouts/header.php';
 <section class="products-hero">
     <div class="container">
         <h1><?= $lang === 'fr' ? 'Catalogue Produits Tech' : 'Tech Products Catalog' ?></h1>
-        <p><?= $lang === 'fr' ? 'Découvrez notre sélection de 20 produits tech essentiels sélectionnés pour les professionnels exigeants' : 'Discover our selection of 20 essential tech products curated for demanding professionals' ?></p>
+        <p><?= $lang === 'fr' ? 'Découvrez notre sélection de produits tech essentiels sélectionnés pour les Télétravailleurs exigeants' : 'Discover our selection of essential tech products curated for demanding Remote workers' ?></p>
     </div>
 </section>
 
@@ -427,10 +427,7 @@ include 'includes/layouts/header.php';
                                 <?= $lang === 'fr' ? 'Détails' : 'Details' ?>
                             </a>
                             
-                            <button onclick="openProductPopup('<?= $product['id'] ?>')" 
-                                    class="btn btn-secondary" style="border: 1px solid #667eea;">
-                                <?= $lang === 'fr' ? 'Aperçu' : 'Quick View' ?>
-                            </button>
+                           
                             
                             <a href="<?= htmlspecialchars($product['amazon_url']) ?>" 
                                class="btn btn-primary" target="_blank" rel="noopener">

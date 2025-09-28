@@ -781,22 +781,33 @@ function timeAgo($datetime) {
     </style>
 </head>
 <body>
-    <!-- Header avec navigation -->
-    <header class="site-header">
-        <div class="header-content">
-            <a href="../index.html" class="logo">TechEssentials Pro</a>
-            <nav>
-                <ul class="nav-menu">
-                    <li><a href="../index.html">🏠 Accueil</a></li>
-                    <li><a href="../products.html">📱 Produits</a></li>
-                    <li><a href="../reviews.html">⭐ Tests</a></li>
-                    <li><a href="index.php" class="active">📝 Blog</a></li>
-                    <li><a href="../deals.html">💰 Bons Plans</a></li>
-                    <li><a href="../contact.html">📞 Contact</a></li>
-                </ul>
-            </nav>
+    
+<!-- 1. HEADER CORRIGÉ POUR LE BLOG (à mettre dans blog/index.php) -->
+
+<header class="site-header">
+    <div class="header-content">
+        <link rel="stylesheet" href="../assets/css/header-unified.css">
+        <a href="../index.php?lang=<?= $lang ?? 'fr' ?>" class="logo">TechEssentials Pro</a>
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="../index.php?lang=<?= $lang ?? 'fr' ?>">🏠 Accueil</a></li>
+                <li><a href="../products.php?lang=<?= $lang ?? 'fr' ?>">📱 Produits</a></li>
+                <li><a href="../reviews.php?lang=<?= $lang ?? 'fr' ?>">⭐ Tests</a></li>
+                <li><a href="index.php?lang=<?= $lang ?? 'fr' ?>" class="active">📝 Blog</a></li>
+                <li><a href="../deals.php?lang=<?= $lang ?? 'fr' ?>">💰 Bons Plans</a></li>
+                <li><a href="../contact.php?lang=<?= $lang ?? 'fr' ?>">📞 Contact</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Ajout du switch langue -->
+        <div class="lang-switch">
+            <a href="?lang=fr<?= isset($_GET) && count($_GET) > 1 ? '&' . http_build_query(array_diff_key($_GET, ['lang' => ''])) : '' ?>" 
+               class="<?= ($lang ?? 'fr') === 'fr' ? 'active' : '' ?>">FR</a>
+            <a href="?lang=en<?= isset($_GET) && count($_GET) > 1 ? '&' . http_build_query(array_diff_key($_GET, ['lang' => ''])) : '' ?>" 
+               class="<?= ($lang ?? 'fr') === 'en' ? 'active' : '' ?>">EN</a>
         </div>
-    </header>
+    </div>
+</header>
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -1129,23 +1140,15 @@ function timeAgo($datetime) {
             <?php endif; ?>
 
             <!-- Newsletter -->
-            <div class="sidebar-widget" style="background: var(--gradient); color: white;">
-                <h3 class="widget-title" style="color: white;">📧 Newsletter</h3>
-                <p style="margin-bottom: 15px; opacity: 0.9;">
-                    Recevez les derniers articles tech directement dans votre boîte mail !
-                </p>
-                <form style="display: flex; flex-direction: column; gap: 10px;">
-                    <input type="email" 
-                           placeholder="Votre email" 
-                           style="padding: 10px; border: none; border-radius: 6px;">
-                    <button type="submit" 
-                            style="background: white; color: var(--primary-color); border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">
-                        S'abonner
-                    </button>
-                </form>
-            </div>
+      
         </aside>
-    </div>
+       </div>
+        <?php 
+      // Include newsletter
+        include '../includes/layouts/newsletter.php';
+        ?>
+        
+    
 
     <script>
         // Animation au scroll

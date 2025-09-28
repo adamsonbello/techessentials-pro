@@ -12,7 +12,7 @@ define('TECHESSENTIALS_PRO', true);
 require_once __DIR__ . '/includes/config.php';
 require_once INCLUDES_PATH . 'functions.php';
 
-echo "BASE_URL = " . BASE_URL . "<br>";
+
 
 // Initialiser la session pour langue
 if (session_status() === PHP_SESSION_NONE) {
@@ -41,7 +41,7 @@ $all_products = [
         'slug' => 'anker-737'
     ],
     [
-        'id' => 'asus-proart-monitor',
+        'id' => 'asus-proart-pa248qv',
         'image' => 'asus-proart-pa248QV.jpg',
         'name' => 'ASUS ProArt Display PA248QV',
         'description' => 'Professional monitor with exceptional color accuracy and Pantone certification.',
@@ -54,7 +54,7 @@ $all_products = [
         'slug' => 'asus-proart-monitor'
     ],
     [
-        'id' => 'logitech-mx-master',
+        'id' => 'logitech-mx-master-3s',
         'image' => 'logitech-mx-master-3s.jpg',
         'name' => 'Logitech MX Master 3S',
         'description' => 'Advanced wireless mouse with MagSpeed scroll wheel and precision tracking.',
@@ -67,7 +67,7 @@ $all_products = [
         'slug' => 'logitech-mx-master'
     ],
     [
-        'id' => 'dell-ultrasharp',
+        'id' => 'dell-ultrasharp-u2720q',
         'image' => 'dell-ultrasharp-u2720q.jpg',
         'name' => 'Dell UltraSharp U2720Q 27"',
         'description' => 'Professional 4K monitor with USB-C connectivity and premium color accuracy.',
@@ -157,11 +157,27 @@ $translations = $t[$lang];
 ?>
 <!DOCTYPE html>
 <html lang="<?= $lang ?>">
+
+<!-- 1. INDEX.PHP - PAGE D'ACCUEIL -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $translations['site_title'] ?> - <?= $translations['tagline'] ?></title>
-    <meta name="description" content="<?= $translations['tagline'] ?>">
+    <title>TechEssentials Pro - Équipement Tech pour Télétravail & Nomades Digitaux</title>
+    <meta name="description" content="Découvrez les meilleurs outils tech pour télétravailleurs à domicile et nomades digitaux. Tests d'experts, recommandations et deals exclusifs pour optimiser votre productivité en remote.">
+    <meta name="keywords" content="télétravail, home office, nomade digital, remote work, équipement bureau domicile, outils productivité télétravail, tech nomade, bureau à distance">
+    <meta name="author" content="TechEssentials Pro">
+    
+    <!-- Open Graph pour réseaux sociaux -->
+    <meta property="og:title" content="TechEssentials Pro - Tech pour Télétravail & Nomades">
+    <meta property="og:description" content="Les meilleurs équipements tech pour télétravailleurs et nomades digitaux. Tests, comparatifs et recommandations d'experts.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://techessentialspro.com">
+    
+    <!-- Hreflang pour versions linguistiques -->
+    <link rel="alternate" hreflang="fr" href="https://techessentialspro.com/index.php?lang=fr">
+    <link rel="alternate" hreflang="en" href="https://techessentialspro.com/index.php?lang=en">
+    <link rel="canonical" href="https://techessentialspro.com">
+
     
     <style>
         * {
@@ -584,25 +600,31 @@ $translations = $t[$lang];
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="nav container">
-            <div class="logo"><?= $translations['site_title'] ?></div>
-            
-          <ul class="nav-links">
-               <li><a href="<?= BASE_URL ?>index.php?lang=<?= $lang ?>"><?= ucfirst($lang == 'fr' ? 'Accueil' : 'Home') ?></a></li>
-               <li><a href="<?= BASE_URL ?>products.php?lang=<?= $lang ?>"><?= $lang == 'fr' ? 'Produits' : 'Products' ?></a></li>
-               <li><a href="<?= BASE_URL ?>reviews.php?lang=<?= $lang ?>"><?= $lang == 'fr' ? 'Tests' : 'Reviews' ?></a></li>
-               <li><a href="<?= BASE_URL ?>blog.php?lang=<?= $lang ?>"><?= $lang == 'fr' ? 'Blog' : 'Blog' ?></a></li>
-               <li><a href="<?= BASE_URL ?>contact.php?lang=<?= $lang ?>"><?= $lang == 'fr' ? 'Contact' : 'Contact' ?></a></li>
-          </ul>
+   <!-- 2. NOUVEAU HEADER PRINCIPAL UNIFIÉ (pour includes/layouts/header.php) -->
 
-            <div class="lang-switch">
-                <a href="?lang=fr" class="<?= $lang === 'fr' ? 'active' : '' ?>">FR</a>
-                <a href="?lang=en" class="<?= $lang === 'en' ? 'active' : '' ?>">EN</a>
-            </div>
+<header class="site-header">
+    <div class="header-content">
+        <link rel="stylesheet" href="assets/css/header-unified.css">
+        <a href="<?= BASE_URL ?>index.php?lang=<?= $lang ?>" class="logo">TechEssentials Pro</a>
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="<?= BASE_URL ?>index.php?lang=<?= $lang ?>" class="<?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : '' ?>">🏠 <?= $lang === 'fr' ? 'Accueil' : 'Home' ?></a></li>
+                <li><a href="<?= BASE_URL ?>products.php?lang=<?= $lang ?>" class="<?= basename($_SERVER['PHP_SELF']) === 'products.php' ? 'active' : '' ?>">📱 <?= $lang === 'fr' ? 'Produits' : 'Products' ?></a></li>
+                <li><a href="<?= BASE_URL ?>reviews.php?lang=<?= $lang ?>" class="<?= basename($_SERVER['PHP_SELF']) === 'reviews.php' ? 'active' : '' ?>">⭐ <?= $lang === 'fr' ? 'Tests' : 'Reviews' ?></a></li>
+                <li><a href="<?= BASE_URL ?>blog/?lang=<?= $lang ?>" class="<?= strpos($_SERVER['REQUEST_URI'], '/blog/') !== false ? 'active' : '' ?>">📝 Blog</a></li>
+                <li><a href="<?= BASE_URL ?>deals.php?lang=<?= $lang ?>" class="<?= basename($_SERVER['PHP_SELF']) === 'deals.php' ? 'active' : '' ?>">💰 <?= $lang === 'fr' ? 'Bons Plans' : 'Deals' ?></a></li>
+                <li><a href="<?= BASE_URL ?>contact.php?lang=<?= $lang ?>" class="<?= basename($_SERVER['PHP_SELF']) === 'contact.php' ? 'active' : '' ?>">📞 Contact</a></li>
+            </ul>
         </nav>
-    </header>
+        
+        <div class="lang-switch">
+            <a href="<?= $_SERVER['PHP_SELF'] ?>?lang=fr<?= isset($_GET) && count($_GET) > 1 ? '&' . http_build_query(array_diff_key($_GET, ['lang' => ''])) : '' ?>" 
+               class="<?= $lang === 'fr' ? 'active' : '' ?>">FR</a>
+            <a href="<?= $_SERVER['PHP_SELF'] ?>?lang=en<?= isset($_GET) && count($_GET) > 1 ? '&' . http_build_query(array_diff_key($_GET, ['lang' => ''])) : '' ?>" 
+               class="<?= $lang === 'en' ? 'active' : '' ?>">EN</a>
+        </div>
+    </div>
+</header>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -679,7 +701,11 @@ $translations = $t[$lang];
                                 </p>
                                 
                                 <div class="product-actions">
-                                    <a href="/product-detail.php?slug=<?= htmlspecialchars($product['slug'] ?? $product['id'] ?? '#') ?>" 
+                                    <a href="product-detail.php?id=<?= htmlspecialchars($product['id'] ?? '#') ?>&lang=<?= $lang ?>"
+                                     
+                                          
+
+
                                        class="btn btn-secondary"><?= $translations['learn_more'] ?></a>
                                     
                                     <a href="<?= htmlspecialchars($product['amazon_url'] ?? $product['affiliate_url'] ?? '#'); ?>" 
@@ -702,8 +728,12 @@ $translations = $t[$lang];
     </section>
 
     <!-- Newsletter Section -->
-    <?php 
+<?php 
 // Include newsletter et footer
+
+// Debug temporaire
+error_log("Newsletter.php loaded with GET: " . print_r($_GET, true));
+
 include 'includes/layouts/newsletter.php';
 include 'includes/layouts/footer.php';
 ?>

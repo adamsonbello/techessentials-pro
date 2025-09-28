@@ -243,9 +243,12 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
 <body>
     <div class="admin-header">
         <h1>📧 Email Manager</h1>
-        <div class="admin-nav">
-            <a href="newsletter.php" class="nav-link">📊 Stats</a>
-            <a href="email-manager.php" class="nav-link active">📧 Emails</a>
+      <div class="admin-nav">
+            <a href="dashboard.php" class="nav-link">🏠 Dashboard</a>
+            <a href="newsletter.php" class="nav-link active">📊 Stats</a>
+            <a href="email-manager.php" class="nav-link">📧 Emails</a>
+            <a href="contact-manager.php" class="nav-link">💬 Messages</a>
+            <a href="verified-contacts.php" class="nav-link">✅ Contacts Vérifiés</a>
         </div>
         <div class="admin-user">
             <span>Connecté : <?php echo htmlspecialchars($admin_user); ?></span>

@@ -143,9 +143,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$blocked) {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
+     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Admin - TechEssentials Pro</title>
+    <title>Blog Télétravail - Guides, Astuces & Actualités Tech | TechEssentials Pro</title>
+    <meta name="description" content="Blog spécialisé télétravail : guides setup bureau domicile, astuces productivité, actualités tech pour remote workers et nomades digitaux.">
+    <meta name="keywords" content="blog télétravail, guide home office, astuces remote work, actualité tech nomade, conseil productivité télétravail">
+    <meta name="author" content="TechEssentials Pro">
+    <meta property="og:title" content="Blog Télétravail - Guides & Astuces Tech">
+    <meta property="og:description" content="Guides pratiques, astuces et actualités tech pour optimiser votre télétravail et vie de nomade digital.">
+    <link rel="canonical" href="https://techessentialspro.com/blog/">
+    
     <style>
         * {
             margin: 0;

@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$blocked) {
         saveLoginAttempts($attempts_file, $login_attempts);
         
         // Redirection
-        header('Location: newsletter.php');
+       header('Location: dashboard.php');
         exit;
     } 
     else {

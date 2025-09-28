@@ -1,5 +1,5 @@
 <?php
-// admin/contact-manager.php - Gestionnaire de messages de contact
+// admin/verified-contacts.php - Gestionnaire de contacts vérifiés
 session_start();
 
 // Vérifier l'authentification
@@ -15,7 +15,7 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Manager - TechEssentials Pro</title>
+    <title>Contacts Vérifiés - TechEssentials Pro</title>
     <style>
         * {
             margin: 0;
@@ -92,19 +92,28 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             text-align: center;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #28a745;
         }
         
         .stat-number {
             font-size: 2.5rem;
             font-weight: bold;
-            color: #667eea;
+            color: #28a745;
             margin-bottom: 5px;
         }
         
         .stat-label {
             color: #666;
             font-size: 1rem;
+        }
+        
+        .verified-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
         }
         
         .messages-section {
@@ -115,7 +124,7 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
         }
         
         .section-header {
-            background: #667eea;
+            background: #28a745;
             color: white;
             padding: 20px;
             display: flex;
@@ -182,12 +191,12 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
             font-weight: 500;
         }
         
-        .status-new {
-            background: #fff3cd;
-            color: #856404;
+        .status-verified {
+            background: #d4edda;
+            color: #155724;
         }
         
-        .status-read {
+        .status-processed {
             background: #d1ecf1;
             color: #0c5460;
         }
@@ -197,20 +206,9 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
             color: #155724;
         }
         
-        .status-closed {
+        .status-archived {
             background: #f8d7da;
             color: #721c24;
-        }
-        
-        .priority-high {
-            color: #dc3545;
-            font-weight: bold;
-        }
-        
-        .priority-urgent {
-            color: #dc3545;
-            font-weight: bold;
-            text-transform: uppercase;
         }
         
         .message-preview {
@@ -221,7 +219,7 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
         }
         
         .action-btn {
-            background: #667eea;
+            background: #28a745;
             color: white;
             border: none;
             padding: 6px 12px;
@@ -233,23 +231,23 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
         }
         
         .action-btn:hover {
-            background: #5a6fd8;
-        }
-        
-        .action-btn.reply {
-            background: #28a745;
-        }
-        
-        .action-btn.reply:hover {
             background: #218838;
         }
         
-        .action-btn.close {
-            background: #dc3545;
+        .action-btn.reply {
+            background: #667eea;
         }
         
-        .action-btn.close:hover {
-            background: #c82333;
+        .action-btn.reply:hover {
+            background: #5a6fd8;
+        }
+        
+        .action-btn.archive {
+            background: #6c757d;
+        }
+        
+        .action-btn.archive:hover {
+            background: #5a6268;
         }
         
         .modal {
@@ -275,7 +273,7 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
         }
         
         .modal-header {
-            background: #667eea;
+            background: #28a745;
             color: white;
             padding: 20px;
             border-radius: 12px 12px 0 0;
@@ -316,7 +314,7 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
         
         .detail-label {
             font-weight: 600;
-            color: #667eea;
+            color: #28a745;
             margin-bottom: 5px;
         }
         
@@ -328,7 +326,15 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+        }
+        
+        .verification-info {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
             margin: 20px 0;
         }
         
@@ -365,12 +371,12 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
         }
         
         .btn-primary {
-            background: #667eea;
+            background: #28a745;
             color: white;
         }
         
         .btn-primary:hover {
-            background: #5a6fd8;
+            background: #218838;
         }
         
         .btn-secondary {
@@ -395,7 +401,7 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
         }
         
         .no-messages h3 {
-            color: #667eea;
+            color: #28a745;
             margin-bottom: 10px;
         }
         
@@ -422,14 +428,15 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
     </style>
 </head>
 <body>
-    <div class="admin-nav">
-    <a href="dashboard.php" class="nav-link">🏠 Dashboard</a>
-    <a href="newsletter.php" class="nav-link">📊 Stats</a>
-    <a href="email-manager.php" class="nav-link">📧 Emails</a>
-    <a href="contact-manager.php" class="nav-link active">💬 Messages</a>
-    <!-- AJOUTER : -->
-    <a href="verified-contacts.php" class="nav-link">✅ Contacts Vérifiés</a>
-    </div>
+    <div class="admin-header">
+        <h1>✅ Contacts Vérifiés</h1>
+        <div class="admin-nav">
+            <a href="dashboard.php" class="nav-link">🏠 Dashboard</a>
+            <a href="newsletter.php" class="nav-link">📊 Stats</a>
+            <a href="email-manager.php" class="nav-link">📧 Emails</a>
+            <a href="contact-manager.php" class="nav-link">💬 Messages</a>
+            <a href="verified-contacts.php" class="nav-link active">✅ Vérifiés</a>
+        </div>
         <div class="admin-user">
             <span>Connecté : <?php echo htmlspecialchars($admin_user); ?></span>
             <a href="?logout=1" class="logout-btn">Déconnexion</a>
@@ -440,28 +447,28 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
         <!-- Statistiques -->
         <div class="stats-cards">
             <div class="stat-card">
-                <div class="stat-number" id="totalMessages">-</div>
-                <div class="stat-label">Total Messages</div>
+                <div class="stat-number" id="totalVerified">-</div>
+                <div class="stat-label">Total Vérifiés</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="newMessages">-</div>
-                <div class="stat-label">Nouveaux</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="pendingReplies">-</div>
+                <div class="stat-number" id="pendingProcessing">-</div>
                 <div class="stat-label">En Attente</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="avgResponseTime">-</div>
-                <div class="stat-label">Temps Réponse (h)</div>
+                <div class="stat-number" id="recentWeek">-</div>
+                <div class="stat-label">Cette Semaine</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="responseRate">-</div>
+                <div class="stat-label">Taux Réponse (%)</div>
             </div>
         </div>
 
         <!-- Messages Section -->
         <div class="messages-section">
             <div class="section-header">
-                <h2>📬 Messages de Contact</h2>
-                <button onclick="loadMessages()" class="action-btn">🔄 Actualiser</button>
+                <h2>📬 Contacts Vérifiés</h2>
+                <button onclick="loadVerifiedContacts()" class="action-btn">🔄 Actualiser</button>
             </div>
 
             <!-- Filtres -->
@@ -470,16 +477,16 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
                     <label>Statut</label>
                     <select id="filterStatus" onchange="applyFilters()">
                         <option value="">Tous</option>
-                        <option value="new">Nouveaux</option>
-                        <option value="read">Lus</option>
+                        <option value="verified">Vérifiés</option>
+                        <option value="processed">Traités</option>
                         <option value="replied">Répondus</option>
-                        <option value="closed">Fermés</option>
+                        <option value="archived">Archivés</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Sujet</label>
-                    <select id="filterSubject" onchange="applyFilters()">
-                        <option value="">Tous</option>
+                    <label>Catégorie</label>
+                    <select id="filterCategory" onchange="applyFilters()">
+                        <option value="">Toutes</option>
                         <option value="general">Général</option>
                         <option value="partnership">Partenariat</option>
                         <option value="review">Test Produit</option>
@@ -489,31 +496,23 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Langue</label>
-                    <select id="filterLanguage" onchange="applyFilters()">
-                        <option value="">Toutes</option>
-                        <option value="en">🇺🇸 Anglais</option>
-                        <option value="fr">🇫🇷 Français</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Date</label>
+                    <label>Date Vérification</label>
                     <input type="date" id="filterDate" onchange="applyFilters()">
                 </div>
             </div>
 
-            <!-- Table des messages -->
-            <div id="messagesContainer">
-                <div class="loading">Chargement des messages...</div>
+            <!-- Table des contacts -->
+            <div id="contactsContainer">
+                <div class="loading">Chargement des contacts vérifiés...</div>
             </div>
         </div>
     </div>
 
-    <!-- Modal pour voir/répondre aux messages -->
-    <div id="messageModal" class="modal">
+    <!-- Modal pour voir/répondre aux contacts -->
+    <div id="contactModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Détails du Message</h2>
+                <h2 id="modalTitle">Détails du Contact</h2>
                 <button class="close-modal" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body" id="modalBody">
@@ -524,37 +523,37 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
 
     <script>
         const API_URL = "api.php";
-        let allMessages = [];
-        let currentMessage = null;
+        let allContacts = [];
+        let currentContact = null;
 
-        // Charger les messages
-        async function loadMessages() {
+        // Charger les contacts vérifiés
+        async function loadVerifiedContacts() {
             try {
-                document.getElementById('messagesContainer').innerHTML = '<div class="loading">Chargement des messages...</div>';
+                document.getElementById('contactsContainer').innerHTML = '<div class="loading">Chargement des contacts vérifiés...</div>';
                 
-                const response = await fetch(`${API_URL}?action=getContactMessages`);
+                const response = await fetch(`${API_URL}?action=getVerifiedContacts`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    allMessages = data.messages || [];
-                    displayMessages(allMessages);
+                    allContacts = data.contacts || [];
+                    displayContacts(allContacts);
                     updateStats(data.stats || {});
                 } else {
-                    document.getElementById('messagesContainer').innerHTML = `<div class="no-messages"><h3>Erreur</h3><p>${data.error}</p></div>`;
+                    document.getElementById('contactsContainer').innerHTML = `<div class="no-messages"><h3>Erreur</h3><p>${data.error}</p></div>`;
                 }
                 
             } catch (error) {
                 console.error('Erreur:', error);
-                document.getElementById('messagesContainer').innerHTML = '<div class="no-messages"><h3>Erreur de connexion</h3><p>Impossible de charger les messages.</p></div>';
+                document.getElementById('contactsContainer').innerHTML = '<div class="no-messages"><h3>Erreur de connexion</h3><p>Impossible de charger les contacts.</p></div>';
             }
         }
 
-        // Afficher les messages
-        function displayMessages(messages) {
-            const container = document.getElementById('messagesContainer');
+        // Afficher les contacts
+        function displayContacts(contacts) {
+            const container = document.getElementById('contactsContainer');
             
-            if (messages.length === 0) {
-                container.innerHTML = '<div class="no-messages"><h3>📭 Aucun message</h3><p>Aucun message de contact trouvé.</p></div>';
+            if (contacts.length === 0) {
+                container.innerHTML = '<div class="no-messages"><h3>📭 Aucun contact vérifié</h3><p>Aucun contact vérifié trouvé.</p></div>';
                 return;
             }
             
@@ -567,35 +566,35 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
                             <th>Email</th>
                             <th>Sujet</th>
                             <th>Aperçu</th>
-                            <th>Langue</th>
+                            <th>Vérification</th>
                             <th>Statut</th>
-                            <th>Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
             `;
             
-            messages.forEach(message => {
-                const statusClass = `status-${message.status}`;
-                const priorityClass = message.priority !== 'normal' ? `priority-${message.priority}` : '';
-                const langFlag = message.language === 'fr' ? '🇫🇷' : '🇺🇸';
-                const date = new Date(message.created_at).toLocaleDateString('fr-FR');
+            contacts.forEach(contact => {
+                const statusClass = `status-${contact.status}`;
+                const verifiedDate = new Date(contact.verified_at).toLocaleDateString('fr-FR');
+                const verifiedTime = new Date(contact.verified_at).toLocaleTimeString('fr-FR');
                 
                 tableHTML += `
-                    <tr class="${priorityClass}">
-                        <td>#${message.id}</td>
-                        <td>${message.first_name} ${message.last_name}</td>
-                        <td><a href="mailto:${message.email}">${message.email}</a></td>
-                        <td>${getSubjectLabel(message.subject)}</td>
-                        <td class="message-preview">${message.message}</td>
-                        <td>${langFlag}</td>
-                        <td><span class="status-badge ${statusClass}">${getStatusLabel(message.status)}</span></td>
-                        <td>${date}</td>
+                    <tr>
+                        <td>#${contact.id}</td>
+                        <td>${contact.name}</td>
+                        <td><a href="mailto:${contact.email}">${contact.email}</a></td>
+                        <td>${getCategoryLabel(contact.contact_category)}</td>
+                        <td class="message-preview">${contact.message}</td>
                         <td>
-                            <button class="action-btn" onclick="viewMessage(${message.id})">👁️ Voir</button>
-                            <button class="action-btn reply" onclick="replyMessage(${message.id})">✉️ Répondre</button>
-                            ${message.status !== 'closed' ? `<button class="action-btn close" onclick="closeMessage(${message.id})">❌ Fermer</button>` : ''}
+                            <div class="verified-badge">✓ Vérifié</div>
+                            <small style="color: #666;">${verifiedDate}<br>${verifiedTime}</small>
+                        </td>
+                        <td><span class="status-badge ${statusClass}">${getStatusLabel(contact.status)}</span></td>
+                        <td>
+                            <button class="action-btn" onclick="viewContact(${contact.id})">👁️ Voir</button>
+                            <button class="action-btn reply" onclick="replyContact(${contact.id})">✉️ Répondre</button>
+                            ${contact.status !== 'archived' ? `<button class="action-btn archive" onclick="archiveContact(${contact.id})">📁 Archiver</button>` : ''}
                         </td>
                     </tr>
                 `;
@@ -607,14 +606,14 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
 
         // Mettre à jour les statistiques
         function updateStats(stats) {
-            document.getElementById('totalMessages').textContent = stats.total || 0;
-            document.getElementById('newMessages').textContent = stats.new || 0;
-            document.getElementById('pendingReplies').textContent = stats.pending || 0;
-            document.getElementById('avgResponseTime').textContent = stats.avg_response_time || '-';
+            document.getElementById('totalVerified').textContent = stats.total_verified || 0;
+            document.getElementById('pendingProcessing').textContent = stats.by_status?.verified || 0;
+            document.getElementById('recentWeek').textContent = stats.recent_week || 0;
+            document.getElementById('responseRate').textContent = stats.response_rate || 0;
         }
 
-        // Labels des sujets
-        function getSubjectLabel(subject) {
+        // Labels des catégories
+        function getCategoryLabel(category) {
             const labels = {
                 'general': 'Général',
                 'partnership': 'Partenariat',
@@ -623,16 +622,16 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
                 'feedback': 'Commentaires',
                 'other': 'Autre'
             };
-            return labels[subject] || subject;
+            return labels[category] || category || 'Général';
         }
 
         // Labels des statuts
         function getStatusLabel(status) {
             const labels = {
-                'new': 'Nouveau',
-                'read': 'Lu',
+                'verified': 'Vérifié',
+                'processed': 'Traité',
                 'replied': 'Répondu',
-                'closed': 'Fermé'
+                'archived': 'Archivé'
             };
             return labels[status] || status;
         }
@@ -640,234 +639,237 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
         // Appliquer les filtres
         function applyFilters() {
             const statusFilter = document.getElementById('filterStatus').value;
-            const subjectFilter = document.getElementById('filterSubject').value;
-            const languageFilter = document.getElementById('filterLanguage').value;
+            const categoryFilter = document.getElementById('filterCategory').value;
             const dateFilter = document.getElementById('filterDate').value;
             
-            let filteredMessages = allMessages.filter(message => {
-                if (statusFilter && message.status !== statusFilter) return false;
-                if (subjectFilter && message.subject !== subjectFilter) return false;
-                if (languageFilter && message.language !== languageFilter) return false;
+            let filteredContacts = allContacts.filter(contact => {
+                if (statusFilter && contact.status !== statusFilter) return false;
+                if (categoryFilter && contact.contact_category !== categoryFilter) return false;
                 if (dateFilter) {
-                    const messageDate = new Date(message.created_at).toISOString().split('T')[0];
-                    if (messageDate !== dateFilter) return false;
+                    const contactDate = new Date(contact.verified_at).toISOString().split('T')[0];
+                    if (contactDate !== dateFilter) return false;
                 }
                 return true;
             });
             
-            displayMessages(filteredMessages);
+            displayContacts(filteredContacts);
         }
 
-        // Voir un message
-        async function viewMessage(messageId) {
-            const message = allMessages.find(m => m.id === messageId);
-            if (!message) return;
+        // Voir un contact
+        async function viewContact(contactId) {
+            const contact = allContacts.find(c => c.id === contactId);
+            if (!contact) return;
             
-            currentMessage = message;
+            currentContact = contact;
+            
+            const submittedDate = new Date(contact.submitted_at).toLocaleString('fr-FR');
+            const verifiedDate = new Date(contact.verified_at).toLocaleString('fr-FR');
             
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
+                <div class="verification-info">
+                    <div class="detail-label">✅ Contact Vérifié</div>
+                    <div class="detail-value">Ce contact a validé son adresse email le ${verifiedDate}</div>
+                </div>
+                
                 <div class="message-details">
                     <div class="detail-item">
                         <div class="detail-label">Contact</div>
-                        <div class="detail-value">${message.first_name} ${message.last_name}</div>
+                        <div class="detail-value">${contact.name}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Email</div>
-                        <div class="detail-value"><a href="mailto:${message.email}">${message.email}</a></div>
+                        <div class="detail-value"><a href="mailto:${contact.email}">${contact.email}</a></div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Sujet</div>
-                        <div class="detail-value">${getSubjectLabel(message.subject)}</div>
+                        <div class="detail-value">${getCategoryLabel(contact.contact_category)}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Date</div>
-                        <div class="detail-value">${new Date(message.created_at).toLocaleString('fr-FR')}</div>
+                        <div class="detail-label">Soumis le</div>
+                        <div class="detail-value">${submittedDate}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Langue</div>
-                        <div class="detail-value">${message.language === 'fr' ? '🇫🇷 Français' : '🇺🇸 English'}</div>
+                        <div class="detail-label">Vérifié le</div>
+                        <div class="detail-value">${verifiedDate}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Statut</div>
-                        <div class="detail-value"><span class="status-badge status-${message.status}">${getStatusLabel(message.status)}</span></div>
+                        <div class="detail-value"><span class="status-badge status-${contact.status}">${getStatusLabel(contact.status)}</span></div>
                     </div>
                 </div>
                 
                 <div class="message-content">
                     <div class="detail-label">Message :</div>
-                    <div style="margin-top: 10px; white-space: pre-wrap;">${message.message}</div>
+                    <div style="margin-top: 10px; white-space: pre-wrap;">${contact.message}</div>
                 </div>
                 
                 <div class="form-actions">
-                    <button class="btn btn-primary" onclick="replyMessage(${messageId})">✉️ Répondre</button>
-                    <button class="btn btn-secondary" onclick="markAsRead(${messageId})">👁️ Marquer comme lu</button>
-                    ${message.status !== 'closed' ? `<button class="btn btn-secondary" onclick="closeMessage(${messageId})">❌ Fermer</button>` : ''}
+                    <button class="btn btn-primary" onclick="replyContact(${contactId})">✉️ Répondre</button>
+                    <button class="btn btn-secondary" onclick="markAsProcessed(${contactId})">✓ Marquer traité</button>
+                    ${contact.status !== 'archived' ? `<button class="btn btn-secondary" onclick="archiveContact(${contactId})">📁 Archiver</button>` : ''}
                 </div>
             `;
             
-            document.getElementById('modalTitle').textContent = `Message #${messageId}`;
-            document.getElementById('messageModal').style.display = 'block';
-            
-            // Marquer comme lu automatiquement
-            if (message.status === 'new') {
-                markAsRead(messageId);
-            }
+            document.getElementById('modalTitle').textContent = `Contact #${contactId}`;
+            document.getElementById('contactModal').style.display = 'block';
         }
 
-        // Répondre à un message
-        function replyMessage(messageId) {
-            const message = allMessages.find(m => m.id === messageId);
-            if (!message) return;
+        // Répondre à un contact
+        function replyContact(contactId) {
+            const contact = allContacts.find(c => c.id === contactId);
+            if (!contact) return;
             
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
+                <div class="verification-info">
+                    <div class="detail-label">✅ Contact Vérifié</div>
+                    <div class="detail-value">Email validé le ${new Date(contact.verified_at).toLocaleString('fr-FR')}</div>
+                </div>
+                
                 <div class="message-details">
                     <div class="detail-item">
                         <div class="detail-label">À</div>
-                        <div class="detail-value">${message.first_name} ${message.last_name} (${message.email})</div>
+                        <div class="detail-value">${contact.name} (${contact.email})</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Sujet Original</div>
-                        <div class="detail-value">${getSubjectLabel(message.subject)}</div>
+                        <div class="detail-value">${getCategoryLabel(contact.contact_category)}</div>
                     </div>
                 </div>
                 
                 <div class="message-content">
                     <div class="detail-label">Message original :</div>
-                    <div style="margin-top: 10px; white-space: pre-wrap; font-style: italic;">${message.message}</div>
+                    <div style="margin-top: 10px; white-space: pre-wrap; font-style: italic;">${contact.message}</div>
                 </div>
                 
                 <div class="reply-form">
                     <div class="detail-label">Votre réponse :</div>
                     <textarea id="replyText" placeholder="Tapez votre réponse ici..."></textarea>
                     <div class="form-actions">
-                        <button class="btn btn-primary" onclick="sendReply(${messageId})">📤 Envoyer Réponse</button>
+                        <button class="btn btn-primary" onclick="sendContactReply(${contactId})">📤 Envoyer Réponse</button>
                         <button class="btn btn-secondary" onclick="closeModal()">❌ Annuler</button>
                     </div>
                 </div>
             `;
             
-            document.getElementById('modalTitle').textContent = `Répondre à #${messageId}`;
-            document.getElementById('messageModal').style.display = 'block';
+            document.getElementById('modalTitle').textContent = `Répondre à #${contactId}`;
+            document.getElementById('contactModal').style.display = 'block';
         }
 
         // Envoyer une réponse
-       async function sendReply(messageId) {
-    const replyText = document.getElementById('replyText').value.trim();
-    
-    if (!replyText) {
-        alert('Veuillez saisir une réponse');
-        return;
-    }
-    
-    if (!confirm('Envoyer cette réponse ?')) {
-        return;
-    }
-    
-    try {
-        const formData = new FormData();
-        formData.append('action', 'sendReply');
-        formData.append('message_id', messageId);
-        formData.append('reply_text', replyText);
-        
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            body: formData
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            alert('Réponse envoyée avec succès !');
-            closeModal();
-            loadMessages();
-        } else {
-            throw new Error(data.error || 'Erreur inconnue');
-        }
-        
-    } catch (error) {
-        alert('Erreur lors de l\'envoi : ' + error.message);
-    }
-}
-
-
-        // Marquer comme lu
-     async function markAsRead(messageId) {
-    try {
-        const formData = new FormData();
-        formData.append('action', 'markAsRead');
-        formData.append('message_id', messageId);
-        
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            body: formData
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            // Mettre à jour localement
-            const message = allMessages.find(m => m.id === messageId);
-            if (message) {
-                message.status = 'read';
-                displayMessages(allMessages);
-                updateStats(); // Recharger stats
+        async function sendContactReply(contactId) {
+            const replyText = document.getElementById('replyText').value.trim();
+            
+            if (!replyText) {
+                alert('Veuillez saisir une réponse');
+                return;
             }
-        } else {
-            console.error('Erreur:', data.error);
-        }
-        
-    } catch (error) {
-        console.error('Erreur:', error);
-    }
-}
-
-        // Fermer un message
-     async function closeMessage(messageId) {
-    if (!confirm('Fermer définitivement ce message ?')) {
-        return;
-    }
-    
-    try {
-        const formData = new FormData();
-        formData.append('action', 'updateMessageStatus');
-        formData.append('message_id', messageId);
-        formData.append('status', 'closed');
-        
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            body: formData
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            const message = allMessages.find(m => m.id === messageId);
-            if (message) {
-                message.status = 'closed';
-                displayMessages(allMessages);
+            
+            if (!confirm('Envoyer cette réponse ?')) {
+                return;
             }
-            closeModal();
-        } else {
-            alert('Erreur: ' + data.error);
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'replyToVerifiedContact');
+                formData.append('contact_id', contactId);
+                formData.append('reply_message', replyText);
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Réponse envoyée avec succès !');
+                    closeModal();
+                    loadVerifiedContacts();
+                } else {
+                    throw new Error(data.error || 'Erreur inconnue');
+                }
+                
+            } catch (error) {
+                alert('Erreur lors de l\'envoi : ' + error.message);
+            }
         }
-        
-    } catch (error) {
-        console.error('Erreur:', error);
-        alert('Erreur lors de la fermeture du message');
-    }
-}
+
+        // Marquer comme traité
+        async function markAsProcessed(contactId) {
+            try {
+                const formData = new FormData();
+                formData.append('action', 'markContactAsProcessed');
+                formData.append('contact_id', contactId);
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const contact = allContacts.find(c => c.id === contactId);
+                    if (contact) {
+                        contact.status = 'processed';
+                        displayContacts(allContacts);
+                    }
+                    closeModal();
+                } else {
+                    console.error('Erreur:', data.error);
+                }
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Archiver un contact
+        async function archiveContact(contactId) {
+            if (!confirm('Archiver ce contact ?')) {
+                return;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'archiveVerifiedContact');
+                formData.append('contact_id', contactId);
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const contact = allContacts.find(c => c.id === contactId);
+                    if (contact) {
+                        contact.status = 'archived';
+                        displayContacts(allContacts);
+                    }
+                    closeModal();
+                } else {
+                    alert('Erreur: ' + data.error);
+                }
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'archivage');
+            }
+        }
 
         // Fermer la modal
         function closeModal() {
-            document.getElementById('messageModal').style.display = 'none';
-            currentMessage = null;
+            document.getElementById('contactModal').style.display = 'none';
+            currentContact = null;
         }
 
         // Fermer modal en cliquant à l'extérieur
         window.addEventListener('click', function(event) {
-            const modal = document.getElementById('messageModal');
+            const modal = document.getElementById('contactModal');
             if (event.target === modal) {
                 closeModal();
             }
@@ -875,8 +877,8 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            loadMessages();
-            console.log('📧 Contact Manager chargé');
+            loadVerifiedContacts();
+            console.log('✅ Verified Contacts Manager chargé');
         });
     </script>
 </body>

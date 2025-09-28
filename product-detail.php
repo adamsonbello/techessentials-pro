@@ -4,9 +4,24 @@ define('TECHESSENTIALS_PRO', true);
 require_once __DIR__ . '/includes/config.php';
 require_once INCLUDES_PATH . 'functions.php';
 
+function getProductByIdOrSlug($identifier) {
+    global $all_products;
+    
+    if (empty($identifier)) return null;
+    
+    foreach ($all_products as $product) {
+        // Comparaison stricte avec les IDs string
+        if (isset($product['id']) && $product['id'] === $identifier) {
+            return $product;
+        }
+    }
+    return null;
+}
+
+
 // Variables de base AVANT d'inclure products-data
 $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'fr';
-$product_id = $_GET['id'] ?? '';
+$product_id = $_GET['id'] ?? $_GET['slug'] ?? '';
 
 if (in_array($lang, ['fr', 'en'])) {
     $_SESSION['lang'] = $lang;
@@ -15,10 +30,8 @@ if (in_array($lang, ['fr', 'en'])) {
 // Maintenant on peut charger products-data (qui utilise $lang)
 require_once INCLUDES_PATH . 'products-data.php';
 
-// Reste du code...
-
 // Vérification produit avec la fonction centralisée
-$product = getProductById($product_id);
+$product = getProductByIdOrSlug($product_id);
 
 if (!$product) {
     // Redirect propre vers products.php si produit non trouvé
@@ -32,7 +45,12 @@ $page_description = htmlspecialchars($product['description']);
 
 // Données supplémentaires pour product-detail (si pas dans l'array de base)
 $product_details = [
-    'gallery_images' => [$product['image']], // Pour l'instant, une seule image
+    'gallery_images' => [
+        $product['image'],
+        $product['image'], 
+        $product['image'], 
+        $product['image']
+    ], // MODIFIÉ : 4 images au lieu d'1
     'reviews_count' => rand(50, 500), // Temporaire
     'long_description' => $product['description'],
     'in_stock' => true,
@@ -108,7 +126,8 @@ include 'includes/layouts/header.php';
     border-radius: 10px;
     overflow: hidden;
     margin-bottom: 1rem;
-    cursor: zoom-in;
+    /* SUPPRIMÉ : cursor: zoom-in; */
+    /* SUPPRIMÉ : onclick */
 }
 
 .main-image img {
@@ -371,25 +390,42 @@ include 'includes/layouts/header.php';
     margin-top: 2px;
 }
 
-.zoom-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+/* SYSTÈME DE LOUPE CARRÉE - CSS AJOUTÉ */
+.magnifier-overlay {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
     display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    cursor: zoom-out;
 }
 
-.zoom-overlay img {
-    max-width: 90%;
-    max-height: 90%;
+.magnifier-lens {
+    position: absolute;
+    border: 2px solid rgba(102, 126, 234, 0.8);
+    background: rgba(102, 126, 234, 0.15);
+    pointer-events: none;
+    width: 120px;
+    height: 120px;
+    backdrop-filter: blur(1px);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+}
+
+.magnifier-result {
+    position: absolute;
+    border: 2px solid #667eea;
+    background: white;
+    overflow: hidden;
+    width: 300px;
+    height: 300px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    z-index: 1001;
+}
+
+.magnifier-result img {
+    position: absolute;
+    width: 600px;
+    height: 600px;
     object-fit: contain;
-    border-radius: 10px;
 }
 
 /* Responsive */
@@ -424,6 +460,28 @@ include 'includes/layouts/header.php';
     .vendor-comparison {
         grid-template-columns: 1fr;
     }
+    
+    /* Masquer la loupe sur mobile */
+    .magnifier-overlay,
+    .magnifier-result {
+        display: none !important;
+    }
+
+    .magnifier-result {
+    position: absolute;
+    border: 2px solid #667eea;
+    background: white;
+    overflow: hidden;
+    width: 300px;
+    height: 300px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    z-index: 1001;
+    /* AJOUTER POUR TEST : */
+    left: 450px !important;
+    top: 0px !important;
+    display: block !important;
+}
 }
 </style>
 
@@ -442,7 +500,8 @@ include 'includes/layouts/header.php';
             <div class="product-main">
                 <!-- Product Gallery -->
                 <div class="product-gallery">
-                    <div class="main-image" onclick="openZoom('assets/images/products/<?= $product['image'] ?>')">
+                    <div class="main-image">
+                        <!-- SUPPRIMÉ onclick="openZoom(...)" -->
                         <img id="mainProductImage" src="assets/images/products/<?= $product['image'] ?>" 
                              alt="<?= htmlspecialchars($product['name']) ?>">
                     </div>
@@ -591,34 +650,30 @@ include 'includes/layouts/header.php';
     </div>
 </div>
 
-<!-- Zoom Overlay -->
-<div class="zoom-overlay" id="zoomOverlay" onclick="closeZoom()">
-    <img id="zoomImage" src="" alt="Zoom">
-</div>
+<!-- SUPPRIMÉ COMPLÈTEMENT : Zoom Overlay -->
+
+<!-- SYSTÈME DE LOUPE CARRÉE INTÉGRÉ -->
+<!-- REMPLACER LE SCRIPT JAVASCRIPT À LA FIN DE VOTRE PRODUCT-DETAIL.PHP PAR CECI : -->
 
 <script>
-// Image Gallery Functions
+// Image Gallery Functions - CONSERVÉES
 function changeMainImage(imageSrc, thumbnail) {
     document.getElementById('mainProductImage').src = imageSrc;
     
     // Update active thumbnail
     document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
     thumbnail.classList.add('active');
+    
+    // Mettre à jour l'image de zoom aussi
+    const zoomImg = document.querySelector('.magnifier-result img');
+    if (zoomImg) {
+        zoomImg.src = imageSrc;
+    }
 }
 
-// Zoom Functions
-function openZoom(imageSrc) {
-    document.getElementById('zoomImage').src = imageSrc;
-    document.getElementById('zoomOverlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
 
-function closeZoom() {
-    document.getElementById('zoomOverlay').style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
 
-// Tab Functions
+// Tab Functions - CONSERVÉES
 function showTab(tabName) {
     // Hide all tabs
     document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
@@ -629,11 +684,135 @@ function showTab(tabName) {
     event.target.classList.add('active');
 }
 
-// Keyboard navigation for zoom
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeZoom();
+// SYSTÈME DE LOUPE CARRÉE FINAL
+document.addEventListener('DOMContentLoaded', function() {
+    const mainImage = document.querySelector('.main-image');
+    const mainImg = document.getElementById('mainProductImage');
+    
+    if (!mainImage || !mainImg) {
+        return;
     }
+    
+    // Vérifier si on est sur mobile
+    if (window.innerWidth <= 768 || 'ontouchstart' in window) {
+        return; // Pas de loupe sur mobile
+    }
+    
+    // Créer la loupe carrée
+    const lens = document.createElement('div');
+    lens.style.cssText = `
+        position: absolute;
+        border: 2px solid rgba(102, 126, 234, 0.8);
+        background: rgba(102, 126, 234, 0.15);
+        pointer-events: none;
+        width: 120px;
+        height: 120px;
+        backdrop-filter: blur(1px);
+        box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+        display: none;
+        z-index: 1000;
+    `;
+    
+    // Créer la fenêtre zoom
+    const result = document.createElement('div');
+    result.className = 'magnifier-result';
+    result.style.cssText = `
+        position: fixed;
+        border: 2px solid #667eea;
+        background: white;
+        overflow: hidden;
+        width: 600px;
+        height: 600px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        z-index: 1001;
+        display: none;
+    `;
+    
+    // Image dans la fenêtre zoom
+    const zoomImg = document.createElement('img');
+    zoomImg.src = mainImg.src;
+    zoomImg.alt = 'Vue agrandie';
+    zoomImg.style.cssText = `
+        position: absolute;
+        width: 1200px;
+        height: 1200px;
+        object-fit: contain;
+    `;
+    result.appendChild(zoomImg);
+    
+    // Ajouter au container
+    mainImage.style.position = 'relative';
+    mainImage.appendChild(lens);
+    mainImage.appendChild(result);
+    
+    // Positionner la fenêtre zoom
+    function positionZoomWindow() {
+        const productInfo = document.querySelector('.product-info');
+        if (productInfo) {
+            const infoRect = productInfo.getBoundingClientRect();
+            result.style.left = (infoRect.left + 50) + 'px';
+            result.style.top = (infoRect.top -100) + 'px';
+        }
+    }
+    
+    positionZoomWindow();
+    
+    // Events
+    mainImage.addEventListener('mouseenter', function() {
+        lens.style.display = 'block';
+        result.style.display = 'block';
+        mainImage.style.cursor = 'none';
+        positionZoomWindow(); // Recalculer position
+    });
+    
+    mainImage.addEventListener('mouseleave', function() {
+        lens.style.display = 'none';
+        result.style.display = 'none';
+        mainImage.style.cursor = 'default';
+    });
+    
+    mainImage.addEventListener('mousemove', function(e) {
+        const rect = mainImage.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Position loupe (centrée sur curseur)
+        const lensSize = 120;
+        const halfLens = lensSize / 2;
+        
+        let lensX = x - halfLens;
+        let lensY = y - halfLens;
+        
+        // Contraindre la loupe dans l'image
+        lensX = Math.max(0, Math.min(lensX, rect.width - lensSize));
+        lensY = Math.max(0, Math.min(lensY, rect.height - lensSize));
+        
+        lens.style.left = lensX + 'px';
+        lens.style.top = lensY + 'px';
+        
+        // Position zoom avec magnifying power 3x
+        const zoomFactor = 3.0;
+        const zoomX = -(x * zoomFactor - 300); // 300 = moitié de 600px
+        const zoomY = -(y * zoomFactor - 300);
+        
+        zoomImg.style.left = zoomX + 'px';
+        zoomImg.style.top = zoomY + 'px';
+    });
+    
+    // Recalculer position sur resize
+    window.addEventListener('resize', positionZoomWindow);
+    
+    // Observer les changements d'image pour compatibilité avec changeMainImage
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+                zoomImg.src = mainImg.src;
+            }
+        });
+    });
+    
+    observer.observe(mainImg, { attributes: true });
 });
 </script>
 
