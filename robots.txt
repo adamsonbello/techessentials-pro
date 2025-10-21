@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Bloquer l'admin
+Disallow: /admin/
+Disallow: /admin-blog/
+Disallow: /includes/
+
+# Bloquer les fichiers sensibles
+Disallow: /*.php$
+Allow: /blog/*.php
+Allow: /products.php
+Allow: /reviews.php
+Allow: /deals.php
+Allow: /contact.php
+
+# Sitemap
+Sitemap: http://localhost/TechessentialsPro/sitemap.php
+
+# Crawl delay
+Crawl-delay: 1

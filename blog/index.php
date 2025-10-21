@@ -72,6 +72,15 @@ $articles_query = "
 $articles_stmt = $pdo->prepare($articles_query);
 $articles_stmt->execute($params);
 $articles = $articles_stmt->fetchAll();
+foreach ($articles as &$article) {
+    if (empty($article['featured_image']) && !empty($article['content'])) {
+        // Chercher la première balise <img> dans le contenu
+        if (preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $article['content'], $match)) {
+            $article['featured_image'] = $match[1];
+        }
+    }
+}
+unset($article); // Important : libérer la référence
 
 // Comptage total pour pagination
 $count_query = "

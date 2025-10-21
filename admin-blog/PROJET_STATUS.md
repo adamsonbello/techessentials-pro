@@ -275,4 +275,3 @@ Le système utilise des fichiers PHP directs (products.php, reviews.php) plutôt
 2. Migrer pages existantes vers cette structure
 3. Intégrer les 20 produits DB avec style
 
----

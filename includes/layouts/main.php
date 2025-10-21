@@ -278,7 +278,7 @@ $current_url = getCurrentURL();
                     <p>&copy; <?= date('Y') ?> <?= __('site.title') ?>. <?= __('site.copyright') ?>.</p>
                 </div>
                 <div class="footer-meta">
-                    <p>Made with ❤️ by Adams (Fred) - CTO</p>
+                    <p>Made with ❤️ by Bello Adams (Fred) - CTO</p>
                 </div>
             </div>
         </div>
@@ -327,3 +327,6 @@ $current_url = getCurrentURL();
     </script>
 </body>
 </html>
+
+
+TechEssentials Pro - Équipement Tech pour Télétravail & Nomades Digitaux

@@ -193,7 +193,7 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Commentaires - Blog Admin</title>
     <style>
-        * {
+         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -550,6 +550,7 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+        /* TON CSS ICI - Garde celui que tu as déjà */
     </style>
 </head>
 <body>
@@ -699,6 +700,8 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
                                 </form>
                             <?php endif; ?>
 
+                            <a href="edit.php?id=<?php echo $comment['id']; ?>" class="btn btn-small" style="background: #2196F3; color: white;">✏️ Modifier</a>
+
                             <form method="POST" style="display: inline;" onsubmit="return confirm('Supprimer définitivement ce commentaire ?')">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="<?php echo $comment['id']; ?>">
@@ -741,10 +744,8 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
             bulkForm.style.display = 'none';
             document.body.appendChild(bulkForm);
 
-            // Gestion des checkboxes
             const checkboxes = document.querySelectorAll('input[name="comment_ids[]"]');
             
-            // Ajouter checkbox "tout sélectionner" dans le header
             const listHeader = document.querySelector('.list-header h3');
             if (listHeader && checkboxes.length > 0) {
                 const selectAllCheckbox = document.createElement('input');
@@ -761,7 +762,6 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
                 listHeader.insertBefore(selectAllCheckbox, listHeader.firstChild);
             }
 
-            // Mise à jour du formulaire d'actions groupées
             const bulkActionSelect = document.querySelector('select[name="bulk_action"]');
             const bulkSubmitBtn = document.querySelector('.bulk-actions button[type="submit"]');
             
@@ -788,7 +788,6 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
                         return;
                     }
                     
-                    // Créer et soumettre le formulaire
                     const form = document.createElement('form');
                     form.method = 'POST';
                     
@@ -818,7 +817,6 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
             }
         });
 
-        // Animation des messages
         document.addEventListener('DOMContentLoaded', function() {
             const messages = document.querySelectorAll('.message');
             messages.forEach(message => {
@@ -832,23 +830,11 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
             });
         });
 
-        // Auto-submit des filtres quand on change le statut
         document.getElementById('status').addEventListener('change', function() {
             this.form.submit();
         });
 
-        // Confirmation pour les actions de suppression
-        document.querySelectorAll('form[onsubmit*="confirm"]').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                if (!confirm('Êtes-vous sûr de vouloir supprimer définitivement ce commentaire ?')) {
-                    e.preventDefault();
-                }
-            });
-        });
-
-        // Raccourcis clavier
         document.addEventListener('keydown', function(e) {
-            // Ctrl+A : Sélectionner tous
             if (e.ctrlKey && e.key === 'a' && document.activeElement.tagName !== 'INPUT') {
                 e.preventDefault();
                 const selectAll = document.getElementById('select-all');
@@ -858,7 +844,6 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
                 }
             }
             
-            // Échap : Désélectionner tous
             if (e.key === 'Escape') {
                 const checkboxes = document.querySelectorAll('input[name="comment_ids[]"]');
                 checkboxes.forEach(cb => cb.checked = false);
@@ -867,7 +852,6 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
             }
         });
 
-        // Indicateur de commentaires sélectionnés
         document.addEventListener('DOMContentLoaded', function() {
             const checkboxes = document.querySelectorAll('input[name="comment_ids[]"]');
             const bulkActions = document.querySelector('.bulk-actions');
@@ -875,7 +859,6 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Admin';
             function updateSelectedCount() {
                 const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
                 
-                // Supprimer l'ancien indicateur
                 const oldIndicator = document.querySelector('.selected-indicator');
                 if (oldIndicator) oldIndicator.remove();
                 

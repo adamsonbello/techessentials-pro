@@ -20,30 +20,65 @@ if (!defined('TECHESSENTIALS_PRO')) {
  * Structure identique pour products.php et product-detail.php
  */
 $all_products = [
+    // PRODUIT 1
     [
         'id' => 'anker-737',
-        'image' => 'anker-737.jpg',
+        'image' => 'anker-737.jpg',  // Pour products.php (liste)
         'category' => 'chargers',
         'name' => $lang === 'fr' ? 'Anker 737 PowerCore 24K' : 'Anker 737 PowerCore 24K',
-        'description' => $lang === 'fr' ? 'Batterie externe haute capacité 24000mAh avec sortie 140W pour ordinateurs portables et appareils.' : 'High-capacity 24,000mAh power bank with 140W output for laptops and devices.',
+        'description' => $lang === 'fr' ? 'Batterie externe haute capacité...' : 'High-capacity power bank...',
         'price' => 139.99,
         'original_price' => 159.99,
         'discount_percentage' => 13,
         'rating' => 4.8,
-        'amazon_url' => 'https://amazon.fr/anker-737'
+        'amazon_url' => 'https://amazon.fr/anker-737',
+        
+        // ✅ GALERIE 4 IMAGES
+        'images' => [
+            'main' => 'anker-737/main.jpg',
+            'gallery' => [
+                'anker-737/gallery-1.jpg',
+                'anker-737/gallery-2.jpg',
+                'anker-737/gallery-3.jpg',
+                'anker-737/gallery-4.jpg'
+            ]
+        ],
+        
+        'asin' => 'B0ANKER737',
+        'ean' => '0123456789012',
+        'sku' => 'ANKER-737-24K',
+        'keywords' => 'Anker PowerCore 737'
     ],
-    [
+[
         'id' => 'anker-dock',
-        'image' => 'anker-dock.jpg',
+        'image' => 'anker-dock.jpg',  // Pour products.php (liste)
         'category' => 'hubs',
         'name' => $lang === 'fr' ? 'Anker PowerExpand+ Hub USB-C' : 'Anker PowerExpand+ USB-C Hub',
-        'description' => $lang === 'fr' ? 'Hub USB-C 7-en-1 avec HDMI 4K, ports USB 3.0 et Power Delivery 85W.' : '7-in-1 USB-C hub with 4K HDMI, USB 3.0 ports and 85W Power Delivery.',
+        'description' => $lang === 'fr' ? 'Hub USB-C 7-en-1...' : '7-in-1 USB-C hub...',
         'price' => 79.99,
         'original_price' => 99.99,
         'discount_percentage' => 20,
         'rating' => 4.6,
-        'amazon_url' => 'https://amazon.fr/anker-dock'
+        'amazon_url' => 'https://amazon.fr/anker-dock',
+        
+        // ✅ GALERIE 4 IMAGES
+        'images' => [
+            'main' => 'anker-dock/main.jpg',
+            'gallery' => [
+                'anker-dock/gallery-1.jpg',
+                'anker-dock/gallery-2.jpg',
+                'anker-dock/gallery-3.jpg',
+                'anker-dock/gallery-4.jpg'
+            ]
+        ],
+        
+        'asin' => 'B0ANKERDOCK',
+        'ean' => '9876543210987',
+        'sku' => 'ANKER-DOCK-7IN1',
+        'keywords' => 'Anker PowerExpand USB-C Hub'
     ],
+
+    //FAIS PAREILLE POUR LE RESTE DE PRODUITS
     [
         'id' => 'anker-nebula',
         'image' => 'anker-nebula.jpg',
@@ -54,7 +89,14 @@ $all_products = [
         'original_price' => 499.99,
         'discount_percentage' => 20,
         'rating' => 4.4,
-        'amazon_url' => 'https://amazon.fr/anker-nebula'
+        'amazon_url' => 'https://amazon.fr/anker-nebula',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'anker-powercore',
@@ -66,7 +108,14 @@ $all_products = [
         'original_price' => 69.99,
         'discount_percentage' => 29,
         'rating' => 4.7,
-        'amazon_url' => 'https://amazon.fr/anker-powercore'
+        'amazon_url' => 'https://amazon.fr/anker-powercore',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'anker-soundcore-q30',
@@ -78,7 +127,14 @@ $all_products = [
         'original_price' => 99.99,
         'discount_percentage' => 20,
         'rating' => 4.5,
-        'amazon_url' => 'https://amazon.fr/anker-soundcore-q30'
+        'amazon_url' => 'https://amazon.fr/anker-soundcore-q30',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'asus-proart-pa248qv',
@@ -90,7 +146,14 @@ $all_products = [
         'original_price' => 599.99,
         'discount_percentage' => 25,
         'rating' => 4.9,
-        'amazon_url' => 'https://amazon.fr/asus-proart'
+        'amazon_url' => 'https://amazon.fr/asus-proart',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'aukey-hub',
@@ -102,7 +165,14 @@ $all_products = [
         'original_price' => 49.99,
         'discount_percentage' => 20,
         'rating' => 4.3,
-        'amazon_url' => 'https://amazon.fr/aukey-hub'
+        'amazon_url' => 'https://amazon.fr/aukey-hub',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'benq-screenbar',
@@ -114,7 +184,14 @@ $all_products = [
         'original_price' => 129.99,
         'discount_percentage' => 15,
         'rating' => 4.6,
-        'amazon_url' => 'https://amazon.fr/benq-screenbar'
+        'amazon_url' => 'https://amazon.fr/benq-screenbar',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'blue-yeti-nano',
@@ -126,7 +203,14 @@ $all_products = [
         'original_price' => 119.99,
         'discount_percentage' => 17,
         'rating' => 4.7,
-        'amazon_url' => 'https://amazon.fr/blue-yeti-nano'
+        'amazon_url' => 'https://amazon.fr/blue-yeti-nano',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'bose-qc45',
@@ -138,7 +222,14 @@ $all_products = [
         'original_price' => 379.99,
         'discount_percentage' => 13,
         'rating' => 4.8,
-        'amazon_url' => 'https://amazon.fr/bose-qc45'
+        'amazon_url' => 'https://amazon.fr/bose-qc45',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'dell-ultrasharp-u2720q',
@@ -150,7 +241,14 @@ $all_products = [
         'original_price' => 899.99,
         'discount_percentage' => 22,
         'rating' => 4.6,
-        'amazon_url' => 'https://amazon.fr/dell-ultrasharp'
+        'amazon_url' => 'https://amazon.fr/dell-ultrasharp',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'herman-miller-sayl',
@@ -162,7 +260,14 @@ $all_products = [
         'original_price' => 495.99,
         'discount_percentage' => 20,
         'rating' => 4.4,
-        'amazon_url' => 'https://amazon.fr/herman-miller-sayl'
+        'amazon_url' => 'https://amazon.fr/herman-miller-sayl',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'logitech-brio',
@@ -174,7 +279,14 @@ $all_products = [
         'original_price' => 249.99,
         'discount_percentage' => 20,
         'rating' => 4.5,
-        'amazon_url' => 'https://amazon.fr/logitech-brio'
+        'amazon_url' => 'https://amazon.fr/logitech-brio',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'logitech-c920',
@@ -186,7 +298,14 @@ $all_products = [
         'original_price' => 89.99,
         'discount_percentage' => 22,
         'rating' => 4.6,
-        'amazon_url' => 'https://amazon.fr/logitech-c920'
+        'amazon_url' => 'https://amazon.fr/logitech-c920',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'logitech-ergo-k860',
@@ -198,7 +317,14 @@ $all_products = [
         'original_price' => 159.99,
         'discount_percentage' => 19,
         'rating' => 4.4,
-        'amazon_url' => 'https://amazon.fr/logitech-ergo-k860'
+        'amazon_url' => 'https://amazon.fr/logitech-ergo-k860',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'logitech-mx-keys',
@@ -210,7 +336,14 @@ $all_products = [
         'original_price' => 139.99,
         'discount_percentage' => 21,
         'rating' => 4.5,
-        'amazon_url' => 'https://amazon.fr/logitech-mx-keys'
+        'amazon_url' => 'https://amazon.fr/logitech-mx-keys',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'logitech-mx-master-3s',
@@ -222,7 +355,14 @@ $all_products = [
         'original_price' => 129.99,
         'discount_percentage' => 23,
         'rating' => 4.7,
-        'amazon_url' => 'https://amazon.fr/logitech-mx-master'
+        'amazon_url' => 'https://amazon.fr/logitech-mx-master',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'logitech-streamcam',
@@ -234,7 +374,14 @@ $all_products = [
         'original_price' => 189.99,
         'discount_percentage' => 16,
         'rating' => 4.5,
-        'amazon_url' => 'https://amazon.fr/logitech-streamcam'
+        'amazon_url' => 'https://amazon.fr/logitech-streamcam',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'logitech-zone-wireless',
@@ -246,7 +393,14 @@ $all_products = [
         'original_price' => 229.99,
         'discount_percentage' => 13,
         'rating' => 4.3,
-        'amazon_url' => 'https://amazon.fr/logitech-zone-wireless'
+        'amazon_url' => 'https://amazon.fr/logitech-zone-wireless',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ],
     [
         'id' => 'seagate-2tb',
@@ -258,7 +412,14 @@ $all_products = [
         'original_price' => 99.99,
         'discount_percentage' => 20,
         'rating' => 4.4,
-        'amazon_url' => 'https://amazon.fr/seagate-2tb'
+        'amazon_url' => 'https://amazon.fr/seagate-2tb',
+
+        // ✅ NOUVEAUX CHAMPS POUR API
+        'asin' => 'B0XXXXXX',           // Amazon Standard Identification Number
+        'ean' => '0123456789012',       // European Article Number (code-barres)
+        'sku' => 'APPLE-IP16P-256',     // Stock Keeping Unit
+        'keywords' => 'iPhone 16 Pro'  // Pour recherche AliExpress
+        // ... reste des données
     ]
 ];
 

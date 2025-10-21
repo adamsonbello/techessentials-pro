@@ -1,0 +1,77 @@
+Array
+(
+    [success] => 1
+    [original_name] => home_office.jpg
+    [unique_name] => home-office_1760460456_478bab
+    [original_size] => 247679
+    [optimized_sizes] => Array
+        (
+            [thumbnail] => Array
+                (
+                    [width] => 300
+                    [height] => 171
+                    [jpeg_size] => 15711
+                    [webp_size] => 9608
+                    [compression_ratio] => 38.8
+                )
+
+            [medium] => Array
+                (
+                    [width] => 800
+                    [height] => 457
+                    [jpeg_size] => 74725
+                    [webp_size] => 40596
+                    [compression_ratio] => 45.7
+                )
+
+            [large] => Array
+                (
+                    [width] => 1200
+                    [height] => 686
+                    [jpeg_size] => 142131
+                    [webp_size] => 72914
+                    [compression_ratio] => 48.7
+                )
+
+            [full] => Array
+                (
+                    [width] => 1792
+                    [height] => 1024
+                    [jpeg_size] => 255776
+                    [webp_size] => 160574
+                    [compression_ratio] => 37.2
+                )
+
+        )
+
+    [urls] => Array
+        (
+            [thumbnail] => Array
+                (
+                    [jpeg] => /TechEssentialsPro/uploads/optimized/thumbnail/home-office_1760460456_478bab_thumbnail.jpg
+                    [webp] => /TechEssentialsPro/uploads/optimized/webp/home-office_1760460456_478bab_thumbnail.webp
+                )
+
+            [medium] => Array
+                (
+                    [jpeg] => /TechEssentialsPro/uploads/optimized/medium/home-office_1760460456_478bab_medium.jpg
+                    [webp] => /TechEssentialsPro/uploads/optimized/webp/home-office_1760460456_478bab_medium.webp
+                )
+
+            [large] => Array
+                (
+                    [jpeg] => /TechEssentialsPro/uploads/optimized/large/home-office_1760460456_478bab_large.jpg
+                    [webp] => /TechEssentialsPro/uploads/optimized/webp/home-office_1760460456_478bab_large.webp
+                )
+
+            [full] => Array
+                (
+                    [jpeg] => /TechEssentialsPro/uploads/optimized/full/home-office_1760460456_478bab_full.jpg
+                    [webp] => /TechEssentialsPro/uploads/optimized/webp/home-office_1760460456_478bab_full.webp
+                )
+
+        )
+
+    [total_saving] => -36013
+    [total_saving_percent] => -14.5
+)

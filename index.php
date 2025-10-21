@@ -114,42 +114,43 @@ $featured_products = array_filter($all_products, function($product) {
 $featured_products = array_slice($featured_products, 0, 6);
 
 // Traductions
+// Traductions
 $t = [
     'fr' => [
         'site_title' => 'TechEssentials Pro',
-        'tagline' => 'Les meilleurs produits tech pour les professionnels',
-        'hero_title' => 'Découvrez les Essentiels Tech',
-        'hero_subtitle' => 'Sélection premium pour professionnels exigeants',
+        'tagline' => 'Équipez votre espace de télétravail avec les meilleurs outils tech',
+        'hero_title' => 'L\'Équipement Tech des Télétravailleurs',
+        'hero_subtitle' => 'Productivité maximale pour nomades digitaux et professionnels en remote',
         'featured_products' => 'Produits Recommandés',
         'view_all_products' => 'Voir tous les produits',
         'buy_now' => 'Acheter maintenant',
         'learn_more' => 'En savoir plus',
         'newsletter_title' => 'Restez informé',
-        'newsletter_subtitle' => 'Recevez nos dernières recommandations et bons plans tech',
+        'newsletter_subtitle' => 'Recevez nos meilleures recommandations tech pour le télétravail',
         'newsletter_placeholder' => 'Votre email',
         'newsletter_button' => "S'abonner",
         'stats_products' => 'Produits testés',
         'stats_reviews' => 'Avis vérifiés',
         'stats_partners' => 'Partenaires',
-        'stats_users' => 'Utilisateurs actifs'
+        'stats_users' => 'Télétravailleurs équipés'
     ],
     'en' => [
         'site_title' => 'TechEssentials Pro',
-        'tagline' => 'Best tech products for professionals',
-        'hero_title' => 'Discover Tech Essentials',
-        'hero_subtitle' => 'Premium selection for demanding professionals',
+        'tagline' => 'Equip your remote workspace with the best tech tools',
+        'hero_title' => 'Tech Gear for Remote Workers',
+        'hero_subtitle' => 'Maximum productivity for digital nomads and remote professionals',
         'featured_products' => 'Featured Products',
         'view_all_products' => 'View all products',
         'buy_now' => 'Buy now',
         'learn_more' => 'Learn more',
         'newsletter_title' => 'Stay Updated',
-        'newsletter_subtitle' => 'Get our latest recommendations and tech deals',
+        'newsletter_subtitle' => 'Get our best tech recommendations for remote work',
         'newsletter_placeholder' => 'Your email',
         'newsletter_button' => 'Subscribe',
         'stats_products' => 'Products tested',
         'stats_reviews' => 'Verified reviews',
         'stats_partners' => 'Partners',
-        'stats_users' => 'Active users'
+        'stats_users' => 'Remote workers equipped'
     ]
 ];
 
@@ -597,6 +598,195 @@ $translations = $t[$lang];
             }
         }
     </style>
+    <style>
+/* Blog Carousel Section */
+.blog-carousel-section {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.carousel-wrapper {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 60px;
+}
+
+.blog-carousel {
+    display: flex;
+    gap: 1.5rem;
+    overflow: hidden;
+    scroll-behavior: smooth;
+}
+
+.blog-card {
+    min-width: calc(20% - 1.2rem);
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.blog-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.blog-card-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.blog-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.blog-card:hover .blog-card-image img {
+    transform: scale(1.1);
+}
+
+.blog-card-content {
+    padding: 1.5rem;
+}
+
+.blog-card-date {
+    font-size: 0.85rem;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.blog-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    color: #2c3e50;
+    line-height: 1.4;
+    height: 3rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.blog-card-excerpt {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    height: 4rem;
+    overflow: hidden;
+}
+
+.blog-card-link {
+    color: #667eea;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+.blog-card-link:hover {
+    color: #764ba2;
+}
+
+/* Carousel Navigation Buttons */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 2rem;
+    color: #667eea;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.carousel-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.prev {
+    left: 0;
+}
+
+.carousel-btn.next {
+    right: 0;
+}
+
+.blog-card-link-wrapper {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    min-width: calc(20% - 1.2rem);
+}
+
+.blog-card-cta {
+    color: #667eea;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+.blog-card-link-wrapper:hover .blog-card-cta {
+    color: #764ba2;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .blog-card-link-wrapper {
+        min-width: calc(33.333% - 1rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-card-link-wrapper {
+        min-width: calc(50% - 0.75rem);
+    }
+}
+    
+    .carousel-wrapper {
+        padding: 0 50px;
+    }
+    
+    .carousel-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+
+
+@media (max-width: 480px) {
+    .blog-card-link-wrapper {
+        min-width: 100%;
+    }
+}
+
+</style>
 </head>
 
 <body>
@@ -734,6 +924,122 @@ $translations = $t[$lang];
 // Debug temporaire
 error_log("Newsletter.php loaded with GET: " . print_r($_GET, true));
 
+//Section Blog Articles Carousel 
+
+// Récupérer les 10 derniers articles publiés
+try {
+    $db = getDB('main');
+    $stmt = $db->prepare("
+        SELECT id, title, slug, excerpt, featured_image, created_at 
+        FROM blog_articles 
+        WHERE status = 'published' 
+        ORDER BY published_at DESC 
+        LIMIT 10
+    ");
+    $stmt->execute();
+    $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $articles = [];
+}
+?>
+
+<?php if (!empty($articles)): ?>
+<section class="blog-carousel-section">
+    <div class="container">
+        <h2 class="section-title">
+            <?= $lang === 'fr' ? 'Derniers Articles' : 'Latest Articles' ?>
+        </h2>
+        
+        <div class="carousel-wrapper">
+            <button class="carousel-btn prev" onclick="moveCarousel(-1)">‹</button>
+            
+            <div class="blog-carousel" id="blogCarousel">
+               <?php foreach ($articles as $article): ?>
+    <a href="blog/article.php?slug=<?= $article['slug'] ?>&lang=<?= $lang ?>" 
+       class="blog-card-link-wrapper">
+        <div class="blog-card">
+            <div class="blog-card-image">
+                <?php if ($article['featured_image']): ?>
+                    <img src="<?= htmlspecialchars($article['featured_image']) ?>" 
+                         alt="<?= htmlspecialchars($article['title']) ?>">
+                <?php else: ?>
+                    <img src="assets/images/blog-placeholder.jpg" alt="Article image">
+                <?php endif; ?>
+            </div>
+            <div class="blog-card-content">
+                <div class="blog-card-date">
+                    <?= date('d M Y', strtotime($article['created_at'])) ?>
+                </div>
+                <h3 class="blog-card-title">
+                    <?= htmlspecialchars($article['title']) ?>
+                </h3>
+                <p class="blog-card-excerpt">
+                    <?= htmlspecialchars(substr($article['excerpt'], 0, 100)) ?>...
+                </p>
+                <span class="blog-card-cta">
+                    <?= $lang === 'fr' ? 'Lire la suite' : 'Read more' ?> →
+                </span>
+            </div>
+        </div>
+    </a>
+<?php endforeach; ?>
+            </div>
+            
+            <button class="carousel-btn next" onclick="moveCarousel(1)">›</button>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<script>
+// Carrousel Blog - Défilement automatique
+let carouselPosition = 0;
+let autoScrollInterval;
+
+function moveCarousel(direction) {
+    const carousel = document.getElementById('blogCarousel');
+    if (!carousel) return;
+    
+    const cards = carousel.querySelectorAll('.blog-card');
+    const cardWidth = cards[0].offsetWidth + 24; // 24px = gap
+    
+    carouselPosition += direction * cardWidth;
+    
+    const maxScroll = -(cardWidth * (cards.length - 5));
+    
+    if (carouselPosition > 0) {
+        carouselPosition = maxScroll;
+    } else if (carouselPosition < maxScroll) {
+        carouselPosition = 0;
+    }
+    
+    carousel.style.transform = `translateX(${carouselPosition}px)`;
+}
+
+// Défilement automatique toutes les 5 secondes
+function startAutoScroll() {
+    autoScrollInterval = setInterval(() => {
+        moveCarousel(-1);
+    }, 5000);
+}
+
+// Pause au survol
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.querySelector('.blog-carousel-section');
+    if (carousel) {
+        startAutoScroll();
+        
+        carousel.addEventListener('mouseenter', () => {
+            clearInterval(autoScrollInterval);
+        });
+        
+        carousel.addEventListener('mouseleave', () => {
+            startAutoScroll();
+        });
+    }
+});
+</script>
+<?php
 include 'includes/layouts/newsletter.php';
 include 'includes/layouts/footer.php';
 ?>

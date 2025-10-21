@@ -95,6 +95,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $slug = trim($_POST['slug'] ?? '');
             $excerpt = trim($_POST['excerpt'] ?? '');
             $content = trim($_POST['content'] ?? '');
+            $featured_image = trim($_POST['featured_image'] ?? '');  // ← AJOUTER ICI
+            if (empty($featured_image) && !empty($content)) {
+                if (preg_match('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $content, $match)) {
+                        $featured_image = $match[1];
+                    }
+            }
+
+            
+
             $category_id = (int)($_POST['category_id'] ?? 0);
             $meta_title = trim($_POST['meta_title'] ?? '');
             $meta_description = trim($_POST['meta_description'] ?? '');
@@ -124,22 +133,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $blogDB->beginTransaction();
             
             if ($mode === 'edit') {
-                // UPDATE article existant
-                $stmt = $blogDB->prepare("
-                    UPDATE articles SET
-                        title = ?, slug = ?, excerpt = ?, content = ?, 
-                        category_id = ?, meta_title = ?, meta_description = ?,
-                        status = ?, is_featured = ?, read_time_minutes = ?,
-                        updated_at = NOW()
-                        " . ($status === 'published' && $article['status'] !== 'published' ? ", published_at = NOW()" : "") . "
-                    WHERE id = ?
-                ");
-                
-                $stmt->execute([
-                    $title, $slug, $excerpt, $content, $category_id,
-                    $meta_title, $meta_description, $status, $is_featured, $read_time,
-                    $article_id
-                ]);
+            // UPDATE article existant
+               $stmt = $blogDB->prepare("
+            UPDATE articles SET
+            title = ?, slug = ?, excerpt = ?, content = ?, featured_image = ?,
+            category_id = ?, meta_title = ?, meta_description = ?,
+            status = ?, is_featured = ?, read_time_minutes = ?,
+            updated_at = NOW()
+            " . ($status === 'published' && $article['status'] !== 'published' ? ", published_at = NOW()" : "") . "
+            WHERE id = ?
+           ");
+    
+            $stmt->execute([
+            $title, $slug, $excerpt, $content, $featured_image,
+            $category_id, $meta_title, $meta_description, $status, $is_featured, $read_time,
+            $article_id
+           ]);
                 
                 // Supprimer les anciens tags
                 $stmt = $blogDB->prepare("DELETE FROM article_tags WHERE article_id = ?");
@@ -147,29 +156,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $message = "Article mis à jour avec succès !";
                 
-            } else {
+          } else {
                 // INSERT nouvel article
-                $stmt = $blogDB->prepare("
-                    INSERT INTO articles (
-                        title, slug, excerpt, content, category_id, author_name, author_email,
-                        meta_title, meta_description, status, is_featured, read_time_minutes,
-                        published_at, created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
-                ");
-                
-                $published_at = ($status === 'published') ? date('Y-m-d H:i:s') : null;
-                $author_name = $_SESSION['blog_admin_user'] ?? 'Admin';
-                $author_email = 'admin@techessentialspro.com';
-                
-                $stmt->execute([
-                    $title, $slug, $excerpt, $content, $category_id, $author_name, $author_email,
-                    $meta_title, $meta_description, $status, $is_featured, $read_time,
-                    $published_at
-                ]);
-                
-                $article_id = $blogDB->lastInsertId();
-                $message = "Article créé avec succès ! ID: " . $article_id;
-            }
+                 $stmt = $blogDB->prepare("
+                INSERT INTO articles (
+                title, slug, excerpt, content, featured_image, category_id, author_name, author_email,
+                meta_title, meta_description, status, is_featured, read_time_minutes,
+                published_at, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+           ");
+    
+              $published_at = ($status === 'published') ? date('Y-m-d H:i:s') : null;
+              $author_name = $_SESSION['blog_admin_user'] ?? 'Admin';
+              $author_email = 'admin@techessentialspro.com';
+    
+              $stmt->execute([
+              $title, $slug, $excerpt, $content, $featured_image, $category_id, $author_name, $author_email,
+              $meta_title, $meta_description, $status, $is_featured, $read_time,
+              $published_at
+            ]);
+    
+             $article_id = $blogDB->lastInsertId();
+             $message = "Article créé avec succès ! ID: " . $article_id;
+          }
             
             // Gestion des tags (pour les deux modes)
             if (!empty($post_tags)) {
@@ -187,7 +196,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ");
             }
             
-            $blogDB->commit();
+           $blogDB->commit();
+$_SESSION['success_message'] = "Article sauvegardé avec succès";
+
+if ($status === 'published') {
+    $_SESSION['success_message'] .= " (Article publié)";
+}
+
+// AJOUT : Redirection si "Sauvegarder et Fermer"
+if (isset($_POST['save_and_close']) && $_POST['save_and_close'] == '1') {
+    header('Location: list.php?message=' . urlencode($_SESSION['success_message']));
+    exit;
+}
+
+// Si création, passer en mode édition
+if ($mode === 'create') {
+    header('Location: editor.php?id=' . $article_id . '&message=' . urlencode($_SESSION['success_message']));
+    exit;
+}
+
+// Rester sur l'éditeur (mode edit)
+header('Location: editor.php?id=' . $article_id . '&message=' . urlencode($_SESSION['success_message']));
+exit;
+
+} catch (Exception $e) {
+    $blogDB->rollBack();
+    $error_message = $e->getMessage();
+}
             
             if ($status === 'published') {
                 $message .= " (Article publié)";
@@ -205,10 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
             
-        } catch (Exception $e) {
-            $blogDB->rollback();
-            $error = "Erreur: " . $e->getMessage();
-        }
+      
     }
 }
 
@@ -728,6 +760,8 @@ $page_title = $mode === 'edit' ? 'Éditer l\'article' : 'Nouvel Article';
                 flex-direction: column;
             }
         }
+
+        
     </style>
 </head>
 <body>
@@ -812,8 +846,9 @@ $page_title = $mode === 'edit' ? 'Éditer l\'article' : 'Nouvel Article';
                         </button>
                     </div>
                     <textarea id="content" name="content" required placeholder="Rédigez votre article ici..."><?= htmlspecialchars($form_data['content']) ?></textarea>
+                  
                     <div class="help-text">HTML supporté. Utilisez la barre d'outils pour insérer des éléments. Ctrl+S pour sauvegarder</div>
-                </div>
+                   </div>
 
                 <div class="form-row">
                     <div class="form-group">
@@ -830,7 +865,7 @@ $page_title = $mode === 'edit' ? 'Éditer l\'article' : 'Nouvel Article';
                 <div class="form-group">
                     <label for="meta_description">📋 Description SEO</label>
                     <textarea id="meta_description" name="meta_description" rows="2" placeholder="Description pour les moteurs de recherche et réseaux sociaux"><?= htmlspecialchars($form_data['meta_description']) ?></textarea>
-                    <div class="help-text">160 caractères max recommandés - <span id="meta_desc_count">0</span>/160</div>
+                    <div class="help-text">200 caractères max recommandés - <span id="meta_desc_count">0</span>/200</div>
                 </div>
 
                 <div class="actions">
@@ -840,9 +875,9 @@ $page_title = $mode === 'edit' ? 'Éditer l\'article' : 'Nouvel Article';
                     <button type="submit" name="save_article" value="published" class="btn btn-success" onclick="document.querySelector('[name=status]').value='published'">
                         🚀 <?= $mode === 'edit' && $article['status'] === 'published' ? 'Mettre à jour' : 'Publier' ?> Article
                     </button>
-                    <button type="submit" name="save_and_close" value="1" class="btn btn-primary" onclick="document.querySelector('[name=status]').value='<?= $form_data['status'] ?>'">
-                        ✅ Sauvegarder et Fermer
-                    </button>
+                   <button type="submit" name="save_article" value="1" class="btn btn-primary">
+                          ✅ Sauvegarder et Fermer
+                   </button>
                     <input type="hidden" name="status" value="draft">
                 </div>
             </form>
@@ -927,7 +962,7 @@ $page_title = $mode === 'edit' ? 'Éditer l\'article' : 'Nouvel Article';
                     <p><strong>Brouillon :</strong> Article sauvé mais non visible</p>
                     <p><strong>Publié :</strong> Article visible sur le site</p>
                     <br>
-                    <p><strong>Auto-save :</strong> Sauvegarde automatique toutes les 30 secondes</p>
+                    <p><strong>Auto-save :</strong> Sauvegarde automatique toutes les 180 secondes</p>
                 </div>
             </div>
         </div>
@@ -1016,7 +1051,7 @@ $page_title = $mode === 'edit' ? 'Éditer l\'article' : 'Nouvel Article';
             const length = metaDesc.value.length;
             const counter = document.getElementById('meta_desc_count');
             counter.textContent = length;
-            counter.style.color = length > 160 ? 'red' : (length > 140 ? 'orange' : 'green');
+            counter.style.color = length > 200 ? 'red' : (length > 160 ? 'orange' : 'green');
         }
         metaDesc.addEventListener('input', updateMetaDescCount);
         updateMetaDescCount();
@@ -1052,14 +1087,14 @@ $page_title = $mode === 'edit' ? 'Éditer l\'article' : 'Nouvel Article';
                 indicator.style.background = '#f44336';
                 setTimeout(() => {
                     indicator.style.display = 'none';
-                }, 3000);
+                }, 60000);
             });
         }
 
         // Déclencher auto-save
         function triggerAutoSave() {
             clearTimeout(autoSaveTimer);
-            autoSaveTimer = setTimeout(autoSave, 30000); // 30 secondes
+            autoSaveTimer = setTimeout(autoSave, 60000); // 60 secondes
         }
 
         // Écouter les modifications
@@ -1070,10 +1105,10 @@ $page_title = $mode === 'edit' ? 'Éditer l\'article' : 'Nouvel Article';
             });
         });
 
-        // Auto-save toutes les 60 secondes si modifications
+        // Auto-save toutes les 60000 secondes si modifications
         setInterval(() => {
             if (formModified) autoSave();
-        }, 60000);
+        }, 240000);
         <?php endif; ?>
 
         // Confirmation avant quitter si contenu modifié
@@ -1316,6 +1351,156 @@ $page_title = $mode === 'edit' ? 'Éditer l\'article' : 'Nouvel Article';
                 closeMediaLibrary();
             }
         });
-    </script>
+
+        </script>
+
+    <script>
+<!-- Modal HTML -->
+<div id="image-modal" class="modal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.7);">
+    <div class="modal-content" style="background:white;border-radius:12px;width:90%;max-width:800px;margin:5% auto;padding:20px;">
+        <div class="modal-header" style="display:flex;justify-content:space-between;margin-bottom:20px;">
+            <h3>Gestionnaire d'images</h3>
+            <button class="close-modal" style="background:none;border:none;font-size:28px;cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="upload-zone" id="quick-upload-zone" style="border:2px dashed #3498db;padding:40px;text-align:center;cursor:pointer;border-radius:8px;">
+                <div style="font-size:48px;">📁</div>
+                <div>Glissez une image ou cliquez</div>
+                <input type="file" id="quick-file-input" accept="image/*" style="display:none;">
+            </div>
+            <div style="margin-top:20px;">
+                <label>Texte alternatif :</label>
+                <input type="text" id="image-alt" style="width:100%;padding:10px;margin:5px 0;">
+            </div>
+            <button id="upload-insert-btn" style="width:100%;background:#3498db;color:white;padding:12px;border:none;border-radius:6px;margin-top:10px;cursor:pointer;">
+                📤 Optimiser et insérer
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+class ImageManager {
+    constructor() {
+        this.modal = document.getElementById('image-modal');
+        this.setupEvents();
+    }
+    
+    setupEvents() {
+        // Bouton ouvrir
+        const btn = document.getElementById('insert-image-btn');
+        if(btn) btn.addEventListener('click', () => this.open());
+        
+        // Bouton fermer
+        document.querySelector('.close-modal').addEventListener('click', () => this.close());
+        
+        // Upload zone
+        const zone = document.getElementById('quick-upload-zone');
+        const input = document.getElementById('quick-file-input');
+        
+        zone.addEventListener('click', () => input.click());
+        input.addEventListener('change', (e) => {
+            if(e.target.files[0]) this.selectedFile = e.target.files[0];
+        });
+        
+        // Bouton upload
+        document.getElementById('upload-insert-btn').addEventListener('click', () => this.upload());
+    }
+    
+    open() {
+        this.modal.style.display = 'flex';
+    }
+    
+    close() {
+        this.modal.style.display = 'none';
+    }
+    
+    async upload() {
+        if(!this.selectedFile) {
+            alert('Sélectionnez une image');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('image', this.selectedFile);
+        
+        try {
+            const response = await fetch('upload-image-api.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if(result.success) {
+                const alt = document.getElementById('image-alt').value;
+                const html = `<img src="${result.urls.medium.jpeg}" alt="${alt}" loading="lazy">`;
+                
+                // Insérer dans le textarea
+                const textarea = document.querySelector('textarea[name="content"]');
+                textarea.value += '\n' + html + '\n';
+                
+                this.close();
+                alert('✅ Image insérée !');
+            } else {
+                alert('Erreur : ' + result.error);
+            }
+        } catch(e) {
+            alert('Erreur upload : ' + e.message);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new ImageManager();
+});
+</script>
+
+
+<!-- Gestionnaire d'images -->
+<script src="image-manager.js"></script>
+
+<script>
+// Auto-save pour brouillons
+let formModified = false;
+const articleId = <?= $article_id ?? 'null' ?>;
+
+// Détecter modifications
+document.getElementById('articleForm')?.addEventListener('input', () => {
+    formModified = true;
+});
+
+// Auto-save toutes les 30 secondes
+if (articleId) {
+    setInterval(async () => {
+        if (formModified) {
+            const formData = new FormData(document.getElementById('articleForm'));
+            formData.set('status', 'draft');
+            
+            await fetch('', { method: 'POST', body: formData });
+            formModified = false;
+            
+            // Notification discrète
+            const notif = document.createElement('div');
+            notif.textContent = '💾 Sauvegardé';
+            notif.style.cssText = 'position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:10px 20px;border-radius:8px;z-index:9999';
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 2000);
+        }
+    }, 180000);
+}
+
+// Ctrl+S pour sauvegarder
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        document.querySelector('[name=save_article][value=draft]')?.click();
+    }
+});
+</script>
+
+
 </body>
 </html>
+
+

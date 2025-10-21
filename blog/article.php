@@ -1,6 +1,11 @@
 <?php
 // blog/article.php - Page publique pour afficher un article avec commentaires
-// URL: yoursite.com/blog/article.php?id=1 ou yoursite.com/blog/article.php?slug=mon-article
+session_start();
+
+// Configuration
+define('TECHESSENTIALS_PRO', true);
+require_once __DIR__ . '/../includes/config.php';
+require_once INCLUDES_PATH . 'functions.php';
 
 // Configuration BDD
 $DB_CONFIG = [
@@ -68,7 +73,7 @@ $stmt = $pdo->prepare("SELECT COUNT(*) FROM comments WHERE article_id = ? AND st
 $stmt->execute([$article['id']]);
 $comments_count = $stmt->fetchColumn();
 
-// Articles similaires (même catégorie)
+// Articles similaires
 $stmt = $pdo->prepare("
     SELECT id, title, slug, excerpt, featured_image, published_at
     FROM articles
@@ -82,6 +87,30 @@ $related_articles = $stmt->fetchAll();
 // Fonctions d'affichage des commentaires
 function displayComments($article_id, $parent_id = null, $level = 0) {
     global $pdo;
+    //debug begin
+     // ✅ DEBUG
+    echo "<!-- DEBUG: Appel displayComments - article_id=$article_id, parent_id=" . ($parent_id ?? 'NULL') . ", level=$level -->\n";
+    
+    $stmt = $pdo->prepare("
+        SELECT * FROM comments 
+        WHERE article_id = ? AND parent_id " . ($parent_id ? "= ?" : "IS NULL") . " AND status = 'approved'
+        ORDER BY created_at ASC
+    ");
+    
+    if ($parent_id) {
+        $stmt->execute([$article_id, $parent_id]);
+    } else {
+        $stmt->execute([$article_id]);
+    }
+    
+    $comments = $stmt->fetchAll();
+    
+    // ✅ DEBUG
+    echo "<!-- DEBUG: Commentaires trouvés: " . count($comments) . " -->\n";
+    foreach ($comments as $c) {
+        echo "<!-- DEBUG: Comment ID={$c['id']}, parent_id=" . ($c['parent_id'] ?? 'NULL') . ", content=" . substr($c['content'], 0, 30) . "... -->\n";
+    }
+    //debug end
     
     $stmt = $pdo->prepare("
         SELECT * FROM comments 
@@ -112,7 +141,6 @@ function displayComments($article_id, $parent_id = null, $level = 0) {
         
         echo '<div class="comment-item ' . $reply_class . '" style="margin-left: ' . $margin_left . 'px;" data-comment-id="' . $comment['id'] . '">';
         
-        // Avatar basé sur l'email
         $avatar_hash = md5(strtolower(trim($comment['author_email'])));
         $avatar_url = "https://www.gravatar.com/avatar/{$avatar_hash}?s=50&d=identicon";
         
@@ -134,27 +162,25 @@ function displayComments($article_id, $parent_id = null, $level = 0) {
         echo '</div>';
         echo '</div>';
         
-        // Contenu du commentaire
         echo '<div class="comment-content">';
         echo nl2br(htmlspecialchars($comment['content']));
         echo '</div>';
         
-        // Bouton répondre (limité à 3 niveaux)
         if ($level < 3) {
             echo '<div class="comment-actions">';
             echo '<button class="reply-btn" onclick="showReplyForm(' . $comment['id'] . ')">💬 Répondre</button>';
             echo '</div>';
             
-            // Formulaire de réponse (caché par défaut)
             echo '<div class="reply-form-container" id="reply-form-' . $comment['id'] . '" style="display: none;">';
-            displayCommentForm($article['id'], $comment['id']);
+            displayCommentForm($article_id, $comment['id']);  // ← Utilise $article_id
             echo '</div>';
         }
         
         echo '</div>';
+
+         displayComments($article_id, $comment['id'], $level + 1);
         
-        // Commentaires enfants (récursif)
-        displayComments($article['id'], $comment['id'], $level + 1);
+        // displayCommentForm($article_id, $comment['id']);  // ← Utilise $article_id au lieu de $article['id']
     }
 }
 
@@ -185,7 +211,7 @@ function displayCommentForm($article_id, $parent_id = null) {
     
     echo '<div class="form-group">';
     echo '<label for="content">Votre commentaire *</label>';
-    echo '<textarea name="content" required minlength="10" maxlength="2000" rows="5" placeholder="Partagez votre avis, vos questions ou vos expériences..."></textarea>';
+    echo '<textarea name="content" required minlength="10" maxlength="2000" rows="5" placeholder="Partagez votre avis..."></textarea>';
     echo '<small><span class="char-count">0</span>/2000 caractères</small>';
     echo '</div>';
     
@@ -200,6 +226,9 @@ function displayCommentForm($article_id, $parent_id = null) {
     echo '</form>';
     echo '</div>';
 }
+
+// Charger config commentaires
+$comments_config = require INCLUDES_PATH . 'comments-config.php';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -208,8 +237,7 @@ function displayCommentForm($article_id, $parent_id = null) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($article['title']); ?> - TechEssentials Pro</title>
     <meta name="description" content="<?php echo htmlspecialchars($article['meta_description'] ?: $article['excerpt']); ?>">
-    <meta name="keywords" content="<?php echo htmlspecialchars($article['meta_keywords']); ?>">
-    
+    <meta name="keywords" content="<?php echo htmlspecialchars($article['meta_keywords'] ?? ''); ?>">
     <!-- Open Graph -->
     <meta property="og:title" content="<?php echo htmlspecialchars($article['title']); ?>">
     <meta property="og:description" content="<?php echo htmlspecialchars($article['excerpt']); ?>">
@@ -218,8 +246,44 @@ function displayCommentForm($article_id, $parent_id = null) {
     <?php if ($article['featured_image']): ?>
     <meta property="og:image" content="<?php echo htmlspecialchars($article['featured_image']); ?>">
     <?php endif; ?>
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="<?= "https://tondomaine.com/blog/article.php?id={$article['id']}" ?>">
+    <meta property="og:title" content="<?= htmlspecialchars($article['title']) ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($article['excerpt']) ?>">
+    <?php if ($article['featured_image']): ?>
+    <meta property="og:image" content="<?= htmlspecialchars($article['featured_image']) ?>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <?php endif; ?>
+    <meta property="og:site_name" content="TechEssentials Pro">
+    <meta property="article:published_time" content="<?= date('c', strtotime($article['published_at'])) ?>">
+    <?php if ($article['updated_at']): ?>
+    <meta property="article:modified_time" content="<?= date('c', strtotime($article['updated_at'])) ?>">
+    <?php endif; ?>
     
-    <style>
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= htmlspecialchars($article['title']) ?>">
+    <meta name="twitter:description" content="<?= htmlspecialchars($article['excerpt']) ?>">
+    <?php if ($article['featured_image']): ?>
+    <meta name="twitter:image" content="<?= htmlspecialchars($article['featured_image']) ?>">
+    <?php endif; ?>
+    
+    <!-- Meta tags SEO classiques -->
+    <meta name="description" content="<?= htmlspecialchars($article['meta_description'] ?: $article['excerpt']) ?>">
+    <meta name="keywords" content="<?= htmlspecialchars($article['meta_keywords'] ?? '') ?>">
+    <meta name="author" content="TechEssentials Pro">
+    <link rel="canonical" href="<?= "https://tondomaine.com/blog/article.php?id={$article['id']}" ?>">
+        
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <!-- Google reCAPTCHA v3 -->
+    <?php if ($comments_config['recaptcha']['enabled']): ?>
+    <script src="https://www.google.com/recaptcha/api.js?render=<?= $comments_config['recaptcha']['site_key'] ?>"></script>
+    <?php endif; ?>
+    
+    <!-- TON CSS ICI (garde ton style existant) -->
+
+     <style>
         * {
             margin: 0;
             padding: 0;
@@ -377,7 +441,7 @@ function displayCommentForm($article_id, $parent_id = null) {
         /* Image mise en avant */
         .featured-image {
             width: 100%;
-            height: 300px;
+            height: 500px;
             object-fit: cover;
         }
 
@@ -853,20 +917,53 @@ function displayCommentForm($article_id, $parent_id = null) {
             }
         }
     </style>
+     <!--FIN  TON CSS ICI (garde ton style existant) -->
+    <link rel="stylesheet" href="article-styles.css">
+    <!-- Schema.org pour Google -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "<?= htmlspecialchars($article['title']) ?>",
+  "description": "<?= htmlspecialchars($article['excerpt']) ?>",
+  "image": <?= !empty($article['featured_image']) ? '"' . htmlspecialchars($article['featured_image']) . '"' : 'null' ?>,
+  "datePublished": "<?= date('c', strtotime($article['published_at'])) ?>",
+  <?php if ($article['updated_at']): ?>
+  "dateModified": "<?= date('c', strtotime($article['updated_at'])) ?>",
+  <?php endif; ?>
+  "author": {
+    "@type": "Organization",
+    "name": "TechEssentials Pro",
+    "url": "https://tondomaine.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "TechEssentials Pro",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://tondomaine.com/logo.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "<?= "https://tondomaine.com/blog/article.php?id={$article['id']}" ?>"
+  }
+}
+</script>
 </head>
 <body>
-    <!-- Header avec navigation -->
+    <!-- Header -->
     <header class="site-header">
         <div class="header-content">
             <a href="../index.html" class="logo">TechEssentials Pro</a>
             <nav>
                 <ul class="nav-menu">
-                    <li><a href="../index.html">🏠 Accueil</a></li>
-                    <li><a href="../products.html">📱 Produits</a></li>
-                    <li><a href="../reviews.html">⭐ Tests</a></li>
+                    <li><a href="../index.php">🏠 Accueil</a></li>
+                    <li><a href="../products.php">📱 Produits</a></li>
+                    <li><a href="../reviews.php">⭐ Tests</a></li>
                     <li><a href="index.php">📝 Blog</a></li>
-                    <li><a href="../deals.html">💰 Bons Plans</a></li>
-                    <li><a href="../contact.html">📞 Contact</a></li>
+                    <li><a href="../deals.php">💰 Bons Plans</a></li>
+                    <li><a href="../contact.php">📞 Contact</a></li>
                 </ul>
             </nav>
         </div>
@@ -874,7 +971,7 @@ function displayCommentForm($article_id, $parent_id = null) {
 
     <!-- Container principal -->
     <div class="container">
-        <!-- En-tête de l'article -->
+        <!-- En-tête article -->
         <div class="article-header">
             <div class="breadcrumb">
                 <a href="index.php">Blog</a> → 
@@ -919,25 +1016,24 @@ function displayCommentForm($article_id, $parent_id = null) {
             </div>
         </div>
 
-        <!-- Image mise en avant -->
-        <?php if (!empty($article['featured_image'])): ?>
+        <!-- Image featured -->
+        <?php if (!empty($article['featured_image'])): ?> 
             <img src="<?php echo htmlspecialchars($article['featured_image']); ?>" 
                  alt="<?php echo htmlspecialchars($article['title']); ?>" 
                  class="featured-image">
-        <?php endif; ?>
+        <?php endif; ?> 
 
-        <!-- Contenu de l'article -->
+        <!-- Contenu -->
         <div class="article-content">
             <?php 
-            // Affichage du contenu avec traitement HTML sécurisé
             $content = $article['content'];
             
-            // Liste des balises autorisées pour un blog tech
-            $allowed_tags = '<p><br><strong><b><em><i><h2><h3><h4><ul><li><ol><a><img><blockquote><code><pre><table><tr><td><th><thead><tbody>';
-            $content = strip_tags($content, $allowed_tags);
+            if (!empty($article['featured_image'])) {
+                $escaped_image = preg_quote($article['featured_image'], '/');
+                $content = preg_replace('/<img[^>]*src=["\']' . $escaped_image . '["\'][^>]*>/i', '', $content);
+            }
             
-            // Ajouter target="_blank" aux liens externes
-            $content = preg_replace('/(<a[^>]*href=["\']https?:\/\/[^"\']*["\'][^>]*)>/i', '$1 target="_blank" rel="noopener">', $content);
+            $content = preg_replace('/(<a[^>]*href=["\']https?:\/\/(?!localhost)[^"\']*["\'][^>]*)>/i', '$1 target="_blank" rel="noopener noreferrer">', $content);
             
             echo $content;
             ?>
@@ -992,7 +1088,7 @@ function displayCommentForm($article_id, $parent_id = null) {
         </div>
     <?php endif; ?>
 
-    <!-- Section des commentaires -->
+    <!-- Section commentaires -->
     <div class="comments-section">
         <div class="comments-header">
             <h2 class="comments-count">
@@ -1001,10 +1097,10 @@ function displayCommentForm($article_id, $parent_id = null) {
             <p>Partagez votre avis, vos questions ou vos expériences sur cet article !</p>
         </div>
 
-        <!-- Formulaire de commentaire principal -->
+        <!-- Formulaire principal -->
         <?php displayCommentForm($article['id']); ?>
 
-        <!-- Liste des commentaires existants -->
+        <!-- Liste commentaires -->
         <div class="comments-list">
             <?php displayComments($article['id']); ?>
         </div>
@@ -1012,205 +1108,215 @@ function displayCommentForm($article_id, $parent_id = null) {
 
     <!-- Scripts -->
     <script>
-        // Mise à jour du compteur de vues (une seule fois par session)
-        if (!sessionStorage.getItem('viewed_article_<?php echo $article['id']; ?>')) {
-            fetch('update_views.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    article_id: <?php echo $article['id']; ?>
-                })
-            }).catch(error => {
-                console.log('Erreur compteur vues:', error);
-            });
-            sessionStorage.setItem('viewed_article_<?php echo $article['id']; ?>', 'true');
-        }
+    // Compteur de vues
+    if (!sessionStorage.getItem('viewed_article_<?php echo $article['id']; ?>')) {
+        fetch('update_views.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ article_id: <?php echo $article['id']; ?> })
+        }).catch(error => console.log('Erreur compteur:', error));
+        sessionStorage.setItem('viewed_article_<?php echo $article['id']; ?>', 'true');
+    }
 
-        // Gestion des formulaires de commentaires
-        document.addEventListener("DOMContentLoaded", function() {
-            // Gestion de tous les formulaires de commentaires
-            document.querySelectorAll(".comment-form").forEach(form => {
-                // Compteur de caractères
-                const textarea = form.querySelector("textarea[name='content']");
-                const charCount = form.querySelector(".char-count");
-                
-                if (textarea && charCount) {
-                    textarea.addEventListener("input", function() {
-                        charCount.textContent = this.value.length;
-                        
-                        if (this.value.length > 1800) {
-                            charCount.style.color = "#f44336";
-                        } else if (this.value.length > 1500) {
-                            charCount.style.color = "#ff9800";
-                        } else {
-                            charCount.style.color = "#4caf50";
-                        }
-                    });
-                }
-                
-                // Soumission du formulaire
-                form.addEventListener("submit", function(e) {
-                    e.preventDefault();
-                    submitComment(this);
-                });
-            });
-        });
-
-        function submitComment(form) {
-            const submitBtn = form.querySelector(".submit-btn");
-            const messageDiv = form.querySelector(".form-message");
-            const formData = new FormData(form);
+    // Gestion formulaires
+    document.addEventListener("DOMContentLoaded", function() {
+        console.log("🚀 DOM chargé");
+        
+        const forms = document.querySelectorAll(".comment-form");
+        console.log("📝 Formulaires trouvés:", forms.length);
+        
+        forms.forEach(form => {
+            console.log("Formulaire, article ID:", form.dataset.articleId);
             
-            // Ajouter les données du formulaire
-            formData.append("article_id", form.dataset.articleId);
-            if (form.dataset.parentId) {
-                formData.append("parent_id", form.dataset.parentId);
-            }
-            
-            // Désactiver le bouton
-            submitBtn.disabled = true;
-            submitBtn.textContent = "📤 Envoi en cours...";
-            
-            // Cacher les messages précédents
-            messageDiv.style.display = "none";
-            
-            fetch("submit_comment.php", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                messageDiv.style.display = "block";
-                messageDiv.className = "form-message " + (data.success ? "success" : "error");
-                messageDiv.textContent = data.message;
+            // Auto-save localStorage (formulaire principal uniquement)
+            if (form.dataset.parentId === "" || !form.dataset.parentId) {
+                const inputs = form.querySelectorAll('input, textarea');
                 
-                if (data.success) {
-                    form.reset();
-                    // Réinitialiser le compteur de caractères
-                    const charCount = form.querySelector(".char-count");
-                    if (charCount) charCount.textContent = "0";
-                    
-                    // Actualiser la page après 2 secondes pour voir le nouveau commentaire
-                    if (data.data && data.data.status === "approved") {
-                        setTimeout(() => location.reload(), 2000);
-                    }
-                    
-                    // Masquer le formulaire de réponse après succès
-                    if (form.dataset.parentId) {
-                        setTimeout(() => {
-                            hideReplyForm(form.dataset.parentId);
-                        }, 3000);
-                    }
-                }
-            })
-            .catch(error => {
-                console.error("Erreur:", error);
-                messageDiv.style.display = "block";
-                messageDiv.className = "form-message error";
-                messageDiv.textContent = "Erreur de connexion. Veuillez réessayer.";
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = "📝 Publier le commentaire";
-            });
-        }
-
-        function showReplyForm(commentId) {
-            // Fermer les autres formulaires de réponse ouverts
-            document.querySelectorAll('.reply-form-container').forEach(container => {
-                if (container.id !== "reply-form-" + commentId) {
-                    container.style.display = "none";
-                }
-            });
-            
-            const replyForm = document.getElementById("reply-form-" + commentId);
-            if (replyForm) {
-                replyForm.style.display = "block";
-                replyForm.querySelector("textarea").focus();
-                
-                // Scroll vers le formulaire
-                replyForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-
-        function hideReplyForm(commentId) {
-            const replyForm = document.getElementById("reply-form-" + commentId);
-            if (replyForm) {
-                replyForm.style.display = "none";
-                // Reset du formulaire
-                const form = replyForm.querySelector("form");
-                if (form) {
-                    form.reset();
-                    const messageDiv = form.querySelector(".form-message");
-                    if (messageDiv) messageDiv.style.display = "none";
-                    const charCount = form.querySelector(".char-count");
-                    if (charCount) charCount.textContent = "0";
-                }
-            }
-        }
-
-        // Animation d'apparition des commentaires
-        document.addEventListener("DOMContentLoaded", function() {
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.style.opacity = '0';
-                            entry.target.style.transform = 'translateY(20px)';
-                            entry.target.style.transition = 'all 0.6s ease';
-                            
-                            setTimeout(() => {
-                                entry.target.style.opacity = '1';
-                                entry.target.style.transform = 'translateY(0)';
-                            }, 100);
-                            
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                },
-                { threshold: 0.1 }
-            );
-
-            document.querySelectorAll('.comment-item').forEach(comment => {
-                observer.observe(comment);
-            });
-        });
-
-        // Amélioration UX: auto-save du formulaire dans localStorage
-        document.addEventListener("DOMContentLoaded", function() {
-            const mainForm = document.querySelector('.comment-form[data-parent-id=""]');
-            if (mainForm) {
-                const inputs = mainForm.querySelectorAll('input, textarea');
-                
-                // Restaurer les données sauvées
                 inputs.forEach(input => {
                     const savedValue = localStorage.getItem('comment_' + input.name);
                     if (savedValue) {
                         input.value = savedValue;
                         if (input.name === 'content') {
-                            const charCount = mainForm.querySelector('.char-count');
+                            const charCount = form.querySelector('.char-count');
                             if (charCount) charCount.textContent = savedValue.length;
                         }
                     }
                     
-                    // Sauvegarder en temps réel
                     input.addEventListener('input', function() {
                         localStorage.setItem('comment_' + this.name, this.value);
                     });
                 });
-                
-                // Nettoyer localStorage après soumission réussie
-                mainForm.addEventListener('submit', function() {
-                    setTimeout(() => {
-                        inputs.forEach(input => {
-                            localStorage.removeItem('comment_' + input.name);
-                        });
-                    }, 2000);
+            }
+            
+            // Compteur caractères
+            const textarea = form.querySelector('textarea[name="content"]');
+            const charCount = form.querySelector('.char-count');
+            
+            if (textarea && charCount) {
+                textarea.addEventListener("input", function() {
+                    charCount.textContent = this.value.length;
                 });
             }
+            
+            // Soumission
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+                console.log("🔥 Formulaire soumis !");
+                submitComment(this);
+            });
         });
+    });
+
+    // Fonction soumission
+    function submitComment(form) {
+        console.log("🚀 submitComment appelé");
+        
+        const submitBtn = form.querySelector(".submit-btn");
+        const messageDiv = form.querySelector(".form-message");
+        const formData = new FormData(form);
+        
+        formData.append("article_id", form.dataset.articleId);
+        if (form.dataset.parentId) {
+            formData.append("parent_id", form.dataset.parentId);
+        }
+        
+        console.log("📦 Données:");
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = "📤 Envoi...";
+        messageDiv.style.display = "none";
+        
+        <?php if ($comments_config['recaptcha']['enabled']): ?>
+        console.log("🔒 reCAPTCHA...");
+        grecaptcha.ready(function() {
+            grecaptcha.execute('<?= $comments_config['recaptcha']['site_key'] ?>', {
+                action: 'submit_comment'
+            }).then(function(token) {
+                console.log("✅ Token obtenu");
+                formData.append('recaptcha_token', token);
+                sendCommentRequest(form, formData, submitBtn, messageDiv);
+            });
+        });
+        <?php else: ?>
+        console.log("⚠️ reCAPTCHA désactivé");
+        sendCommentRequest(form, formData, submitBtn, messageDiv);
+        <?php endif; ?>
+    }
+
+    // Envoi requête
+    function sendCommentRequest(form, formData, submitBtn, messageDiv) {
+        console.log("📡 Envoi...");
+        
+        fetch("submit_comment.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => {
+            console.log("✅ Réponse:", response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log("📥 Data:", data);
+            
+            messageDiv.style.display = "block";
+            messageDiv.className = "form-message " + (data.success ? "success" : "error");
+            messageDiv.textContent = data.message;
+            
+            if (data.success) {
+                form.reset();
+                
+                if (form.dataset.parentId === "" || !form.dataset.parentId) {
+                    localStorage.removeItem('comment_author_name');
+                    localStorage.removeItem('comment_author_email');
+                    localStorage.removeItem('comment_author_website');
+                    localStorage.removeItem('comment_content');
+                }
+                
+                const charCount = form.querySelector(".char-count");
+                if (charCount) charCount.textContent = "0";
+                
+               // Plus de rechargement auto car les commentaires sont en modération
+               // if (data.data && data.data.status === "approved") {
+               //     setTimeout(() => location.reload(), 2000);
+               // }
+                
+                if (form.dataset.parentId) {
+                    setTimeout(() => hideReplyForm(form.dataset.parentId), 3000);
+                }
+            }
+        })
+        .catch(error => {
+            console.error("❌ Erreur:", error);
+            messageDiv.style.display = "block";
+            messageDiv.className = "form-message error";
+            messageDiv.textContent = "Erreur de connexion.";
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "📝 Publier le commentaire";
+        });
+    }
+
+    // Réponses
+    function showReplyForm(commentId) {
+        document.querySelectorAll('.reply-form-container').forEach(container => {
+            if (container.id !== "reply-form-" + commentId) {
+                container.style.display = "none";
+            }
+        });
+        
+        const replyForm = document.getElementById("reply-form-" + commentId);
+        if (replyForm) {
+            replyForm.style.display = "block";
+            replyForm.querySelector("textarea").focus();
+            replyForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function hideReplyForm(commentId) {
+        const replyForm = document.getElementById("reply-form-" + commentId);
+        if (replyForm) {
+            replyForm.style.display = "none";
+            const form = replyForm.querySelector("form");
+            if (form) {
+                form.reset();
+                const messageDiv = form.querySelector(".form-message");
+                if (messageDiv) messageDiv.style.display = "none";
+                const charCount = form.querySelector(".char-count");
+                if (charCount) charCount.textContent = "0";
+            }
+        }
+    }
+
+    // Animations
+    document.addEventListener("DOMContentLoaded", function() {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '0';
+                        entry.target.style.transform = 'translateY(20px)';
+                        entry.target.style.transition = 'all 0.6s ease';
+                        
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, 100);
+                        
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+
+        document.querySelectorAll('.comment-item').forEach(comment => {
+            observer.observe(comment);
+        });
+    });
     </script>
 </body>
 </html>

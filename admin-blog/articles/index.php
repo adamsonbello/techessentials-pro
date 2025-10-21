@@ -670,7 +670,7 @@ $stats['draft'] = $stmt->fetch()['total'];
                                     <?= strlen($article['title']) > 50 ? '...' : '' ?>
                                 </div>
                                 <div class="article-meta">
-                                    Par <?= htmlspecialchars($article['author'] ?: 'Anonyme') ?>
+                                <?= htmlspecialchars($article['author_name'] ?? 'Anonyme') ?>
                                 </div>
                             </td>
                             <td>

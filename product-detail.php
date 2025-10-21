@@ -150,14 +150,36 @@ include 'includes/layouts/header.php';
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.3s ease;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
-.thumbnail.active,
+.thumbnail::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(102, 126, 234, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.thumbnail.active {
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    transform: scale(1.05);
+    
+}
+
 .thumbnail:hover {
     border-color: #667eea;
+    transform: scale(1.05);
 }
+
+.thumbnail:hover::after {
+    opacity: 1;
+}
+
 
 .thumbnail img {
     width: 100%;
@@ -482,6 +504,8 @@ include 'includes/layouts/header.php';
     top: 0px !important;
     display: block !important;
 }
+
+
 }
 </style>
 
@@ -498,23 +522,37 @@ include 'includes/layouts/header.php';
 
             <!-- Product Main Section -->
             <div class="product-main">
+
                 <!-- Product Gallery -->
-                <div class="product-gallery">
-                    <div class="main-image">
-                        <!-- SUPPRIMÉ onclick="openZoom(...)" -->
-                        <img id="mainProductImage" src="assets/images/products/<?= $product['image'] ?>" 
-                             alt="<?= htmlspecialchars($product['name']) ?>">
-                    </div>
-                    
-                    <div class="thumbnail-gallery">
-                        <?php foreach ($product['gallery_images'] as $index => $image): ?>
-                            <div class="thumbnail <?= $index === 0 ? 'active' : '' ?>" 
-                                 onclick="changeMainImage('assets/images/products/<?= $image ?>', this)">
-                                <img src="assets/images/products/<?= $image ?>" alt="<?= htmlspecialchars($product['name']) ?> - Image <?= $index + 1 ?>">
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
+             <div class="product-gallery">
+              <div class="main-image">
+               <?php 
+                // Utiliser la nouvelle structure images ou fallback
+                 $mainImageSrc = isset($product['images']['main']) 
+            ? 'assets/images/products/' . $product['images']['main']
+            : 'assets/images/products/' . $product['image'];
+               ?>
+               <img id="mainProductImage" 
+                  src="<?= $mainImageSrc ?>" 
+                  alt="<?= htmlspecialchars($product['name']) ?>">
                 </div>
+    
+             <div class="thumbnail-gallery">
+              <?php 
+            // Utiliser gallery si disponible, sinon fallback sur gallery_images
+              $galleryImages = $product['images']['gallery'] ?? $product['gallery_images'] ?? [$product['image']];
+        
+                foreach ($galleryImages as $index => $image): 
+                 $imagePath = 'assets/images/products/' . $image;
+             ?>
+               <div class="thumbnail <?= $index === 0 ? 'active' : '' ?>" 
+                 onclick="changeMainImageAndZoom('<?= $imagePath ?>', this)">
+                <img src="<?= $imagePath ?>" 
+                     alt="<?= htmlspecialchars($product['name']) ?> - Vue <?= $index + 1 ?>">
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
 
                 <!-- Product Info -->
                 <div class="product-info">
@@ -589,85 +627,616 @@ include 'includes/layouts/header.php';
             </div>
         </div>
 
-        <!-- Product Tabs -->
-        <div class="product-tabs">
-            <div class="tab-navigation">
-                <button class="tab-btn active" onclick="showTab('specifications')">
-                    <?= $lang === 'fr' ? 'Spécifications' : 'Specifications' ?>
-                </button>
-                <button class="tab-btn" onclick="showTab('features')">
-                    <?= $lang === 'fr' ? 'Caractéristiques' : 'Features' ?>
-                </button>
-                <button class="tab-btn" onclick="showTab('reviews')">
-                    <?= $lang === 'fr' ? 'Avis' : 'Reviews' ?> (<?= $product['reviews_count'] ?>)
-                </button>
-            </div>
+       
             
-            <div class="tab-content">
-                <!-- Specifications Tab -->
-                <div id="specifications" class="tab-panel active">
-                    <div class="specifications-grid">
-                        <?php foreach ($product['specifications'] as $label => $value): ?>
-                            <div class="spec-item">
-                                <span class="spec-label"><?= htmlspecialchars($label) ?></span>
-                                <span class="spec-value"><?= htmlspecialchars($value) ?></span>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
+            
                 
-                <!-- Features Tab -->
-                <div id="features" class="tab-panel">
-                    <div class="features-grid">
-                        <?php foreach ($product['features'] as $feature): ?>
-                            <div class="feature-item">
-                                <div class="feature-icon">✓</div>
-                                <div><?= htmlspecialchars($feature) ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
                 
-                <!-- Reviews Tab -->
-                <div id="reviews" class="tab-panel">
-                    <div style="text-align: center; padding: 2rem;">
-                        <h3><?= $lang === 'fr' ? 'Avis clients' : 'Customer Reviews' ?></h3>
-                        <p><?= $lang === 'fr' ? 'Section des avis en cours de développement.' : 'Reviews section under development.' ?></p>
-                        <div style="margin: 2rem 0;">
-                            <div class="stars" style="font-size: 2rem;">
-                                <?php
-                                for ($i = 1; $i <= 5; $i++) {
-                                    echo $i <= $product['rating'] ? '★' : '☆';
-                                }
-                                ?>
-                            </div>
-                            <p><strong><?= $product['rating'] ?>/5</strong> - <?= $product['reviews_count'] ?> <?= $lang === 'fr' ? 'avis vérifiés' : 'verified reviews' ?></p>
-                        </div>
-                    </div>
-                </div>
+                
+        
+
+   <section>
+                <!-- SYSTEM RATING DYNAMIQUE--->
+                 
+<!-- INTÉGRATION DANS PRODUCT-DETAIL.PHP -->
+<!-- Placer cette section après les onglets produit -->
+ <style>
+    .rating-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.rating-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 2px;
+}
+
+.star {
+    font-size: 1.5rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    user-select: none;
+}
+
+.star.filled {
+    color: #ffd700;
+}
+
+.star.hover {
+    color: #ffed4e;
+}
+
+.rating-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.rating-average {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.rating-count {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.rating-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    margin-top: 15px;
+}
+
+.rating-form h4 {
+    margin-bottom: 15px;
+    color: #2d3748;
+}
+
+.user-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.user-rating-stars {
+    display: flex;
+    gap: 2px;
+}
+
+.user-rating .star {
+    font-size: 2rem;
+    transition: all 0.3s ease;
+}
+
+.user-rating .star:hover {
+    transform: scale(1.1);
+}
+
+.rating-label {
+    font-weight: 600;
+    color: #4a5568;
+    min-width: 120px;
+}
+
+.rating-value {
+    font-size: 1.1rem;
+    color: #667eea;
+    font-weight: 600;
+}
+
+.comment-field {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-family: inherit;
+    resize: vertical;
+    margin-bottom: 15px;
+}
+
+.comment-field:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.submit-rating {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.submit-rating:hover {
+    background: #5a6fd8;
+}
+
+.submit-rating:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+}
+
+.rating-message {
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.rating-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.rating-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.existing-ratings {
+    margin-top: 20px;
+}
+
+.rating-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 10px;
+}
+
+.rating-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.rating-user {
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.rating-date {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.rating-stars-small {
+    display: flex;
+    gap: 1px;
+}
+
+.rating-stars-small .star {
+    font-size: 1rem;
+    cursor: default;
+}
+
+.rating-comment {
+    color: #2d3748;
+    line-height: 1.5;
+    margin-top: 8px;
+}
+
+/* Animation pour le feedback visuel */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.star.clicked {
+    animation: pulse 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .rating-display {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .user-rating {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .rating-label {
+        min-width: auto;
+    }
+}
+</style>
+
+<!-- Section Rating et Avis -->
+<section class="product-rating-section">
+    <div class="rating-summary">
+        <div class="rating-overview">
+            <div class="rating-average">0</div>
+            <div class="rating-stars">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
             </div>
+            <div class="rating-count">0 avis</div>
         </div>
     </div>
-</div>
+    
+    <div class="existing-reviews-container">
+        <h3>Les avis de nos clients</h3>
+        <div id="existing-reviews">
+            <p class="loading">Chargement des avis...</p>
+        </div>
+    </div>
+    
+    <div class="add-review-container">
+        <h3>Donnez votre avis</h3>
+        <form id="rating-form">
+            <div class="form-group">
+                <label>Votre note :</label>
+                <div class="rating-input">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <div class="rating-value">Sélectionnez une note</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Votre avis (optionnel) :</label>
+                <textarea id="rating-comment" rows="4" placeholder="Partagez votre expérience..."></textarea>
+            </div>
+            
+            <button type="submit" class="submit-rating-btn">Publier mon avis</button>
+        </form>
+    </div>
+</section>
 
-<!-- SUPPRIMÉ COMPLÈTEMENT : Zoom Overlay -->
+<style>
+.product-rating-section {
+    background: #f8f9fa;
+    padding: 3rem 0;
+    margin-top: 3rem;
+}
+
+.product-rating-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+/* Statistiques globales */
+.rating-summary {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.rating-overview {
+    text-align: center;
+    padding: 1rem;
+}
+
+.rating-average {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.rating-stars {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.rating-stars .star {
+    color: #ddd;
+}
+
+.rating-stars .star.filled {
+    color: #ffd700;
+}
+
+.rating-count {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Distribution des notes */
+.rating-distribution {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.rating-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rating-bar-item > span:first-child {
+    min-width: 30px;
+    color: #666;
+}
+
+.bar-container {
+    flex: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.rating-bar-item > span:last-child {
+    min-width: 30px;
+    text-align: right;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Liste des avis existants */
+.existing-reviews-container {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.existing-reviews-container h3 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+#existing-reviews {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.review-item {
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.review-rating {
+    color: #ffd700;
+    font-size: 1.2rem;
+}
+
+.review-date {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.review-comment {
+    color: #444;
+    line-height: 1.6;
+}
+
+.no-reviews, .loading {
+    text-align: center;
+    color: #999;
+    padding: 2rem;
+}
+
+/* Bouton "Voir plus" */
+.load-more-btn {
+    display: block;
+    margin: 1.5rem auto 0;
+    padding: 0.8rem 2rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.load-more-btn:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+}
+
+.load-more-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Formulaire d'ajout d'avis */
+.add-review-container {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.add-review-container h3 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Étoiles cliquables */
+.rating-input {
+    display: flex;
+    gap: 0.3rem;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.rating-input .star {
+    color: #ddd;
+    transition: all 0.2s ease;
+}
+
+.rating-input .star:hover,
+.rating-input .star.active {
+    color: #ffd700;
+    transform: scale(1.1);
+}
+
+.rating-value {
+    margin-top: 0.5rem;
+    color: #667eea;
+    font-weight: 500;
+}
+
+/* Textarea */
+#rating-comment {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+#rating-comment:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* Bouton de soumission */
+.submit-rating-btn {
+    background: #667eea;
+    color: white;
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-rating-btn:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+}
+
+.submit-rating-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Messages de feedback */
+.rating-message {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.rating-message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.rating-message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .rating-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .rating-input {
+        font-size: 1.5rem;
+    }
+}
+</style>
 
 <!-- SYSTÈME DE LOUPE CARRÉE INTÉGRÉ -->
 <!-- REMPLACER LE SCRIPT JAVASCRIPT À LA FIN DE VOTRE PRODUCT-DETAIL.PHP PAR CECI : -->
 
 <script>
 // Image Gallery Functions - CONSERVÉES
-function changeMainImage(imageSrc, thumbnail) {
-    document.getElementById('mainProductImage').src = imageSrc;
-    
-    // Update active thumbnail
-    document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
-    thumbnail.classList.add('active');
-    
-    // Mettre à jour l'image de zoom aussi
+
+// FONCTION AMÉLIORÉE - Compatible avec la loupe
+function changeMainImageAndZoom(imageSrc, thumbnail) {
+    const mainImg = document.getElementById('mainProductImage');
     const zoomImg = document.querySelector('.magnifier-result img');
+    
+    // Changer l'image principale
+    mainImg.src = imageSrc;
+    
+    // Changer l'image de la loupe
     if (zoomImg) {
         zoomImg.src = imageSrc;
+    }
+    
+    // Mettre à jour les thumbnails actifs
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+    });
+    
+    if (thumbnail) {
+        thumbnail.classList.add('active');
     }
 }
 
@@ -705,8 +1274,8 @@ document.addEventListener('DOMContentLoaded', function() {
         border: 2px solid rgba(102, 126, 234, 0.8);
         background: rgba(102, 126, 234, 0.15);
         pointer-events: none;
-        width: 120px;
-        height: 120px;
+        width: 150px;
+        height: 150px;
         backdrop-filter: blur(1px);
         box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
         display: none;
@@ -815,6 +1384,12 @@ document.addEventListener('DOMContentLoaded', function() {
     observer.observe(mainImg, { attributes: true });
 });
 </script>
+
+<!-- Script pour le rating avec pagination -->
+<script>
+document.body.dataset.productId = '<?= $product['id'] ?>';
+</script>
+<script src="assets/js/rating-system.js"></script>
 
 <?php 
 // Include newsletter et footer

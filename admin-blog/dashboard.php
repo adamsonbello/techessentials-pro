@@ -11,6 +11,7 @@ if (!isset($_SESSION['blog_admin_logged']) || $_SESSION['blog_admin_logged'] !==
 // Logout
 if (isset($_GET['logout'])) {
     session_destroy();
+    
     header('Location: index.php');
     exit;
 }
@@ -692,7 +693,7 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Blog Admin';
             </div>
             <div class="topbar-right">
                 <div class="quick-actions">
-                    <a href="articles/new.php" class="btn btn-primary">
+                    <a href="articles/editor.php" class="btn btn-primary">
                         ✏️ Nouvel Article
                     </a>
                     <a href="newsletter/templates.php" class="btn btn-success">
@@ -761,7 +762,7 @@ $admin_user = $_SESSION['blog_admin_user'] ?? 'Blog Admin';
                 <div class="content-section">
                     <div class="section-header">
                         <h2 class="section-title">Articles récents</h2>
-                        <a href="articles/new.php" class="btn btn-primary">
+                        <a href="articles/editor.php" class="btn btn-primary">
                             ✏️ Nouveau
                         </a>
                     </div>
