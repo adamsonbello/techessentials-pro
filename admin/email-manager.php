@@ -392,7 +392,7 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
     </div>
 
     <script>
-        const API_URL = "../api.php";
+        const API_URL = "api.php";
 
         // Gestion des onglets
         function showTab(tabName) {
@@ -536,6 +536,34 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
             previewEl.style.display = 'block';
         }
 
+    
+        // SEND WELCOME TO ALL
+        async function sendWelcomeToAll() {
+            if (!confirm('Envoyer un email de bienvenue à tous les nouveaux abonnés (dernières 24h) via Brevo ?')) {
+                return;
+           }
+    
+           try {
+               const response = await fetch(`${API_URL}?action=sendWelcomeToAll`, {
+            method: 'POST'
+        });
+        
+               const data = await response.json();
+        
+          if (data.success) {
+            alert(`✅ Emails de bienvenue envoyés via Brevo !\n\nTotal: ${data.results.total}\nEnvoyés: ${data.results.sent}\nÉchecs: ${data.results.failed}`);
+        } else {
+            alert('❌ Erreur: ' + (data.error || 'Erreur inconnue'));
+        }
+          } catch (error) {
+              alert('❌ Erreur réseau: ' + error.message);
+    }
+}
+          
+
+           
+
+
         // Envoyer newsletter
         async function sendNewsletter() {
             const subject = document.getElementById('newsletterSubject').value;
@@ -569,10 +597,10 @@ $admin_user = isset($_SESSION['admin_user']) ? $_SESSION['admin_user'] : 'Admin'
                 const data = await response.json();
                 
                 if (data.success) {
+                    Succès: ${data.results.sent || 0}
+                    Échecs: ${data.results.failed || 0}
+                    ${data.results.errors ? '\nErreurs:\n' + data.results.errors.join('\n') : ''}`;
                     resultsEl.textContent = `✅ Newsletter envoyée !
-Succès: ${data.results.sent || 0}
-Échecs: ${data.results.failed || 0}
-${data.results.errors ? '\nErreurs:\n' + data.results.errors.join('\n') : ''}`;
                 } else {
                     resultsEl.textContent = `❌ Erreur: ${data.error}`;
                 }
@@ -652,6 +680,36 @@ ${data.results.errors ? '\nErreurs:\n' + data.results.errors.join('\n') : ''}`;
             // Auto-actualisation des stats toutes les 5 minutes
             setInterval(loadEmailStats, 5 * 60 * 1000);
         });
+
+        // Aperçu template de bienvenue
+async function previewWelcomeTemplate() {
+    const language = document.getElementById('templateLanguage').value;
+    const previewEl = document.getElementById('templatePreview');
+    const contentEl = document.getElementById('templateContent');
+    
+    previewEl.style.display = 'block';
+    contentEl.innerHTML = 'Chargement...';
+    
+    try {
+        const response = await fetch(`newsletters/templates/welcome_${language}.html`);
+        
+        if (!response.ok) {
+            throw new Error('Template non trouvé');
+        }
+        
+        const template = await response.text();
+        
+        // Remplacer les variables pour l'aperçu
+        const preview = template
+            .replace(/{{email}}/g, 'exemple@email.com')
+            .replace(/{{unsubscribe_url}}/g, '#unsubscribe')
+            .replace(/{{year}}/g, new Date().getFullYear());
+        
+        contentEl.innerHTML = preview;
+    } catch (error) {
+        contentEl.innerHTML = '❌ Template introuvable dans admin/newsletters/templates/welcome_' + language + '.html';
+    }
+}
     </script>
 </body>
 </html>

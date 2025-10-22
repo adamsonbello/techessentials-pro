@@ -13,6 +13,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 define('TECHESSENTIALS_PRO', true);
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/brevo-config.php';
 
 // Simple authentification pour API
 if (session_status() === PHP_SESSION_NONE) {
@@ -58,12 +59,27 @@ function handleAPIRequest() {
                 
             case 'sendNewsletterBroadcast':
                 return sendNewsletterBroadcast();
+            
+            case 'sendWelcomeToAll':
+                return sendWelcomeToAll();
                 
             case 'getRecentSubscribers':
                 return getRecentSubscribers();
                 
             case 'exportSubscribers':
                 return exportSubscribers();
+
+                return getVerifiedContacts();
+                
+            case 'replyToVerifiedContact':
+                return replyToVerifiedContact();
+                
+            case 'markContactAsProcessed':
+                return markContactAsProcessed();
+                
+            case 'archiveVerifiedContact':
+                return archiveVerifiedContact();
+            case 'getVerifiedContacts':
                 
             default:
                 throw new Exception('Action non reconnue: ' . $action);
@@ -103,11 +119,6 @@ function getContactMessages() {
         $params[] = $subject;
     }
     
-    if ($language) {
-        $where_conditions[] = "language = ?";
-        $params[] = $language;
-    }
-    
     if ($date) {
         $where_conditions[] = "DATE(created_at) = ?";
         $params[] = $date;
@@ -115,21 +126,21 @@ function getContactMessages() {
     
     $where_sql = !empty($where_conditions) ? 'WHERE ' . implode(' AND ', $where_conditions) : '';
     
-    // Requête principale
+    // Requête principale ADAPTÉE à ta structure
     $stmt = $db->prepare("
         SELECT 
-            id, first_name, last_name, email, subject, custom_subject,
-            message, language, status, priority, ip_address,
-            created_at, updated_at, replied_at, verified_at,
-            admin_notes, rgpd_consent
+            id, name, email, subject, message, category, priority, status,
+            ip_address, user_agent, assigned_to, replied, replied_at, replied_by,
+            created_at, updated_at
         FROM contact_messages 
         $where_sql 
         ORDER BY 
             CASE status 
                 WHEN 'new' THEN 1 
                 WHEN 'read' THEN 2 
-                WHEN 'replied' THEN 3 
-                WHEN 'closed' THEN 4 
+                WHEN 'in_progress' THEN 3
+                WHEN 'resolved' THEN 4
+                WHEN 'archived' THEN 5
             END,
             created_at DESC
     ");
@@ -139,15 +150,11 @@ function getContactMessages() {
     
     // Enrichir les données pour l'interface
     foreach ($messages as &$message) {
-        // Combiner custom_subject si present
-        if ($message['custom_subject'] && $message['subject'] === 'other') {
-            $message['subject_display'] = $message['custom_subject'];
-        } else {
-            $message['subject_display'] = ucfirst($message['subject']);
-        }
-        
-        // Ajouter le statut de vérification email
-        $message['is_verified'] = !empty($message['verified_at']);
+        // Adapter à ta structure
+        $message['first_name'] = $message['name']; // Compatibilité
+        $message['last_name'] = ''; // Pas de last_name
+        $message['subject_display'] = ucfirst($message['subject']);
+        $message['language'] = 'fr'; // Par défaut si pas de colonne language
         
         // Prévisualiser le message (100 caractères)
         $message['message_preview'] = substr($message['message'], 0, 100);
@@ -257,7 +264,10 @@ function updateMessageStatus() {
     $message_id = $_POST['message_id'] ?? 0;
     $new_status = $_POST['status'] ?? '';
     
-    if (!$message_id || !in_array($new_status, ['new', 'read', 'replied', 'closed'])) {
+    // Adapter aux statuts de ta table
+    $valid_statuses = ['new', 'read', 'in_progress', 'resolved', 'archived'];
+    
+    if (!$message_id || !in_array($new_status, $valid_statuses)) {
         throw new Exception('Paramètres invalides pour la mise à jour du statut');
     }
     
@@ -266,8 +276,9 @@ function updateMessageStatus() {
     $update_fields = ['status = ?', 'updated_at = NOW()'];
     $params = [$new_status];
     
-    // Si on marque comme répondu, ajouter replied_at
-    if ($new_status === 'replied') {
+    // Si on marque comme resolved, ajouter replied
+    if ($new_status === 'resolved') {
+        $update_fields[] = 'replied = 1';
         $update_fields[] = 'replied_at = NOW()';
     }
     
@@ -340,7 +351,7 @@ function sendReply() {
     
     // Préparer l'email de réponse
     $to = $message['email'];
-    $subject = "Re: " . ($message['custom_subject'] ?: ucfirst($message['subject'])) . " - TechEssentials Pro";
+    $subject = "Re: " . $message['subject'] . " - TechEssentials Pro";
     
     $html_body = "
     <!DOCTYPE html>
@@ -363,7 +374,7 @@ function sendReply() {
                 <p>Réponse à votre message</p>
             </div>
             <div class='content'>
-                <p>Bonjour " . htmlspecialchars($message['first_name']) . ",</p>
+                <p>Bonjour " . htmlspecialchars($message['name']) . ",</p>
                 
                 <p>Merci pour votre message. Voici notre réponse :</p>
                 
@@ -400,20 +411,20 @@ function sendReply() {
     $email_sent = mail($to, $subject, $html_body, implode("\r\n", $headers));
     
     if ($email_sent) {
-        // Mettre à jour le statut et ajouter la note admin
+        // Mettre à jour le statut
         $stmt = $db->prepare("
             UPDATE contact_messages 
             SET 
-                status = 'replied',
+                status = 'resolved',
+                replied = 1,
                 replied_at = NOW(),
                 updated_at = NOW(),
-                replied_by = ?,
-                admin_notes = CONCAT(COALESCE(admin_notes, ''), '\n--- Réponse envoyée le ', NOW(), ' ---\n', ?)
+                replied_by = ?
             WHERE id = ?
         ");
         
         $admin_user = $_SESSION['admin_user'] ?? 'Admin';
-        $stmt->execute([$admin_user, $reply_text, $message_id]);
+        $stmt->execute([$admin_user, $message_id]);
         
         return [
             'success' => true,
@@ -423,7 +434,6 @@ function sendReply() {
         throw new Exception('Erreur lors de l\'envoi de l\'email');
     }
 }
-
 // ========== FONCTIONS EMAIL/NEWSLETTER ==========
 
 /**
@@ -512,34 +522,40 @@ function testEmailConfig() {
  * Envoyer un email de test
  */
 function sendTestEmail() {
-    $data = json_decode(file_get_contents('php://input'), true);
+    $input = file_get_contents('php://input');
+    $data = json_decode($input, true);
+    
+    if (!$data) {
+        $data = $_POST;
+    }
+    
     $test_email = $data['email'] ?? '';
     $language = $data['language'] ?? 'fr';
     
-    if (!$test_email) {
-        throw new Exception('Email de test manquant');
+    if (!$test_email || !filter_var($test_email, FILTER_VALIDATE_EMAIL)) {
+        return [
+            'success' => false,
+            'error' => 'Email invalide ou manquant'
+        ];
     }
     
-    $subject = $language === 'fr' ? 'Test Email - TechEssentials Pro' : 'Test Email - TechEssentials Pro';
-    $message = $language === 'fr' ? 
-        'Ceci est un email de test depuis votre interface admin TechEssentials Pro.' :
-        'This is a test email from your TechEssentials Pro admin interface.';
+    $subject = 'Test Email - TechEssentials Pro via Brevo';
+    $html_content = $language === 'fr' 
+        ? "<h1>🎉 Test réussi !</h1><p>Ceci est un email de test envoyé via Brevo API.</p><p>Votre configuration fonctionne parfaitement !</p>"
+        : "<h1>🎉 Test successful!</h1><p>This is a test email sent via Brevo API.</p><p>Your configuration works perfectly!</p>";
     
-    $headers = [
-        'From: TechEssentials Pro <hello@techessentialspro.com>',
-        'Reply-To: hello@techessentialspro.com',
-        'Content-Type: text/plain; charset=UTF-8'
-    ];
+    $result = sendEmailViaBrevo($test_email, 'Test User', $subject, $html_content, $language);
     
-    $result = mail($test_email, $subject, $message, implode("\r\n", $headers));
-    
-    if ($result) {
+    if ($result['success']) {
         return [
             'success' => true,
-            'message' => "Email de test envoyé à $test_email"
+            'message' => "Email de test envoyé via Brevo à $test_email"
         ];
     } else {
-        throw new Exception('Échec envoi email de test');
+        return [
+            'success' => false,
+            'error' => $result['error']['message'] ?? 'Erreur Brevo inconnue'
+        ];
     }
 }
 
@@ -553,16 +569,58 @@ function sendNewsletterBroadcast() {
     $language_filter = $data['language'] ?? null;
     
     if (!$subject || !$content) {
-        throw new Exception('Sujet et contenu requis');
+        return [
+            'success' => false,
+            'error' => 'Sujet et contenu requis'
+        ];
+    }
+    
+    $results = sendNewsletterViaBrevo($subject, $content, $language_filter);
+    
+    return [
+        'success' => true,
+        'results' => $results,
+        'message' => "Newsletter envoyée via Brevo : {$results['sent']} succès, {$results['failed']} échecs"
+    ];
+}
+
+function sendWelcomeToAll() {
+    require_once __DIR__ . '/brevo-config.php';
+    
+    $db = getDB('main');
+    
+    // Récupérer les nouveaux abonnés (dernières 24h) qui n'ont pas reçu de bienvenue
+    $stmt = $db->query("
+        SELECT email, language 
+        FROM newsletter_subscribers 
+        WHERE status = 'active' 
+        AND subscribed_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+        LIMIT 50
+    ");
+    
+    $subscribers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $results = [
+        'total' => count($subscribers),
+        'sent' => 0,
+        'failed' => 0
+    ];
+    
+    foreach ($subscribers as $subscriber) {
+        $result = sendWelcomeEmailViaBrevo($subscriber['email'], $subscriber['language']);
+        
+        if ($result['success']) {
+            $results['sent']++;
+        } else {
+            $results['failed']++;
+        }
+        
+        usleep(500000); // 0.5s pause
     }
     
     return [
         'success' => true,
-        'results' => [
-            'sent' => 0,
-            'failed' => 0,
-            'errors' => ['Table newsletter_subscribers non configurée']
-        ]
+        'results' => $results
     ];
 }
 
@@ -570,10 +628,26 @@ function sendNewsletterBroadcast() {
  * Récupérer la liste des abonnés récents
  */
 function getRecentSubscribers() {
-    return [
-        'success' => false,
-        'error' => 'Table newsletter_subscribers non configurée'
-    ];
+    $db = getDB('main');
+    $limit = $_GET['limit'] ?? 100;
+    
+    try {
+        $stmt = $db->prepare("
+            SELECT email, language, status, subscribed_at 
+            FROM newsletter_subscribers 
+            ORDER BY subscribed_at DESC 
+            LIMIT ?
+        ");
+        $stmt->execute([$limit]);
+        $subscribers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $subscribers; // Retourne directement le tableau
+        
+    } catch (Exception $e) {
+        return [
+            'error' => 'Erreur: ' . $e->getMessage()
+        ];
+    }
 }
 
 /**
